@@ -23,5 +23,10 @@ public class MainActivity extends AppCompatActivity {
 
         Toast.makeText(MainActivity.this, "User inserted " + success, Toast.LENGTH_LONG).show();
 
+        boolean exists = authTable.checkIfUserExists("testuser2");
+        Toast.makeText(MainActivity.this, "User Exists " + exists, Toast.LENGTH_LONG).show();
+
+
+
     }
 }
