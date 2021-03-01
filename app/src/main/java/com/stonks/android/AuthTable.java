@@ -52,7 +52,7 @@ public class AuthTable extends SQLiteOpenHelper {
     }
 
     public boolean checkIfUserExists(String username) {
-        SQLiteDatabase db = this.getReadableDatabase();
+        SQLiteDatabase db = this.getWritableDatabase();
         String queryString = "SELECT * FROM " + AUTH_TABLE + " WHERE " + COLUMN_USERNAME + " = " + username;
         Cursor cursor = db.rawQuery(queryString, null);
 
