@@ -47,7 +47,7 @@ public class AuthTable extends SQLiteOpenHelper {
         cv.put(COLUMN_LAST_NAME, userModel.getLastName());
         cv.put(COLUMN_PASSWORD, userModel.getPassword());
 
-        long insert = db.insert(AUTH_TABLE, null ,cv);
+        long insert = db.insert(AUTH_TABLE, null, cv);
         return insert >= 0;
     }
 
@@ -55,12 +55,8 @@ public class AuthTable extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         String queryString = "SELECT * FROM " + AUTH_TABLE + " WHERE AUTH_TABLE.username = \"" + username + "\"";
         Cursor cursor = db.rawQuery(queryString, null);
-
-        if (cursor.moveToFirst()) {
-            cursor.close();
-            return true;
-        } else {
-            return false;
-        }
+        boolean exists = cursor.moveToFirst();
+        cursor.close();
+        return exists;
     }
 }
