@@ -1,4 +1,4 @@
-package com.stonks.android;
+package com.stonks.android.storage.tables;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -36,7 +36,9 @@ public class AuthTable extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-
+        String dropStatement = "DROP TABLE stonks_db.AUTH_TABLE";
+        db.execSQL(dropStatement);
+        onCreate(db);
     }
 
     public boolean addUser(UserModel userModel) {
