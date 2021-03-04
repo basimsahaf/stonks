@@ -1,6 +1,5 @@
 package com.stonks.android.data;
 
-import com.google.firebase.auth.FirebaseAuth;
 import com.stonks.android.data.model.LoggedInUser;
 
 /**

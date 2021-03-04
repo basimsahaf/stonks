@@ -1,10 +1,12 @@
 package com.stonks.android;
 
 import androidx.appcompat.app.AppCompatActivity;
-import android.os.Bundle;
+import androidx.appcompat.app.AppCompatDelegate;
 
-import java.util.ArrayList;
-import java.util.List;
+import android.os.Bundle;
+import android.widget.Toast;
+
+import com.stonks.android.models.UserModel;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -12,5 +14,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
     }
 }

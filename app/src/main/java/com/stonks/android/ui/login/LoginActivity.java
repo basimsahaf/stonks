@@ -26,6 +26,8 @@ import android.widget.Toast;
 
 import com.stonks.android.MainActivity;
 import com.stonks.android.R;
+import com.stonks.android.data.LoginDataSource;
+import com.stonks.android.data.LoginRepository;
 import com.stonks.android.ui.login.LoginViewModel;
 import com.stonks.android.ui.login.LoginViewModelFactory;
 
@@ -37,8 +39,7 @@ public class LoginActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        loginViewModel = new ViewModelProvider(this, new LoginViewModelFactory())
-                .get(LoginViewModel.class);
+        loginViewModel = new LoginViewModel(new LoginRepository());
 
         final EditText usernameEditText = findViewById(R.id.username);
         final EditText passwordEditText = findViewById(R.id.password);
