@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import android.util.Log;
 import android.util.Patterns;
 
 import com.stonks.android.data.LoginRepository;
@@ -35,7 +36,8 @@ public class LoginViewModel extends ViewModel {
 
         if (result instanceof Result.Success) {
             LoggedInUser data = ((Result.Success<LoggedInUser>) result).getData();
-            loginResult.setValue(new LoginResult(new LoggedInUserView(data.getDisplayName())));
+            Log.d("Debug", "Returning success from model");
+            loginResult.setValue(new LoginResult(new LoggedInUserView("Hello!")));
         } else {
             loginResult.setValue(new LoginResult(R.string.login_failed));
         }

@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 
@@ -54,11 +55,23 @@ public class AuthTable extends SQLiteOpenHelper {
     }
 
     public boolean checkIfUserExists(String username) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        String queryString = "SELECT * FROM " + AUTH_TABLE + " WHERE AUTH_TABLE.username = \"" + username + "\"";
+        SQLiteDatabase db = this.getReadableDatabase();
+        String queryString = "SELECT * FROM " + AUTH_TABLE + " WHERE AUTH_TABLE.username = '" + username + "'";
         Cursor cursor = db.rawQuery(queryString, null);
         boolean exists = cursor.moveToFirst();
         cursor.close();
+        Log.d("Debug", "User exist " + exists);
+        return exists;
+    }
+
+    public boolean checkUsernamePassword(String username, String password) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String queryString = "SELECT * FROM " + AUTH_TABLE + " WHERE AUTH_TABLE.username = '" + username + "' AND AUTH_TABLE.password = '" + password + "'";
+        Cursor cursor = db.rawQuery(queryString, null);
+        boolean exists = cursor.moveToFirst();
+        cursor.close();
+        Log.d("Debug", "Password exist " + exists);
+
         return exists;
     }
 }

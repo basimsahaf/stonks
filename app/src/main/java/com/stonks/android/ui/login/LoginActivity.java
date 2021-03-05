@@ -28,18 +28,23 @@ import com.stonks.android.MainActivity;
 import com.stonks.android.R;
 import com.stonks.android.data.LoginDataSource;
 import com.stonks.android.data.LoginRepository;
-import com.stonks.android.ui.login.LoginViewModel;
-import com.stonks.android.ui.login.LoginViewModelFactory;
+import com.stonks.android.models.UserModel;
+import com.stonks.android.storage.tables.AuthTable;
 
 public class LoginActivity extends AppCompatActivity {
 
     private LoginViewModel loginViewModel;
+    private AuthTable authTable;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        loginViewModel = new LoginViewModel(new LoginRepository());
+        authTable = new AuthTable(this);
+//        UserModel tempUser = new UserModel("test12345", "test12345", "Test", "User");
+//        authTable.addUser(tempUser);
+        loginViewModel = new LoginViewModel(new LoginRepository(new LoginDataSource(authTable)));
+
 
         final EditText usernameEditText = findViewById(R.id.username);
         final EditText passwordEditText = findViewById(R.id.password);

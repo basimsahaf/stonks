@@ -1,5 +1,7 @@
 package com.stonks.android.data;
 
+import android.util.Log;
+
 import com.stonks.android.data.model.LoggedInUser;
 
 /**
@@ -17,7 +19,7 @@ public class LoginRepository {
     private LoggedInUser user = null;
 
     // private constructor : singleton access
-    private LoginRepository(LoginDataSource dataSource) {
+    public LoginRepository(LoginDataSource dataSource) {
         this.dataSource = dataSource;
     }
 
@@ -49,6 +51,7 @@ public class LoginRepository {
         if (result instanceof Result.Success) {
             setLoggedInUser(((Result.Success<LoggedInUser>) result).getData());
         }
+        Log.d("Debug", "returning success from repository");
         return result;
     }
 }
