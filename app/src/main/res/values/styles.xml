@@ -36,4 +36,8 @@
     <style name="AppTheme.TextAppearance.XSLabel">
         <item name="android:textSize">12sp</item>
     </style>
+
+    <style name="AppTheme.TextAppearance.Content">
+        <item name="android:textSize">15sp</item>
+    </style>
 </resources>
