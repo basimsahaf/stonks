@@ -13,12 +13,11 @@
 
     <style name="AppTheme.TextAppearance.XXLLabel">
         <item name="android:textSize">24sp</item>
-        <item name="android:textStyle">bold</item>
     </style>
 
     <style name="AppTheme.TextAppearance.XLLabel">
         <item name="android:textSize">20sp</item>
-        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/secondaryColor</item>
     </style>
 
     <style name="AppTheme.TextAppearance.LargeLabel">
@@ -31,6 +30,7 @@
 
     <style name="AppTheme.TextAppearance.SmallLabel">
         <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/secondaryColor</item>
     </style>
 
     <style name="AppTheme.TextAppearance.XSLabel">

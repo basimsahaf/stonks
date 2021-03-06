@@ -19,17 +19,16 @@
                 android:id="@+id/stock_symbol"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textStyle="bold"
-                android:text="SYM"
+                style="@style/AppTheme.TextAppearance.SmallLabel"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-        />
+                android:text="SYM"/>
         <TextView
                 android:id="@+id/stock_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Company Name"
-                style="@style/TextAppearance.AppCompat.Large"
+                style="@style/AppTheme.TextAppearance.XXLLabel"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/stock_symbol"
         />
@@ -39,7 +38,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="$100"
-                style="@style/TextAppearance.AppCompat.Medium"
+                style="@style/AppTheme.TextAppearance.XLLabel"
                 app:layout_constraintTop_toTopOf="@id/stock_name"
                 app:layout_constraintEnd_toEndOf="parent"
         />
@@ -48,6 +47,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="⬆ $20.19 (34%)"
+                style="@style/AppTheme.TextAppearance.SmallLabel"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/current_price"
         />
@@ -58,86 +58,254 @@
             android:id="@+id/graph"
             android:layout_width="match_parent"
             android:layout_height="300dp"
+            android:layout_marginTop="32dp"
             app:layout_constraintTop_toBottomOf="@id/header"
     />
 
     <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
             app:layout_constraintTop_toBottomOf="@id/graph">
 
         <TextView
                 android:id="@+id/stats_title"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="8dp"
                 android:text="Stats"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                style="@style/TextAppearance.AppCompat.Medium"
+                app:layout_constraintBottom_toTopOf="@id/row_1"
+                style="@style/AppTheme.TextAppearance.XLLabel"
         />
 
         <LinearLayout
-                android:layout_width="wrap_content"
+                android:id="@+id/row_1"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                app:layout_constraintTop_toBottomOf="@id/stats_title"
                 app:layout_constraintStart_toStartOf="parent"
-                style="@style/TextAppearance.AppCompat.Medium">
+                app:layout_constraintEnd_toStartOf="@id/row_1_col_2"
+                app:layout_constraintBottom_toTopOf="@+id/row_2"
+                app:layout_constraintHorizontal_bias="0.5"
+                android:layout_marginBottom="8dp"
+        >
 
             <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Open"
-                    style="@style/TextAppearance.AppCompat.Small"
+                    android:layout_marginBottom="4dp"
+                    style="@style/AppTheme.TextAppearance.XSLabel"
+            />
+            <TextView
+                    android:id="@+id/open"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="$39.26"
+                    style="@style/AppTheme.TextAppearance.LargeLabel"
             />
 
         </LinearLayout>
         <LinearLayout
-                android:layout_width="wrap_content"
+                android:id="@+id/row_1_col_2"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                app:layout_constraintTop_toBottomOf="@id/stats_title"
+                app:layout_constraintStart_toEndOf="@id/row_1"
                 app:layout_constraintEnd_toEndOf="parent"
-                style="@style/TextAppearance.AppCompat.Medium">
+                app:layout_constraintBottom_toTopOf="@+id/row_2"
+                app:layout_constraintHorizontal_bias="0.5"
+                android:layout_marginBottom="8dp"
+        >
 
             <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Volume"
-                    style="@style/TextAppearance.AppCompat.Small"
+                    android:layout_marginBottom="4dp"
+                    style="@style/AppTheme.TextAppearance.XSLabel"
+            />
+            <TextView
+                    android:id="@+id/volume"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="45,067"
+                    style="@style/AppTheme.TextAppearance.LargeLabel"
             />
 
         </LinearLayout>
 
         <LinearLayout
-                android:layout_width="wrap_content"
+                android:id="@+id/row_2"
+                android:layout_width="0dp"
+                app:layout_constraintHorizontal_bias="0.5"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                app:layout_constraintTop_toBottomOf="@id/stats_title"
                 app:layout_constraintStart_toStartOf="parent"
-                style="@style/TextAppearance.AppCompat.Medium">
+                app:layout_constraintBottom_toTopOf="@+id/row_3"
+                android:layout_marginBottom="8dp"
+                app:layout_constraintEnd_toStartOf="@+id/row_2_col_2"
+        >
 
             <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Open"
-                    style="@style/TextAppearance.AppCompat.Small"
+                    android:text="High today"
+                    android:layout_marginBottom="4dp"
+                    style="@style/AppTheme.TextAppearance.XSLabel"
+            />
+            <TextView
+                    android:id="@+id/daily_high"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="$42.78"
+                    style="@style/AppTheme.TextAppearance.LargeLabel"
             />
 
         </LinearLayout>
         <LinearLayout
-                android:layout_width="wrap_content"
+                android:id="@+id/row_2_col_2"
+                android:layout_width="0dp"
+                app:layout_constraintHorizontal_bias="0.5"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                app:layout_constraintTop_toBottomOf="@id/stats_title"
+                app:layout_constraintStart_toEndOf="@id/row_2"
                 app:layout_constraintEnd_toEndOf="parent"
-                style="@style/TextAppearance.AppCompat.Medium">
+                android:layout_marginBottom="8dp"
+                app:layout_constraintBottom_toTopOf="@+id/row_3"
+        >
 
             <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Volume"
-                    style="@style/TextAppearance.AppCompat.Small"
+                    android:text="Low today"
+                    android:layout_marginBottom="4dp"
+                    style="@style/AppTheme.TextAppearance.XSLabel"
+                    android:layout_weight="1"
+            />
+            <TextView
+                    android:id="@+id/daily_low"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="$39.15"
+                    style="@style/AppTheme.TextAppearance.LargeLabel"
+            />
+
+        </LinearLayout>
+
+        <LinearLayout
+                android:id="@+id/row_3"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintHorizontal_bias="0.5"
+                android:orientation="vertical"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/row_3_col_2"
+                app:layout_constraintBottom_toTopOf="@+id/row_4"
+                android:layout_marginBottom="8dp"
+        >
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="52 wk high"
+                    android:layout_marginBottom="4dp"
+                    style="@style/AppTheme.TextAppearance.XSLabel"
+            />
+            <TextView
+                    android:id="@+id/yearly_high"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="$58.75"
+                    style="@style/AppTheme.TextAppearance.LargeLabel"
+            />
+
+        </LinearLayout>
+        <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintHorizontal_bias="0.5"
+                android:orientation="vertical"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:id="@+id/row_3_col_2"
+                app:layout_constraintStart_toEndOf="@id/row_3"
+                android:layout_marginBottom="8dp"
+                app:layout_constraintBottom_toTopOf="@+id/row_4"
+        >
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="P/E ratio"
+                    android:layout_marginBottom="4dp"
+                    style="@style/AppTheme.TextAppearance.XSLabel"
+            />
+            <TextView
+                    android:id="@+id/pe_ratio"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="–"
+                    style="@style/AppTheme.TextAppearance.LargeLabel"
+            />
+
+        </LinearLayout>
+
+        <LinearLayout
+                android:id="@+id/row_4"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintHorizontal_bias="0.5"
+                android:orientation="vertical"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/row_4_col_2"
+                android:layout_marginBottom="8dp"
+        >
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="52 wk. low"
+                    android:layout_marginBottom="4dp"
+                    style="@style/AppTheme.TextAppearance.XSLabel"
+            />
+
+            <TextView
+                    android:id="@+id/yearly_low"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="$37.23"
+                    style="@style/AppTheme.TextAppearance.LargeLabel"
+            />
+
+        </LinearLayout>
+        <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@id/row_4"
+                android:layout_marginBottom="8dp"
+                android:id="@+id/row_4_col_2"
+        >
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Div/Yield"
+                    android:layout_marginBottom="4dp"
+                    style="@style/AppTheme.TextAppearance.XSLabel"
+            />
+            <TextView
+                    android:id="@+id/div_yield"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="–"
+                    style="@style/AppTheme.TextAppearance.LargeLabel"
             />
 
         </LinearLayout>
