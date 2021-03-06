@@ -1,5 +1,6 @@
 package com.stonks.android;
 
+import android.content.Intent;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 
