@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+//apply from: "$project.rootDir/spotless.gradle"
 
 android {
     compileSdkVersion 29

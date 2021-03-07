@@ -1,8 +1,7 @@
 package com.stonks.android.model;
 
 import java.time.LocalDateTime;
-import java.time.format.TextStyle;
-import java.util.Locale;
+import java.time.format.DateTimeFormatter;
 
 public class Transaction {
     private LocalDateTime transactionDate;
@@ -24,11 +23,13 @@ public class Transaction {
     }
 
     public String getTransactionDateString() {
-        return transactionDate.getDayOfMonth() + " " + transactionDate.getMonth().getDisplayName(TextStyle.SHORT, Locale.CANADA) + " " + transactionDate.getYear();
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("dd MMM yy");
+        return transactionDate.format(format);
     }
 
     public String getTransactionTimeString() {
-        return transactionDate.getHour() + ":" + transactionDate.getMinute();
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("HH:mm");
+        return transactionDate.format(format);
     }
 
     public String getSymbol() {
