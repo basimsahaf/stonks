@@ -43,7 +43,7 @@ allprojects {
         }
 
         format 'xml', {
-            target '**/*.xml'
+            target "app/src/**/*.xml"
             indentWithSpaces()
             trimTrailingWhitespace()
             endWithNewline()
