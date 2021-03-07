@@ -10,7 +10,12 @@ public class Transaction {
     private int shares;
     private String transactionType; // buy or sell
 
-    public Transaction(String symbol, int shares, float price, String transactionType, LocalDateTime transactionDate) {
+    public Transaction(
+            String symbol,
+            int shares,
+            float price,
+            String transactionType,
+            LocalDateTime transactionDate) {
         this.transactionDate = transactionDate;
         this.symbol = symbol;
         this.price = price;

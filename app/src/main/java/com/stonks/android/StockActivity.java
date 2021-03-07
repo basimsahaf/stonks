@@ -6,7 +6,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.stonks.android.adapter.TransactionViewAdapter;
 import com.stonks.android.model.Transaction;
-
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.ArrayList;
@@ -36,8 +35,20 @@ public class StockActivity extends BaseActivity {
     private ArrayList<Transaction> getFakeTransactions() {
         ArrayList<Transaction> list = new ArrayList<>();
 
-        list.add(new Transaction("UBER", 100, 56.92f, "buy", LocalDateTime.of(2020, Month.AUGUST, 19, 13, 14)));
-        list.add(new Transaction("UBER", 268, 36.47f, "buy", LocalDateTime.of(2020, Month.AUGUST, 1, 9, 52)));
+        list.add(
+                new Transaction(
+                        "UBER",
+                        100,
+                        56.92f,
+                        "buy",
+                        LocalDateTime.of(2020, Month.AUGUST, 19, 13, 14)));
+        list.add(
+                new Transaction(
+                        "UBER",
+                        268,
+                        36.47f,
+                        "buy",
+                        LocalDateTime.of(2020, Month.AUGUST, 1, 9, 52)));
 
         return list;
     }

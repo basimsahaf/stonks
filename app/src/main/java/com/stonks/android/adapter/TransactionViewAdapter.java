@@ -10,7 +10,8 @@ import com.stonks.android.R;
 import com.stonks.android.model.Transaction;
 import java.util.ArrayList;
 
-public class TransactionViewAdapter extends RecyclerView.Adapter<TransactionViewAdapter.ViewHolder> {
+public class TransactionViewAdapter
+        extends RecyclerView.Adapter<TransactionViewAdapter.ViewHolder> {
     ArrayList<Transaction> transactions;
 
     public TransactionViewAdapter(ArrayList<Transaction> transactionList) {
@@ -20,7 +21,9 @@ public class TransactionViewAdapter extends RecyclerView.Adapter<TransactionView
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.stock_transaction_list_item, parent, false);
+        View v =
+                LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.stock_transaction_list_item, parent, false);
 
         return new ViewHolder(v);
     }
@@ -31,7 +34,8 @@ public class TransactionViewAdapter extends RecyclerView.Adapter<TransactionView
 
         holder.transactionType.setText("Market " + transaction.getTransactionType().toLowerCase());
         holder.symbol.setText(transaction.getSymbol());
-        holder.priceAndShares.setText("$" + transaction.getPrice() + " (x" + transaction.getShares() + ")");
+        holder.priceAndShares.setText(
+                "$" + transaction.getPrice() + " (x" + transaction.getShares() + ")");
         holder.date.setText(transaction.getTransactionDateString());
         holder.time.setText(transaction.getTransactionTimeString());
     }
