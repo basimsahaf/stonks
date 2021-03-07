@@ -5,9 +5,6 @@ import androidx.appcompat.app.AppCompatDelegate;
 
 import android.os.Bundle;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class MainActivity extends AppCompatActivity {
 
     @Override
