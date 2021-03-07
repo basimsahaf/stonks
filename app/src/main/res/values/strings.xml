@@ -9,9 +9,9 @@
     <string name="pe_ratio_label">P/E ratio</string>
     <string name="yearly_low_label">52 wk. low</string>
     <string name="div_yield_label">Div/Yield</string>
-    <string name="trade_button_caption">Trade</string>
+    <string name="trade_button_label">Trade</string>
     <string name="sym_placeholder">SYM</string>
     <string name="company_name_placeholder">Company Name</string>
-    <string name="about_label">About</string>
+    <string name="about_title">About</string>
     <string name="na_value">–</string>
 </resources>

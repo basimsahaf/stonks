@@ -321,7 +321,7 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toTopOf="@id/about_company"
-                    android:text="@string/about_label"
+                    android:text="@string/about_title"
                     style="@style/AppTheme.TextAppearance.XLLabel"
                     android:layout_marginBottom="@dimen/title_margin"
             />
