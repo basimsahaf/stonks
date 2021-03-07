@@ -14,4 +14,12 @@
     <string name="company_name_placeholder">Company Name</string>
     <string name="about_title">About</string>
     <string name="na_value">–</string>
+    <string name="position_title">Position</string>
+    <string name="shares_label">Shares</string>
+    <string name="market_value_label">Market value</string>
+    <string name="avg_cost_label">Average cost</string>
+    <string name="today_return_label">Today\'s return</string>
+    <string name="total_return_label">Total return</string>
+    <string name="intent_extra_symbol">symbol</string>
+    <string name="your_history_title">Your history</string>
 </resources>
