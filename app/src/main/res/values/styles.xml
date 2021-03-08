@@ -8,33 +8,52 @@
         <item name="android:fontFamily">sans-serif</item>
     </style>
 
-    <style name="AppTheme.TextAppearance.XXLLabel">
+    <style name="AppTheme.TextAppearance.XXLLabel" parent="AppTheme.TextAppearance">
         <item name="android:textSize">24sp</item>
     </style>
 
-    <style name="AppTheme.TextAppearance.XLLabel">
+    <style name="AppTheme.TextAppearance.XLLabel" parent="AppTheme.TextAppearance">
         <item name="android:textSize">20sp</item>
         <item name="android:textColor">@color/secondaryTextColor</item>
     </style>
 
-    <style name="AppTheme.TextAppearance.LargeLabel">
+    <style name="AppTheme.TextAppearance.LargeLabel" parent="AppTheme.TextAppearance">
         <item name="android:textSize">18sp</item>
     </style>
 
-    <style name="AppTheme.TextAppearance.MediumLabel">
+    <style name="AppTheme.TextAppearance.MediumLabel" parent="AppTheme.TextAppearance">
         <item name="android:textSize">16sp</item>
     </style>
 
-    <style name="AppTheme.TextAppearance.SmallLabel">
+    <style name="AppTheme.TextAppearance.SmallLabel" parent="AppTheme.TextAppearance">
         <item name="android:textSize">14sp</item>
         <item name="android:textColor">@color/secondaryTextColor</item>
     </style>
 
-    <style name="AppTheme.TextAppearance.XSLabel">
+    <style name="AppTheme.TextAppearance.XSLabel" parent="AppTheme.TextAppearance">
         <item name="android:textSize">12sp</item>
     </style>
 
-    <style name="AppTheme.TextAppearance.Content">
+    <style name="AppTheme.TextAppearance.Content" parent="AppTheme.TextAppearance">
         <item name="android:textSize">15sp</item>
+    </style>
+
+    <style name="AppTheme.Button" parent="AppTheme.TextAppearance">
+        <item name="android:textSize">16sp</item>
+        <item name="cornerRadius">5sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="AppTheme.Button.PrimaryButton" parent="AppTheme.Button">
+        <item name="backgroundColor">@color/colorPrimary</item>
+    </style>
+
+    <style name="AppTheme.Button.SecondaryButton" parent="AppTheme.Button">
+        <item name="backgroundColor">@color/colorAccent</item>
+    </style>
+
+    <style name="AppTheme.Button.FloatingActionButton.ShapeOverlay" parent="AppTheme.Button">
+        <item name="cornerSize">20sp</item>
+        <item name="cornerFamily">rounded</item>
     </style>
 </resources>
