@@ -1,0 +1,17 @@
+Index: app/src/main/java/com/stonks/android/data/model/LoggedInUser.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.stonks.android.data.model;\n\n/**\n * Data class that captures user information for logged in users retrieved from LoginRepository\n */\npublic class LoggedInUser {\n\n    private String userId;\n\n    public LoggedInUser(String userId) {\n        this.userId = userId;\n    }\n\n    public String getUserId() {\n        return userId;\n    }\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/stonks/android/data/model/LoggedInUser.java	(revision 9f601660553077abf7fad3120e78ecf77ccaf096)
++++ app/src/main/java/com/stonks/android/data/model/LoggedInUser.java	(date 1614910492000)
+@@ -6,6 +6,7 @@
+ public class LoggedInUser {
+ 
+     private String userId;
++    String first_name;
+ 
+     public LoggedInUser(String userId) {
+         this.userId = userId;

@@ -5,4 +5,5 @@
     <dimen name="label_margin">4dp</dimen>
     <dimen name="page_padding_horizontal">16dp</dimen>
     <dimen name="page_padding_vertical">20dp</dimen>
+    <dimen name="section_divider_margin">20dp</dimen>
 </resources>

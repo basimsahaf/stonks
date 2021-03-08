@@ -22,4 +22,7 @@
     <string name="total_return_label">Total return</string>
     <string name="intent_extra_symbol">symbol</string>
     <string name="your_history_title">Your history</string>
+    <string name="price_on_label">Price on</string>
+    <string name="estimated_cost_label">Estimated Cost</string>
+    <string name="estimated_value_label">Estimated Value</string>
 </resources>
