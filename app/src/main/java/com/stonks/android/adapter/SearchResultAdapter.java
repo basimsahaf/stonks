@@ -6,12 +6,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
-
 import com.stonks.android.R;
 import com.stonks.android.model.SearchResult;
-
 import java.util.ArrayList;
 
 public class SearchResultAdapter extends BaseAdapter {
@@ -20,14 +17,11 @@ public class SearchResultAdapter extends BaseAdapter {
     Context context;
     LayoutInflater inflater;
 
-
     public SearchResultAdapter(Context context, ArrayList<SearchResult> queryResultList) {
         this.context = context;
         this.queryResultList = queryResultList;
         this.searchResultList = new ArrayList<>();
-        this.searchResultList.addAll(queryResultList);
         inflater = LayoutInflater.from(context);
-
     }
 
     public class ViewHolder {
@@ -77,16 +71,16 @@ public class SearchResultAdapter extends BaseAdapter {
         return view;
     }
 
-    public void filterQuery(String charText) {
-        charText = charText.toLowerCase();
+    public void filterQuery(String searchText) {
+        searchText = searchText.toLowerCase();
         searchResultList.clear();
-        if (charText.length() == 0) {
-            searchResultList.addAll(queryResultList);
-        } else {
+
+        if (searchText.length() != 0) {
             for (SearchResult queryResultItem : queryResultList) {
                 String queryResultSymbol = queryResultItem.getSymbol().toLowerCase();
                 String queryResultCompanyName = queryResultItem.getCompanyName().toLowerCase();
-                if(queryResultSymbol.contains(charText) || queryResultCompanyName.contains(charText)) {
+                if (queryResultSymbol.contains(searchText)
+                        || queryResultCompanyName.contains(searchText)) {
                     searchResultList.add(queryResultItem);
                 }
             }

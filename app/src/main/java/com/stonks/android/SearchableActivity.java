@@ -1,17 +1,10 @@
 package com.stonks.android;
 
-import android.app.SearchManager;
-import android.content.Context;
 import android.os.Bundle;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SearchView;
-
-import androidx.core.content.ContextCompat;
-
 import com.stonks.android.adapter.SearchResultAdapter;
 import com.stonks.android.model.SearchResult;
-
 import java.util.ArrayList;
 
 public class SearchableActivity extends BaseActivity implements SearchView.OnQueryTextListener {
@@ -24,18 +17,13 @@ public class SearchableActivity extends BaseActivity implements SearchView.OnQue
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_searchable);
 
-        // Locate the ListView
         searchResultList = (ListView) findViewById(R.id.list_view);
         searchResultAdapter = new SearchResultAdapter(this, getFakeSearchResults());
         searchResultList.setAdapter(searchResultAdapter);
 
         searchView = (SearchView) findViewById(R.id.search_view);
+        searchView.setIconifiedByDefault(false);
         searchView.setOnQueryTextListener(this);
-
-        int searchTextId = searchView.getContext().getResources().getIdentifier("android:id/search_src_text", null, null);
-        EditText searchEditText = (EditText) searchView.findViewById(searchTextId);
-        searchEditText.setTextColor(ContextCompat.getColor(this, R.color.colorPrimaryDark));
-        searchEditText.setHintTextColor(ContextCompat.getColor(this, R.color.colorPrimaryDark));
     }
 
     @Override
@@ -52,41 +40,17 @@ public class SearchableActivity extends BaseActivity implements SearchView.OnQue
         return false;
     }
 
-    private void enableSearch() {
-        // Enable search for SearchView
-        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        searchView = (SearchView) findViewById(R.id.search_view);
-        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-        searchView.setIconifiedByDefault(false); // Do not iconify the widget; expand it by default
-        //  // ?? do I need this??
-    }
-
     private ArrayList<SearchResult> getFakeSearchResults() {
         ArrayList<SearchResult> list = new ArrayList<>();
-        list.add(
-                new SearchResult(
-                "Shopify",
-                "SHOP"));
-        list.add(
-                new SearchResult(
-                "Uber",
-                "UBER"));
-        list.add(new SearchResult(
-                "Survey Monkey",
-                "SVMK"));
-        list.add(
-                new SearchResult(
-                        "Google",
-                        "GOOGL"));
-        list.add(
-                new SearchResult(
-                "Facebook",
-                        "FB"));
-        list.add(
-                new SearchResult(
-                "Instacart",
-                        "ICART"));
+        list.add(new SearchResult("Shopify", "SHOP"));
+        list.add(new SearchResult("Uber", "UBER"));
+        list.add(new SearchResult("Survey Monkey", "SVMK"));
+        list.add(new SearchResult("Google", "GOOGL"));
+        list.add(new SearchResult("Facebook", "FB"));
+        list.add(new SearchResult("Instacart", "ICART"));
+        list.add(new SearchResult("Salesforce", "CRM"));
 
+        list.add(new SearchResult("The Weather Network", "WNET"));
 
         return list;
     }

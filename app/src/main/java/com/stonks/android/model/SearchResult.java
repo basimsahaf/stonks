@@ -9,7 +9,9 @@ public class SearchResult {
         this.symbol = symbol;
     }
 
-    public String getCompanyName() { return companyName; }
+    public String getCompanyName() {
+        return companyName;
+    }
 
     public String getSymbol() {
         return symbol;
