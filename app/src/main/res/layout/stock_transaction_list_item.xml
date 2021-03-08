@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:padding="4dp">
+
+    <LinearLayout
+            android:id="@+id/linear_layout_time"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/cLayout"
+            app:layout_constraintHorizontal_weight="2">
+        <TextView
+                android:id="@+id/transaction_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sep 29 '20"
+                style="@style/AppTheme.TextAppearance.XSLabel"
+        />
+        <TextView
+                android:id="@+id/transaction_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="09:35"
+                style="@style/AppTheme.TextAppearance.XSLabel"
+        />
+    </LinearLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintHorizontal_weight="8"
+            app:layout_constraintStart_toEndOf="@id/linear_layout_time"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+        <LinearLayout android:layout_width="0dp"
+                      android:layout_height="wrap_content"
+                      android:orientation="vertical"
+                      app:layout_constraintTop_toTopOf="parent"
+                      app:layout_constraintStart_toStartOf="parent"
+                      app:layout_constraintEnd_toStartOf="@id/cost_shares"
+                      app:layout_constraintHorizontal_bias="0.1"
+                      app:layout_constraintHorizontal_weight="2"
+                      android:id="@+id/linear_layout">
+            <TextView
+                    android:id="@+id/transaction_type"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Market buy"
+                    style="@style/AppTheme.TextAppearance.XSLabel"
+            />
+
+            <TextView
+                    android:id="@+id/symbol"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/sym_placeholder"
+                    style="@style/AppTheme.TextAppearance.LargeLabel"
+            />
+        </LinearLayout>
+
+        <TextView
+                android:id="@+id/cost_shares"
+                app:layout_constraintHorizontal_weight="6"
+                app:layout_constraintBottom_toBottomOf="@id/linear_layout"
+                app:layout_constraintStart_toEndOf="@id/linear_layout"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:textAlignment="textEnd"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="$348.66 (x1298)"
+                style="@style/AppTheme.TextAppearance.LargeLabel"
+        />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
