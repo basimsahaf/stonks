@@ -25,4 +25,5 @@
     <string name="price_on_label">Price on</string>
     <string name="estimated_cost_label">Estimated Cost</string>
     <string name="estimated_value_label">Estimated Value</string>
+    <string name="sample_date">March 8th, 2021 5:00PM EST</string>
 </resources>

@@ -7,6 +7,8 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
+import android.widget.TextView;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -23,6 +25,18 @@ public class HypotheticalModeActivity extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+
+    ImageButton cancelButton;
+    TextView stockSymbol;
+    TextView stockCompanyName;
+    TextView lastPriceLabel;
+    TextView lastPrice;
+    TextView estimatedCostLabel;
+    TextView estimatedCost;
+    TextView estimatedValueLabel;
+    TextView estimatedValue;
+
+
 
     public HypotheticalModeActivity() {
         // Required empty public constructor
@@ -59,6 +73,9 @@ public class HypotheticalModeActivity extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        View view = inflater.inflate(R.layout.fragment_hypothetical_mode, null);
+        this.cancelButton = view.findViewById(R.id.cancel_button_image);
+
         return inflater.inflate(R.layout.fragment_hypothetical_mode, container, false);
     }
 }
