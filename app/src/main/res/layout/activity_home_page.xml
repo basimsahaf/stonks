@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="@dimen/page_padding_horizontal"
+        android:paddingVertical="@dimen/page_padding_vertical">
+
+        <TextView
+            android:id="@+id/current_value_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/AppTheme.TextAppearance.SmallLabel"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:text="@string/current_value"/>
+
+        <TextView
+            android:id="@+id/current_value_price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/AppTheme.TextAppearance.XXLLabel"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/current_value_label"
+            android:text="@string/current_value_price" />
+
+        <TextView
+            android:id="@+id/price_update"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/AppTheme.TextAppearance.MediumLabel"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/current_value_price"
+            android:layout_marginTop="8sp"
+            android:text="@string/price_update" />
+
+        <TextView
+            android:id="@+id/money_left"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/AppTheme.TextAppearance.MediumLabel"
+            app:layout_constraintTop_toTopOf="@id/current_value_price"
+            app:layout_constraintRight_toRightOf="parent"
+            android:text="@string/money_left" />
+
+        <TextView
+            android:id="@+id/money_left_desc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/AppTheme.TextAppearance.SmallLabel"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/money_left"
+            android:lines="2"
+            android:maxLines="2"
+            android:text="@string/money_left_desc"/>
+
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tab_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/price_update"
+            android:layout_marginTop="20sp">
+
+            <com.google.android.material.tabs.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/your_portfolio"/>
+
+            <com.google.android.material.tabs.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/recent_transactions"/>
+
+        </com.google.android.material.tabs.TabLayout>
+
+        <androidx.viewpager.widget.ViewPager
+            android:id="@+id/view_pager"
+            android:layout_width="match_parent"
+            android:layout_height="500sp"
+            app:layout_constraintTop_toBottomOf="@+id/tab_layout"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</RelativeLayout >

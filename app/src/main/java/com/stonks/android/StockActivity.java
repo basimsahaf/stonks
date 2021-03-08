@@ -32,7 +32,7 @@ public class StockActivity extends BaseActivity {
         getSupportActionBar().setTitle(this.symbol);
     }
 
-    private ArrayList<Transaction> getFakeTransactions() {
+    public static ArrayList<Transaction> getFakeTransactions() {
         ArrayList<Transaction> list = new ArrayList<>();
 
         list.add(
