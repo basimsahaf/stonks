@@ -22,4 +22,5 @@
     <string name="total_return_label">Total return</string>
     <string name="intent_extra_symbol">symbol</string>
     <string name="your_history_title">Your history</string>
+    <string name="search_hint">Symbol or company name</string>
 </resources>
