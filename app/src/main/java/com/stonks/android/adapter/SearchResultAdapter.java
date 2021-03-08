@@ -24,7 +24,8 @@ public class SearchResultAdapter extends BaseAdapter {
     public SearchResultAdapter(Context context, ArrayList<SearchResult> queryResultList) {
         this.context = context;
         this.queryResultList = queryResultList;
-        this.searchResultList = new ArrayList<>(queryResultList);
+        this.searchResultList = new ArrayList<>();
+        this.searchResultList.addAll(queryResultList);
         inflater = LayoutInflater.from(context);
 
     }

@@ -3,8 +3,11 @@ package com.stonks.android;
 import android.app.SearchManager;
 import android.content.Context;
 import android.os.Bundle;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SearchView;
+
+import androidx.core.content.ContextCompat;
 
 import com.stonks.android.adapter.SearchResultAdapter;
 import com.stonks.android.model.SearchResult;
@@ -28,6 +31,11 @@ public class SearchableActivity extends BaseActivity implements SearchView.OnQue
 
         searchView = (SearchView) findViewById(R.id.search_view);
         searchView.setOnQueryTextListener(this);
+
+        int searchTextId = searchView.getContext().getResources().getIdentifier("android:id/search_src_text", null, null);
+        EditText searchEditText = (EditText) searchView.findViewById(searchTextId);
+        searchEditText.setTextColor(ContextCompat.getColor(this, R.color.colorPrimaryDark));
+        searchEditText.setHintTextColor(ContextCompat.getColor(this, R.color.colorPrimaryDark));
     }
 
     @Override

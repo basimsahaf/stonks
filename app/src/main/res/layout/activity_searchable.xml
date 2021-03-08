@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".SearchableActivity">
 
+
     <SearchView
         android:id="@+id/search_view"
         android:background="@drawable/search_view"
@@ -15,7 +16,10 @@
         android:queryHint="@string/search_hint"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent" >
+        <requestFocus />
+
+    </SearchView>
 
     <ListView
         android:id="@+id/list_view"
