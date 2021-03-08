@@ -11,6 +11,14 @@
         <item name="android:fontFamily">sans-serif</item>
     </style>
 
+    <style name="AppTheme.TextAppearance.BaseL">
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="AppTheme.TextAppearance.BaseS">
+        <item name="android:textSize">14sp</item>
+    </style>
+
     <style name="AppTheme.TextAppearance.XXLLabel">
         <item name="android:textSize">24sp</item>
     </style>
