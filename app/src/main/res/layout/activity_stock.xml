@@ -13,8 +13,8 @@
             android:elevation="5dp"
             android:layout_marginBottom="@dimen/page_padding_horizontal"
             android:layout_marginEnd="@dimen/page_padding_vertical"
-            android:text="Trade"
-            style="@style/Widget.MaterialComponents.ExtendedFloatingActionButton"
+            android:text="@string/trade_button_label"
+            style="@style/AppTheme.Button.FloatingActionButton"
             app:shapeAppearanceOverlay="@style/AppTheme.Button.FloatingActionButton.ShapeOverlay"
     />
 
