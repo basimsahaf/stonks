@@ -23,4 +23,7 @@
     <string name="intent_extra_symbol">symbol</string>
     <string name="your_history_title">Your history</string>
     <string name="search_hint">Search companies...</string>
+    <string name="buy_label">Buy</string>
+    <string name="sell_label">Sell</string>
+    <string name="try_it_out_label">Try it out</string>
 </resources>
