@@ -80,11 +80,13 @@
                     style="@style/AppTheme.TextAppearance.XLLabel"
                     android:layout_marginTop="10sp"/>
 
-                <fragment
-                    android:id="@+id/portfolio_list_fragment"
-                    android:name="com.stonks.android.PortolfioListFragment"
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/profolio_list"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content"
+                    android:clipToPadding="false"
+                    android:scrollbars="none"
+                    android:overScrollMode="never"/>
 
             </LinearLayout>
 
