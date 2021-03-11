@@ -14,8 +14,8 @@ import com.google.android.material.button.MaterialButton;
 // Todos:
 // - check if user is able to buy/sell so we can gray out the button accordingly
 // - cancel button onclick (close drawer/back)
-// small thing but styling the +/- buttons to be circular
-
+// - small thing but styling the +/- buttons to be circular
+// - calculate estimated cost/price
 
 public class BuySell extends Fragment {
 
