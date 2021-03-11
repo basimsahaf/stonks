@@ -18,26 +18,27 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginTop="@dimen/page_padding_horizontal"
+            android:weightSum="2"
+            app:singleSelection="true"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:weightSum="2">
+            app:layout_constraintTop_toTopOf="parent">
 
-            <Button
-                android:id="@+id/buy"
-                style="@style/Widget.AppCompat.Button"
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buy_mode_button"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Buy" />
+                android:text="@string/buy_button_label"
+                style="?attr/materialButtonOutlinedStyle"/>
 
-            <Button
-                android:id="@+id/sell"
-                style="@style/Widget.AppCompat.Button.Borderless"
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/sell_mode_button"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Sell" />
+                android:text="@string/sell_button_label"
+                style="?attr/materialButtonOutlinedStyle" />
 
         </com.google.android.material.button.MaterialButtonToggleGroup>
 
@@ -54,10 +55,9 @@
                 style="@style/AppTheme.TextAppearance.SmallLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="SYM"
+                android:text="@string/sym_placeholder"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/company_name"
@@ -65,7 +65,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/label_margin"
-                android:text="Company name"
+                android:text="@string/company_name_placeholder"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/stock_symbol" />
 
@@ -75,13 +75,12 @@
             android:id="@+id/number_picker"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/section_margin"
             android:layout_marginStart="@dimen/section_margin"
+            android:layout_marginTop="@dimen/section_margin"
             android:layout_marginEnd="@dimen/section_margin"
-            app:layout_constraintTop_toBottomOf="@id/header"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/header" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/price_info"
@@ -93,21 +92,23 @@
             app:layout_constraintTop_toBottomOf="@id/number_picker">
 
             <TextView
+                android:id="@+id/price_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Price"
+                android:text="@string/price_label"
+                android:textAppearance="@style/AppTheme.TextAppearance.SmallLabel"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                android:textAppearance="@style/AppTheme.TextAppearance.SmallLabel" />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
+                android:id="@+id/price"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="end"
-                android:text="$12.20"
+                android:text="@string/small_dollar_placeholder"
+                android:textAppearance="@style/AppTheme.TextAppearance.BaseS"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                android:textAppearance="@style/AppTheme.TextAppearance.BaseS" />
+                app:layout_constraintTop_toTopOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -120,21 +121,23 @@
             app:layout_constraintTop_toBottomOf="@id/price_info">
 
             <TextView
+                android:id="@+id/cost_value_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Estimated cost"
+                android:text="@string/estimated_cost_label"
+                android:textAppearance="@style/AppTheme.TextAppearance.SmallLabel"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                android:textAppearance="@style/AppTheme.TextAppearance.SmallLabel" />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
+                android:id="@+id/cost_price"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="end"
-                android:text="$0.00"
+                android:text="@string/zero_dollar_placeholder"
+                android:textAppearance="@style/AppTheme.TextAppearance.BaseS"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                android:textAppearance="@style/AppTheme.TextAppearance.BaseS" />
+                app:layout_constraintTop_toTopOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -147,27 +150,49 @@
             app:layout_constraintTop_toBottomOf="@id/value_cost_info">
 
             <TextView
+                android:id="@+id/available_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Avaiable to trade"
+                android:text="@string/available_to_trade_label"
+                android:textAppearance="@style/AppTheme.TextAppearance.SmallLabel"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                android:textAppearance="@style/AppTheme.TextAppearance.SmallLabel" />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
+                android:id="@+id/available"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="end"
-                android:text="$10,103.20"
+                android:text="@string/big_dollar_placeholder"
+                android:textAppearance="@style/AppTheme.TextAppearance.BaseS"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                android:textAppearance="@style/AppTheme.TextAppearance.BaseS" />
+                app:layout_constraintTop_toTopOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/trade_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/section_margin"
+            android:text="@string/trade_button_label"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/available_info"
+            style='@style/AppTheme.Button.PrimaryButton'/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/cancel_btn"
+            style="@style/AppTheme.Button.TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/section_margin"
+            android:layout_marginEnd="@dimen/btn_margin"
+            android:text="@string/cancel_button_label"
+            app:layout_constraintEnd_toStartOf="@+id/trade_btn"
+            app:layout_constraintTop_toBottomOf="@id/available_info"
+            app:layout_goneMarginBottom="@dimen/section_margin" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-
 
 
 </androidx.core.widget.NestedScrollView>

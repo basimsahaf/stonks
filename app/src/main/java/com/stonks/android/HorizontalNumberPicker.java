@@ -7,7 +7,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-
 import androidx.annotation.Nullable;
 
 public class HorizontalNumberPicker extends LinearLayout {
@@ -19,6 +18,9 @@ public class HorizontalNumberPicker extends LinearLayout {
 
         inflate(context, R.layout.numberpicker_horizontal, this);
 
+        min = 0; // should probably let user know that min/max is 10000
+        max = 10000;
+
         et_number = findViewById(R.id.et_number);
 
         final Button btn_less = findViewById(R.id.btn_less);
@@ -28,10 +30,7 @@ public class HorizontalNumberPicker extends LinearLayout {
         btn_more.setOnClickListener(new AddHandler(1));
     }
 
-    /***
-     * HANDLERS
-     **/
-
+    /** * HANDLERS */
     private class AddHandler implements OnClickListener {
         final int diff;
 
@@ -51,10 +50,7 @@ public class HorizontalNumberPicker extends LinearLayout {
         }
     }
 
-    /***
-     * GETTERS & SETTERS
-     */
-
+    /** * GETTERS & SETTERS */
     public int getValue() {
         if (et_number != null) {
             try {
