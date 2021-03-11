@@ -5,15 +5,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.Fragment;
-
 import com.google.android.material.button.MaterialButton;
 
-import org.w3c.dom.Text;
+// Todos:
+// - check if user is able to buy/sell so we can gray out the button accordingly
+// - cancel button onclick (close drawer/back)
+// small thing but styling the +/- buttons to be circular
+
 
 public class BuySell extends Fragment {
 
@@ -49,21 +51,22 @@ public class BuySell extends Fragment {
         sellBtn = getView().findViewById(R.id.sell_mode_button);
 
         costValueLabel = getView().findViewById(R.id.cost_value_label);
-        availableLabel = getView().findViewById(R.id.available);
+        availableLabel = getView().findViewById(R.id.available_label);
         tradeBtn = getView().findViewById(R.id.trade_btn);
 
         switchView(mode);
 
-        // we also need to eventually check if user is able to buy/sell so we can gray out the button accordingly
+        buyBtn.setOnClickListener(
+                myView -> {
+                    switchView(Mode.BUY);
+                });
+        sellBtn.setOnClickListener(
+                myView -> {
+                    switchView(Mode.SELL);
+                });
 
-        buyBtn.setOnClickListener(myView -> {
-            switchView(Mode.BUY);
-        });
-        sellBtn.setOnClickListener(myView -> {
-            switchView(Mode.SELL);
-        });
-
-        final HorizontalNumberPicker np_channel_nr = (HorizontalNumberPicker) getView().findViewById(R.id.number_picker);
+        final HorizontalNumberPicker np_channel_nr =
+                (HorizontalNumberPicker) getView().findViewById(R.id.number_picker);
 
         int number = np_channel_nr.getValue();
     }
@@ -76,8 +79,7 @@ public class BuySell extends Fragment {
             costValueLabel.setText(getString(R.string.estimated_cost_label));
             availableLabel.setText(getString(R.string.available_to_trade_label));
             tradeBtn.setText(getString(R.string.buy_button_label));
-        }
-        else {
+        } else {
             sellBtn.setChecked(true);
             buyBtn.setChecked(false);
             costValueLabel.setText(getString(R.string.estimated_value_label));

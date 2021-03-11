@@ -18,7 +18,7 @@ public class HorizontalNumberPicker extends LinearLayout {
 
         inflate(context, R.layout.numberpicker_horizontal, this);
 
-        min = 0; // should probably let user know that min/max is 10000
+        min = 0; // should probably let user know that max is 10000
         max = 10000;
 
         et_number = findViewById(R.id.et_number);

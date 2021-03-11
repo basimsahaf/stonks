@@ -82,4 +82,9 @@
         <item name="cornerSize">35sp</item>
         <item name="cornerFamily">rounded</item>
     </style>
+
+    <style name="AppTheme.Button.AddSubtractButton.ShapeOverlay" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="cornerSize">50%</item>
+        <item name="cornerFamily">rounded</item>
+    </style>
 </resources>
