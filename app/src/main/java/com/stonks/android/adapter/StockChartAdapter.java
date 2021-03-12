@@ -3,20 +3,20 @@ package com.stonks.android.adapter;
 import android.graphics.RectF;
 import com.robinhood.spark.SparkAdapter;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class StockChartAdapter extends SparkAdapter {
     private final List<Float> yData;
-    private final float baseline, maxX;
+    private final AtomicBoolean hasBaseline;
+    private float baseline, maxX;
 
-    public StockChartAdapter(List<Float> yData, float baseline) {
-        this.yData = yData;
-        this.baseline = baseline;
-        this.maxX = -1;
+    public StockChartAdapter(List<Float> yData) {
+        this(yData, -1);
     }
 
-    public StockChartAdapter(List<Float> yData, float baseline, float maxX) {
+    public StockChartAdapter(List<Float> yData, float maxX) {
         this.yData = yData;
-        this.baseline = baseline;
+        this.hasBaseline = new AtomicBoolean(false);
         this.maxX = maxX;
     }
 
@@ -65,5 +65,27 @@ public class StockChartAdapter extends SparkAdapter {
         }
 
         return new RectF(minX, minY, this.maxX == -1 ? maxX : this.maxX, maxY);
+    }
+
+    public void setBaseline(float baseline) {
+        this.baseline = baseline;
+        this.hasBaseline.set(true);
+    }
+
+    public void removeBaseline() {
+        this.hasBaseline.set(false);
+    }
+
+    public void setMaxX(float maxX) {
+        this.maxX = maxX;
+    }
+
+    public void resetMaxX() {
+        this.maxX = -1;
+    }
+
+    public void setData(List<Float> yData) {
+        this.yData.clear();
+        this.yData.addAll(yData);
     }
 }

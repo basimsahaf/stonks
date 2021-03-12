@@ -9,15 +9,16 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import com.robinhood.spark.SparkView;
 import com.stonks.android.adapter.StockChartAdapter;
 import com.stonks.android.adapter.TransactionViewAdapter;
 import com.stonks.android.model.Transaction;
+import com.stonks.android.uicomponent.CustomSparkView;
 import com.stonks.android.uicomponent.SpeedDialExtendedFab;
 import com.stonks.android.utility.Constants;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 public class StockActivity extends BaseActivity {
@@ -57,21 +58,22 @@ public class StockActivity extends BaseActivity {
         getSupportActionBar().setDisplayShowTitleEnabled(true);
         getSupportActionBar().setTitle(this.symbol);
 
-        SparkView sparkView = findViewById(R.id.stock_graph);
-        sparkView.setAdapter(
+        CustomSparkView sparkView = findViewById(R.id.stock_chart);
+        StockChartAdapter dataAdapter =
                 new StockChartAdapter(
                         this.getFakeStockPrices().stream()
                                 .map(p -> p.second)
-                                .collect(Collectors.toList()),
-                        121.08f));
-        sparkView.setScrubEnabled(true);
+                                .collect(Collectors.toList()));
+        dataAdapter.setBaseline(121.08f);
+
+        sparkView.setAdapter(dataAdapter);
         sparkView.setScrubListener(
                 value -> {
                     // disable scrolling when a value is selected
                     scrollView.requestDisallowInterceptTouchEvent(value != null);
 
                     if (value != null) {
-                        currentPrice.setText("$" + value);
+                        currentPrice.setText(String.format(Locale.CANADA, "$%.2f", value));
                     }
                 });
 

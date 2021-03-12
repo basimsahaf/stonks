@@ -189,13 +189,13 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <RelativeLayout
-                    android:id="@+id/graph"
+                    android:id="@+id/chart_container"
                     android:layout_width="match_parent"
                     android:layout_height="300dp"
                     android:layout_marginTop="@dimen/section_margin"
                     app:layout_constraintTop_toBottomOf="@id/header">
-                <com.robinhood.spark.SparkView
-                        android:id="@+id/stock_graph"
+                <com.stonks.android.uicomponent.CustomSparkView
+                        android:id="@+id/stock_chart"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         style="@style/AppTheme.ChartStyle"
@@ -209,7 +209,7 @@
                     android:id="@+id/position"
                     layout="@layout/stock_position"
                     android:layout_marginTop="@dimen/section_margin"
-                    app:layout_constraintTop_toBottomOf="@id/graph"
+                    app:layout_constraintTop_toBottomOf="@id/chart_container"
             />
 
             <androidx.constraintlayout.widget.ConstraintLayout
