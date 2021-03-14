@@ -1,9 +1,9 @@
 package com.stonks.android;
 
-import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.fragment.app.FragmentTransaction;
 
 public class MainActivity extends BaseActivity {
 
@@ -17,7 +17,8 @@ public class MainActivity extends BaseActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         getSupportActionBar().hide();
 
-        Intent intent = new Intent(getApplicationContext(), SearchableActivity.class);
-        startActivity(intent);
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.fragment_container, new HomePageFragment());
+        ft.commit();
     }
 }
