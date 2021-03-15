@@ -1,8 +1,6 @@
 package com.stonks.android;
 
 import android.os.Bundle;
-import android.widget.LinearLayout;
-import android.widget.SearchView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.Fragment;
