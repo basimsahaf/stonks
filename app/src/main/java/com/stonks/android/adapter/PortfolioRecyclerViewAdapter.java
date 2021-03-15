@@ -4,13 +4,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.stonks.android.R;
 import com.stonks.android.model.PortfolioListItem;
-
 import java.util.ArrayList;
 
 public class PortfolioRecyclerViewAdapter
@@ -24,8 +21,9 @@ public class PortfolioRecyclerViewAdapter
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.portfolio_list_item, parent, false);
+        View v =
+                LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.portfolio_list_item, parent, false);
 
         return new PortfolioRecyclerViewAdapter.ViewHolder(v);
     }
@@ -37,7 +35,8 @@ public class PortfolioRecyclerViewAdapter
         holder.stockSymbol.setText(item.getStockSymbol());
         holder.companyName.setText(item.getCompanyName());
         holder.price.setText("$" + item.getPrice() + " (x" + item.getMultiplier() + ")");
-        holder.priceChange.setText("$" + item.getPriceChange() + "(% " + item.getChangePercent() + ")");
+        holder.priceChange.setText(
+                "$" + item.getPriceChange() + "(% " + item.getChangePercent() + ")");
     }
 
     @Override
