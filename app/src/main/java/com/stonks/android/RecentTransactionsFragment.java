@@ -9,10 +9,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.stonks.android.adapter.TransactionViewAdapter;
 
-/**
- * A simple {@link Fragment} subclass. Use the {@link RecentTransactionsFragment#newInstance}
- * factory method to create an instance of this fragment.
- */
 public class RecentTransactionsFragment extends Fragment {
     public RecentTransactionsFragment() {}
 
