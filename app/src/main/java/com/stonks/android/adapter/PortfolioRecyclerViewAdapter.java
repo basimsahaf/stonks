@@ -34,9 +34,9 @@ public class PortfolioRecyclerViewAdapter
 
         holder.stockSymbol.setText(item.getStockSymbol());
         holder.companyName.setText(item.getCompanyName());
-        holder.price.setText("$" + item.getPrice() + " (x" + item.getMultiplier() + ")");
+        holder.price.setText(String.format("$%.2f (x%d)", item.getPrice(), item.getMultiplier()));
         holder.priceChange.setText(
-                "$" + item.getPriceChange() + "(% " + item.getChangePercent() + ")");
+                String.format("$%.2f (%.2f%%)", item.getPriceChange(), item.getChangePercent()));
     }
 
     @Override
