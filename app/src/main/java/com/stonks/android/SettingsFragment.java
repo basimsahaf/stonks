@@ -1,14 +1,12 @@
 package com.stonks.android;
 
 import android.os.Bundle;
-
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.fragment.app.Fragment;
 
 public class SettingsFragment extends Fragment {
 
@@ -33,8 +31,8 @@ public class SettingsFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(
+            LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_settings_parent, container, false);
     }
 
@@ -49,31 +47,34 @@ public class SettingsFragment extends Fragment {
         amountChangeScreen = view.findViewById(R.id.starting_amount_change);
         submitButton = view.findViewById(R.id.submit_button);
 
-        emailSetting.setOnClickListener(v -> {
-            settingsScreen.setVisibility(View.GONE);
-            emailChangeScreen.setVisibility(View.VISIBLE);
-            submitButton.setVisibility(View.VISIBLE);
-        });
+        emailSetting.setOnClickListener(
+                v -> {
+                    settingsScreen.setVisibility(View.GONE);
+                    emailChangeScreen.setVisibility(View.VISIBLE);
+                    submitButton.setVisibility(View.VISIBLE);
+                });
 
-        passwordSetting.setOnClickListener(v -> {
-            settingsScreen.setVisibility(View.GONE);
-            passwordChangeScreen.setVisibility(View.VISIBLE);
-            submitButton.setVisibility(View.VISIBLE);
-        });
+        passwordSetting.setOnClickListener(
+                v -> {
+                    settingsScreen.setVisibility(View.GONE);
+                    passwordChangeScreen.setVisibility(View.VISIBLE);
+                    submitButton.setVisibility(View.VISIBLE);
+                });
 
-        amountSetting.setOnClickListener(v -> {
-            settingsScreen.setVisibility(View.GONE);
-            amountChangeScreen.setVisibility(View.VISIBLE);
-            submitButton.setVisibility(View.VISIBLE);
-        });
+        amountSetting.setOnClickListener(
+                v -> {
+                    settingsScreen.setVisibility(View.GONE);
+                    amountChangeScreen.setVisibility(View.VISIBLE);
+                    submitButton.setVisibility(View.VISIBLE);
+                });
 
-        submitButton.setOnClickListener(v -> {
-            emailChangeScreen.setVisibility(View.GONE);
-            passwordChangeScreen.setVisibility(View.GONE);
-            amountChangeScreen.setVisibility(View.GONE);
-            submitButton.setVisibility(View.GONE);
-            settingsScreen.setVisibility(View.VISIBLE);
-        });
+        submitButton.setOnClickListener(
+                v -> {
+                    emailChangeScreen.setVisibility(View.GONE);
+                    passwordChangeScreen.setVisibility(View.GONE);
+                    amountChangeScreen.setVisibility(View.GONE);
+                    submitButton.setVisibility(View.GONE);
+                    settingsScreen.setVisibility(View.VISIBLE);
+                });
     }
 }
-
