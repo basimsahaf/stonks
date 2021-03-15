@@ -20,8 +20,11 @@ public class AlpacaApiHttpClient {
                             chain -> {
                                 Request.Builder requestBuilder = chain.request().newBuilder();
 
-                                requestBuilder.addHeader(Constants.ALPACA_KEY_ID_HEADER, BuildConfig.ALPACA_KEY_ID);
-                                requestBuilder.addHeader(Constants.ALPACA_SECRET_KEY_HEADER, BuildConfig.ALPACA_SECRET_KEY);
+                                requestBuilder.addHeader(
+                                        Constants.ALPACA_KEY_ID_HEADER, BuildConfig.ALPACA_KEY_ID);
+                                requestBuilder.addHeader(
+                                        Constants.ALPACA_SECRET_KEY_HEADER,
+                                        BuildConfig.ALPACA_SECRET_KEY);
 
                                 return chain.proceed(requestBuilder.build());
                             });

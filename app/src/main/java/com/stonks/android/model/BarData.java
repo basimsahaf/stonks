@@ -18,6 +18,17 @@ public class BarData {
     @SerializedName("h")
     private Float high;
 
+    @SerializedName("v")
+    private Integer volume;
+
+    public Integer getVolume() {
+        return volume;
+    }
+
+    public void setVolume(Integer volume) {
+        this.volume = volume;
+    }
+
     public Integer getTimestamp() {
         return timestamp;
     }

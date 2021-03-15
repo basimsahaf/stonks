@@ -8,8 +8,8 @@ public class Constants {
     // TODO: figure out why @colors/primaryColor doesn't work
     public static int primaryColor = Color.rgb(7, 78, 232);
 
-    public static float[] stockDataPoints =
-            new float[] {
+    public static Float[] stockDataPoints =
+            new Float[] {
                 121.85f, 121.555f, 121.64f, 121.36f, 120.92f, 121.01f, 121.01f, 120.67f, 120.38f,
                 120.57f, 120.14f, 120.19f, 120.4f, 120.51f, 120.7f, 121f, 120.97f, 120.885f, 121f,
                 121.115f, 121.405f, 121.42f, 121.38f, 121.28f, 121.11f, 121.15f, 121.105f, 120.77f,
