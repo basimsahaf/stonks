@@ -23,12 +23,6 @@ public class BuySell extends Fragment {
     HorizontalNumberPicker np;
     MaterialButton buyBtn, sellBtn, tradeBtn;
     TextView costValueLabel, availableLabel;
-
-    enum Mode {
-        BUY,
-        SELL
-    }
-
     Mode mode;
 
     @Nullable
