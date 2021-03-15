@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="@dimen/page_padding_horizontal"
+        android:paddingVertical="@dimen/page_padding_vertical">
+
+        <TextView
+            android:id="@+id/current_value_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/AppTheme.TextAppearance.SmallLabel"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:text="@string/current_value"/>
+
+        <TextView
+            android:id="@+id/current_value_price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/AppTheme.TextAppearance.XXLLabel"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/current_value_label"
+            android:text="@string/current_value_price" />
+
+        <TextView
+            android:id="@+id/price_update"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/AppTheme.TextAppearance.MediumLabel"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/current_value_price"
+            android:layout_marginTop="8sp"
+            android:text="@string/price_update" />
+
+        <TextView
+            android:id="@+id/money_left"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/AppTheme.TextAppearance.MediumLabel"
+            app:layout_constraintTop_toTopOf="@id/current_value_price"
+            app:layout_constraintRight_toRightOf="parent"
+            android:text="@string/money_left" />
+
+        <TextView
+            android:id="@+id/money_left_desc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/AppTheme.TextAppearance.SmallLabel"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/money_left"
+            android:lines="2"
+            android:maxLines="2"
+            android:text="@string/money_left_desc"/>
+
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/price_update">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/your_portfolio_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/your_portfolio"
+                    style="@style/AppTheme.TextAppearance.XLLabel"
+                    android:layout_marginTop="10sp"/>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/profolio_list"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clipToPadding="false"
+                    android:scrollbars="none"
+                    android:overScrollMode="never"/>
+
+            </LinearLayout>
+
+        </androidx.core.widget.NestedScrollView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</RelativeLayout>
