@@ -1,14 +1,11 @@
 package com.stonks.android;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-
 import androidx.appcompat.app.AppCompatDelegate;
-
 import com.google.android.material.textfield.TextInputLayout;
 
 public class MainActivity extends BaseActivity {
@@ -40,25 +37,25 @@ public class MainActivity extends BaseActivity {
         errorMessage = findViewById(R.id.error_message);
 
         loginButton.setText(getString(R.string.login));
-        loginButton.setOnClickListener(view -> {
-            String username = "";
-            String password = "";
+        loginButton.setOnClickListener(
+                view -> {
+                    String username = "";
+                    String password = "";
 
-            if ( usernameField.getEditText().getText() != null ){
-                username = usernameField.getEditText().getText().toString();
-            }
+                    if (usernameField.getEditText().getText() != null) {
+                        username = usernameField.getEditText().getText().toString();
+                    }
 
-            if ( passwordField.getEditText().getText() != null ) {
-                password = passwordField.getEditText().getText().toString();
-            }
+                    if (passwordField.getEditText().getText() != null) {
+                        password = passwordField.getEditText().getText().toString();
+                    }
 
+                    Log.d(TAG, "Username/password pair: " + username + " -> " + password);
 
-            Log.d(TAG, "Username/password pair: " + username + " -> " + password);
+                    usernameField.getEditText().setText("");
+                    passwordField.getEditText().setText("");
 
-            usernameField.getEditText().setText("");
-            passwordField.getEditText().setText("");
-
-            errorMessage.setVisibility(View.VISIBLE);
-        });
+                    errorMessage.setVisibility(View.VISIBLE);
+                });
     }
 }
