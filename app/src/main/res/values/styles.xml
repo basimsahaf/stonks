@@ -82,4 +82,20 @@
         <item name="cornerSize">35sp</item>
         <item name="cornerFamily">rounded</item>
     </style>
+
+    <style name="AppTheme.ChartStyle">
+        <item name="spark_lineColor">@color/colorPrimary</item>
+        <item name="spark_lineWidth">3dp</item>
+        <item name="spark_cornerRadius">5dp</item>
+        <item name="spark_fill">false</item>
+
+        <item name="spark_baseLineColor">@color/white</item>
+        <item name="spark_baseLineWidth">2dp</item>
+
+        <item name="spark_scrubLineColor">@color/white</item>
+        <item name="spark_scrubLineWidth">2dp</item>
+        <item name="spark_scrubEnabled">true</item>
+
+        <item name="spark_animateChanges">true</item>
+    </style>
 </resources>

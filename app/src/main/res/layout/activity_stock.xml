@@ -130,7 +130,7 @@
 
 
     <androidx.core.widget.NestedScrollView
-            android:id="@+id/scrollView"
+            android:id="@+id/scroll_view"
             xmlns:tools="http://schemas.android.com/tools"
             tools:context=".StockActivity"
             android:layout_height="match_parent"
@@ -172,7 +172,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="$100"
-                        style="@style/AppTheme.TextAppearance.XLLabel"
+                        style="@style/AppTheme.TextAppearance.XXLLabel"
                         app:layout_constraintTop_toTopOf="@id/stock_name"
                         app:layout_constraintEnd_toEndOf="parent"
                 />
@@ -188,13 +188,20 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <Space
-                    android:id="@+id/graph"
+            <RelativeLayout
+                    android:id="@+id/chart_container"
                     android:layout_width="match_parent"
                     android:layout_height="300dp"
                     android:layout_marginTop="@dimen/section_margin"
-                    app:layout_constraintTop_toBottomOf="@id/header"
-            />
+                    app:layout_constraintTop_toBottomOf="@id/header">
+                <com.stonks.android.uicomponent.CustomSparkView
+                        android:id="@+id/stock_chart"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        style="@style/AppTheme.ChartStyle"
+                />
+
+            </RelativeLayout>
 
             <include
                     android:layout_width="match_parent"
@@ -202,7 +209,7 @@
                     android:id="@+id/position"
                     layout="@layout/stock_position"
                     android:layout_marginTop="@dimen/section_margin"
-                    app:layout_constraintTop_toBottomOf="@id/graph"
+                    app:layout_constraintTop_toBottomOf="@id/chart_container"
             />
 
             <androidx.constraintlayout.widget.ConstraintLayout
