@@ -1,6 +1,7 @@
 package com.stonks.android.adapter;
 
 import android.graphics.RectF;
+import androidx.annotation.NonNull;
 import com.robinhood.spark.SparkAdapter;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -10,11 +11,11 @@ public class StockChartAdapter extends SparkAdapter {
     private final AtomicBoolean hasBaseline;
     private float baseline, maxX;
 
-    public StockChartAdapter(List<Float> yData) {
+    public StockChartAdapter(@NonNull final List<Float> yData) {
         this(yData, -1);
     }
 
-    public StockChartAdapter(List<Float> yData, float maxX) {
+    public StockChartAdapter(@NonNull final List<Float> yData, float maxX) {
         this.yData = yData;
         this.hasBaseline = new AtomicBoolean(false);
         this.maxX = maxX;
@@ -26,12 +27,12 @@ public class StockChartAdapter extends SparkAdapter {
     }
 
     @Override
-    public Object getItem(int index) {
+    public Object getItem(final int index) {
         return yData.get(index);
     }
 
     @Override
-    public float getY(int index) {
+    public float getY(final int index) {
         return yData.get(index);
     }
 
@@ -67,7 +68,7 @@ public class StockChartAdapter extends SparkAdapter {
         return new RectF(minX, minY, this.maxX == -1 ? maxX : this.maxX, maxY);
     }
 
-    public void setBaseline(float baseline) {
+    public void setBaseline(final float baseline) {
         this.baseline = baseline;
         this.hasBaseline.set(true);
     }
@@ -84,7 +85,7 @@ public class StockChartAdapter extends SparkAdapter {
         this.maxX = -1;
     }
 
-    public void setData(List<Float> yData) {
+    public void setData(@NonNull final List<Float> yData) {
         this.yData.clear();
         this.yData.addAll(yData);
     }
