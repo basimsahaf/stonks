@@ -52,7 +52,7 @@
 
             <TextView
                 android:id="@+id/stock_symbol"
-                style="@style/AppTheme.TextAppearance.SmallLabel"
+                style="@style/AppTheme.TextAppearance.SmallLabelSecondary"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/sym_placeholder"
@@ -61,7 +61,7 @@
 
             <TextView
                 android:id="@+id/company_name"
-                style="@style/AppTheme.TextAppearance.BaseL"
+                style="@style/AppTheme.TextAppearance.LargeLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/label_margin"
@@ -96,7 +96,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/price_label"
-                android:textAppearance="@style/AppTheme.TextAppearance.SmallLabel"
+                android:textAppearance="@style/AppTheme.TextAppearance.SmallLabelSecondary"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -106,7 +106,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="end"
                 android:text="@string/small_dollar_placeholder"
-                android:textAppearance="@style/AppTheme.TextAppearance.BaseS"
+                android:textAppearance="@style/AppTheme.TextAppearance.SmallLabel"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -125,7 +125,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/estimated_cost_label"
-                android:textAppearance="@style/AppTheme.TextAppearance.SmallLabel"
+                android:textAppearance="@style/AppTheme.TextAppearance.SmallLabelSecondary"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -135,7 +135,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="end"
                 android:text="@string/zero_dollar_placeholder"
-                android:textAppearance="@style/AppTheme.TextAppearance.BaseS"
+                android:textAppearance="@style/AppTheme.TextAppearance.SmallLabel"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -154,7 +154,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/available_to_trade_label"
-                android:textAppearance="@style/AppTheme.TextAppearance.SmallLabel"
+                android:textAppearance="@style/AppTheme.TextAppearance.SmallLabelSecondary"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -164,7 +164,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="end"
                 android:text="@string/big_dollar_placeholder"
-                android:textAppearance="@style/AppTheme.TextAppearance.BaseS"
+                android:textAppearance="@style/AppTheme.TextAppearance.SmallLabel"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>

@@ -10,7 +10,7 @@ import android.widget.LinearLayout;
 import androidx.annotation.Nullable;
 
 public class HorizontalNumberPicker extends LinearLayout {
-    private EditText et_number;
+    private EditText etNumber;
     private int min, max;
 
     public HorizontalNumberPicker(Context context, @Nullable AttributeSet attrs) {
@@ -21,13 +21,13 @@ public class HorizontalNumberPicker extends LinearLayout {
         min = 0; // should probably let user know that max is 10000
         max = 10000;
 
-        et_number = findViewById(R.id.et_number);
+        etNumber = findViewById(R.id.et_number);
 
-        final Button btn_less = findViewById(R.id.btn_less);
-        btn_less.setOnClickListener(new AddHandler(-1));
+        final Button btnLess = findViewById(R.id.btn_less);
+        btnLess.setOnClickListener(new AddHandler(-1));
 
-        final Button btn_more = findViewById(R.id.btn_more);
-        btn_more.setOnClickListener(new AddHandler(1));
+        final Button btnMore = findViewById(R.id.btn_more);
+        btnMore.setOnClickListener(new AddHandler(1));
     }
 
     /** * HANDLERS */
@@ -46,15 +46,15 @@ public class HorizontalNumberPicker extends LinearLayout {
             } else if (newValue > max) {
                 newValue = max;
             }
-            et_number.setText(String.valueOf(newValue));
+            etNumber.setText(String.valueOf(newValue));
         }
     }
 
     /** * GETTERS & SETTERS */
     public int getValue() {
-        if (et_number != null) {
+        if (etNumber != null) {
             try {
-                final String value = et_number.getText().toString();
+                final String value = etNumber.getText().toString();
                 return Integer.parseInt(value);
             } catch (NumberFormatException ex) {
                 Log.e("HorizontalNumberPicker", ex.toString());
@@ -64,8 +64,8 @@ public class HorizontalNumberPicker extends LinearLayout {
     }
 
     public void setValue(final int value) {
-        if (et_number != null) {
-            et_number.setText(String.valueOf(value));
+        if (etNumber != null) {
+            etNumber.setText(String.valueOf(value));
         }
     }
 

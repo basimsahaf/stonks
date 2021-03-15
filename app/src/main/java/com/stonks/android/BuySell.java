@@ -10,6 +10,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.Fragment;
 import com.google.android.material.button.MaterialButton;
+import com.stonks.android.model.Mode;
 
 // Todos:
 // - check if user is able to buy/sell so we can gray out the button accordingly
@@ -71,8 +72,7 @@ public class BuySell extends Fragment {
         int number = np_channel_nr.getValue();
     }
 
-    // not sure what the visibility for this should be?
-    void switchView(Mode mode) {
+    private void switchView(Mode mode) {
         if (mode == Mode.BUY) {
             buyBtn.setChecked(true);
             sellBtn.setChecked(false);
