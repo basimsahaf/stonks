@@ -16,8 +16,7 @@ public class MainActivity extends BaseActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
 
         getSupportFragmentManager().beginTransaction()
-                .add(R.id.fragment_container, new SettingsParentFragment())
+                .add(R.id.fragment_container, new SettingsFragment())
                 .commit();
-
     }
 }
