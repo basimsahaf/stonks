@@ -1,10 +1,11 @@
+name: Spotless Check
+
 on: [push]
 
 jobs:
   spotless_check_job:
     runs-on: ubuntu-latest
-    name: Spotless Check
     steps:
       - uses: actions/checkout@v2
-      - name: Spotless Check
+      - name: Run spotlessCheck
         run: ./gradlew spotlessCheck
