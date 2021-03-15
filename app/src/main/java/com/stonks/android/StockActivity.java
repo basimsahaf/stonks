@@ -63,13 +63,7 @@ public class StockActivity extends BaseActivity {
     private ArrayList<Transaction> getFakeTransactions() {
         ArrayList<Transaction> list = new ArrayList<>();
 
-        list.add(
-                new Transaction(
-                        "UBER",
-                        100,
-                        56.92f,
-                        "buy",
-                        LocalDateTime.of(2020, Month.AUGUST, 19, 13, 14)));
+        list.add(new Transaction("UBER", 100, 56.92f, "buy", LocalDateTime.of(2020, Month.AUGUST, 19, 13, 14)));
         list.add(
                 new Transaction(
                         "UBER",
