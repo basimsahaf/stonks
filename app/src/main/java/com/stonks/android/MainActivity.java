@@ -10,8 +10,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 
 import com.google.android.material.textfield.TextInputLayout;
+import android.content.Intent;
+import android.os.Bundle;
+import androidx.appcompat.app.AppCompatDelegate;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity {
 
     final String TAG = this.getClass().getSimpleName();
 
@@ -52,5 +55,11 @@ public class MainActivity extends AppCompatActivity {
 
             errorMessage.setVisibility(View.VISIBLE);
         });
+
+        // disable the back button on the homepage
+        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+
+        Intent intent = new Intent(getApplicationContext(), SearchableActivity.class);
+        startActivity(intent);
     }
 }
