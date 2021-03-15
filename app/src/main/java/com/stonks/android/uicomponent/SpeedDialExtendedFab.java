@@ -64,23 +64,23 @@ public class SpeedDialExtendedFab extends ExtendedFloatingActionButton {
     }
 
     // Needed by ObjectAnimator
-    public void setIconTint(int iconTint) {
+    public void setIconTint(final int iconTint) {
         super.setIconTint(ColorStateList.valueOf(iconTint));
     }
 
     // Needed by ObjectAnimator
-    public void setBackgroundTintList(int backgroundTint) {
+    public void setBackgroundTintList(final int backgroundTint) {
         super.setIconTint(ColorStateList.valueOf(backgroundTint));
     }
 
-    public void addToSpeedDial(View view) {
-        speedDial.add(view);
-        view.setVisibility(GONE);
-        view.setTranslationY(view.getHeight());
-        view.setAlpha(0f);
+    public void addToSpeedDial(@NonNull final View v) {
+        speedDial.add(v);
+        v.setVisibility(GONE);
+        v.setTranslationY(v.getHeight());
+        v.setAlpha(0f);
     }
 
-    private void showSpeedDial(View v) {
+    private void showSpeedDial(@NonNull final View v) {
         v.setVisibility(View.VISIBLE);
         v.setAlpha(0f);
         v.setTranslationY(v.getHeight());
@@ -98,7 +98,7 @@ public class SpeedDialExtendedFab extends ExtendedFloatingActionButton {
                 .start();
     }
 
-    private void hideSpeedDial(View v) {
+    private void hideSpeedDial(@NonNull final View v) {
         v.setVisibility(View.VISIBLE);
         v.setAlpha(1f);
         v.setTranslationY(0);
@@ -118,7 +118,7 @@ public class SpeedDialExtendedFab extends ExtendedFloatingActionButton {
                 .start();
     }
 
-    public void open(View overlay) {
+    public void open(@NonNull final View overlay) {
         this.setIconTint(ColorStateList.valueOf(Constants.primaryColor));
 
         overlay.setVisibility(VISIBLE);
@@ -143,7 +143,7 @@ public class SpeedDialExtendedFab extends ExtendedFloatingActionButton {
         this.speedDial.forEach(this::showSpeedDial);
     }
 
-    public void close(View overlay) {
+    public void close(@NonNull final View overlay) {
         overlay.animate()
                 .setDuration(200L)
                 .alpha(0f)
@@ -165,7 +165,7 @@ public class SpeedDialExtendedFab extends ExtendedFloatingActionButton {
         this.speedDial.forEach(this::hideSpeedDial);
     }
 
-    public void trigger(View overlay) {
+    public void trigger(@NonNull final View overlay) {
         if (this.isExtended()) {
             this.open(overlay);
         } else {
