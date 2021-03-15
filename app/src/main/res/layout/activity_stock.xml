@@ -23,7 +23,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             android:elevation="@dimen/dialog_elevation"
-            android:layout_marginBottom="@dimen/page_padding_horizontal"
+            android:layout_marginBottom="@dimen/section_margin"
             android:layout_marginEnd="@dimen/page_padding_vertical"
             android:text="@string/trade_button_label"
             style="@style/AppTheme.Button.FloatingActionButton"
