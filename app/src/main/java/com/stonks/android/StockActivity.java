@@ -2,6 +2,7 @@ package com.stonks.android;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.Pair;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -11,14 +12,18 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.stonks.android.adapter.StockChartAdapter;
 import com.stonks.android.adapter.TransactionViewAdapter;
+import com.stonks.android.external.AlpacaMarketDataApi;
+import com.stonks.android.external.AlpacaMarketDataService;
+import com.stonks.android.model.BarData;
 import com.stonks.android.model.Transaction;
 import com.stonks.android.uicomponent.CustomSparkView;
 import com.stonks.android.uicomponent.SpeedDialExtendedFab;
 import com.stonks.android.utility.Constants;
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 import java.time.LocalDateTime;
 import java.time.Month;
-import java.util.ArrayList;
-import java.util.Locale;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class StockActivity extends BaseActivity {
@@ -79,6 +84,29 @@ public class StockActivity extends BaseActivity {
 
         this.tradeButton.setOnClickListener(v -> tradeButton.trigger(this.overlay));
         this.overlay.setOnClickListener(v -> tradeButton.close(v));
+
+        AlpacaMarketDataService marketDataService = new AlpacaMarketDataService();
+
+        marketDataService
+                .getBars(
+                        AlpacaMarketDataApi.AlpacaTimeframe.MINUTE,
+                        new AlpacaMarketDataApi.Symbols(Collections.singletonList("UBER")))
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(
+                        data -> {
+                            Log.d("response", data.toString());
+
+                            List<BarData> barData = data.get(symbol);
+
+                            dataAdapter.setData(
+                                    barData.stream()
+                                            .map(BarData::getClose)
+                                            .collect(Collectors.toList()));
+                            dataAdapter.setBaseline(barData.get(0).getOpen());
+                            dataAdapter.notifyDataSetChanged();
+                        },
+                        err -> Log.e("error", err.toString()));
     }
 
     @Override

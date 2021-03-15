@@ -55,4 +55,7 @@ public class Constants {
                 120.49f, 120.395f, 120.255f, 120.2f, 120.265f, 120.12f, 120.075f, 120.01f, 120.045f,
                 119.99f, 119.985f, 119.97f
             };
+
+    public static final String ALPACA_KEY_ID_HEADER = "APCA-API-KEY-ID";
+    public static final String ALPACA_SECRET_KEY_HEADER = "APCA-API-SECRET-KEY";
 }
