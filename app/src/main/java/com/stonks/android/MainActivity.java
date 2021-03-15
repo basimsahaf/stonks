@@ -1,18 +1,15 @@
 package com.stonks.android;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 
 import com.google.android.material.textfield.TextInputLayout;
-import android.content.Intent;
-import android.os.Bundle;
-import androidx.appcompat.app.AppCompatDelegate;
 
 public class MainActivity extends BaseActivity {
 
@@ -28,6 +25,14 @@ public class MainActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+
+        // disable the back button on the homepage
+        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+
+        /*
+        Intent intent = new Intent(getApplicationContext(), SearchableActivity.class);
+        startActivity(intent);
+        */
 
         loginButton = findViewById(R.id.login_button);
         usernameField = findViewById(R.id.username_field);
@@ -55,11 +60,5 @@ public class MainActivity extends BaseActivity {
 
             errorMessage.setVisibility(View.VISIBLE);
         });
-
-        // disable the back button on the homepage
-        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-
-        Intent intent = new Intent(getApplicationContext(), SearchableActivity.class);
-        startActivity(intent);
     }
 }
