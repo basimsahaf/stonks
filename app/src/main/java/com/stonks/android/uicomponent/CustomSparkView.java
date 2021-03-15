@@ -40,4 +40,8 @@ public class CustomSparkView extends SparkView {
         setBaseLinePaint(strokedBaseLine);
         setScrubEnabled(true);
     }
+
+    @Override
+    public void onScrubEnded() {
+    }
 }

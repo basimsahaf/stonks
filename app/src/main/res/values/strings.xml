@@ -37,6 +37,7 @@
     <string name="buy_label">Buy</string>
     <string name="sell_label">Sell</string>
     <string name="try_it_out_label">Try it out</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="price_on_label">Price on</string>
+    <string name="sample_date">03-15-2021, 5:00PM EST</string>
+    <string name="as_of_label">as of today at</string>
 </resources>
