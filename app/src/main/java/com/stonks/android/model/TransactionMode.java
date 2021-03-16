@@ -4,4 +4,3 @@ public enum TransactionMode {
     BUY,
     SELL
 }
-

@@ -33,7 +33,8 @@ public class BuySell extends Fragment {
             @Nullable Bundle savedInstanceState) {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES); // force dark mode
 
-        mode = TransactionMode.SELL; // for now; we would get this info from the screen that triggers this
+        // for now; we would get this info from the screen that triggers this
+        mode = TransactionMode.SELL;
 
         return inflater.inflate(R.layout.fragment_buy_sell, container, false);
     }
@@ -52,8 +53,14 @@ public class BuySell extends Fragment {
 
         switchView(mode);
 
-        buyBtn.setOnClickListener(myView -> {switchView(TransactionMode.BUY);});
-        sellBtn.setOnClickListener(myView -> {switchView(TransactionMode.SELL);});
+        buyBtn.setOnClickListener(
+                myView -> {
+                    switchView(TransactionMode.BUY);
+                });
+        sellBtn.setOnClickListener(
+                myView -> {
+                    switchView(TransactionMode.SELL);
+                });
     }
 
     private void switchView(TransactionMode mode) {
