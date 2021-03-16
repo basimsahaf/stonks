@@ -1,27 +1,48 @@
 package com.stonks.android;
 
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.SearchView;
+import androidx.fragment.app.Fragment;
 import com.stonks.android.adapter.SearchResultAdapter;
 import com.stonks.android.model.SearchResult;
 import java.util.ArrayList;
 
-public class SearchableActivity extends BaseActivity implements SearchView.OnQueryTextListener {
+public class SearchableFragment extends Fragment implements SearchView.OnQueryTextListener {
     private ListView searchResultList;
     private SearchResultAdapter searchResultAdapter;
     private SearchView searchView;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_searchable);
+    public SearchableFragment() {
+        // Required empty public constructor
+    }
 
-        searchResultList = (ListView) findViewById(R.id.list_view);
-        searchResultAdapter = new SearchResultAdapter(this, getFakeSearchResults());
+    public static SearchableFragment newInstance() {
+        SearchableFragment fragment = new SearchableFragment();
+        Bundle args = new Bundle();
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    @Override
+    public View onCreateView(
+            LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        return inflater.inflate(R.layout.fragment_searchable, container, false);
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        searchResultList = view.findViewById(R.id.list_view);
+        searchResultAdapter = new SearchResultAdapter(getActivity(), getFakeSearchResults());
         searchResultList.setAdapter(searchResultAdapter);
 
-        searchView = (SearchView) findViewById(R.id.search_view);
+        searchView = view.findViewById(R.id.search_view);
         searchView.setIconifiedByDefault(false);
         searchView.setOnQueryTextListener(this);
     }
