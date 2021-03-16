@@ -90,6 +90,5 @@ lint/generated/
 lint/outputs/
 lint/tmp/
 # lint/reports/
-
-# .DS_Store file in Mac 
+# .DS_Store file in Mac
 **/.DS_Store
