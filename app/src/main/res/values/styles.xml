@@ -112,4 +112,10 @@
 
         <item name="spark_animateChanges">true</item>
     </style>
+
+    <style name="AppTheme.BottomNav" parent="Widget.MaterialComponents.BottomNavigationView.PrimarySurface">
+        <item name="backgroundTint">@color/colorPrimaryDark</item>
+        <item name="itemTextColor">@drawable/bottom_nav_item_text</item>
+        <item name="itemIconTint">@drawable/bottom_nav_item_text</item>
+    </style>
 </resources>
