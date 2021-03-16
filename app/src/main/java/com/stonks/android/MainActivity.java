@@ -1,10 +1,12 @@
 package com.stonks.android;
 
-import android.content.Intent;
 import android.os.Bundle;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
-public class MainActivity extends BaseActivity {
+public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -14,8 +16,12 @@ public class MainActivity extends BaseActivity {
 
         // disable the back button on the homepage
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        switchFragment(new SearchableFragment());
+    }
 
-        Intent intent = new Intent(getApplicationContext(), SearchableActivity.class);
-        startActivity(intent);
+    private void switchFragment(Fragment fragment) {
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.fragment_container, fragment);
+        ft.commit();
     }
 }
