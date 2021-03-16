@@ -2,8 +2,8 @@ package com.stonks.android.model;
 
 public enum AlpacaTimeframe {
     MINUTE("minute"),
-    MINUTES_5("5min"),
-    MINUTES_15("15min"),
+    MINUTES_5("5Min"),
+    MINUTES_15("15Min"),
     DAY("day");
 
     private final String timeframe;
