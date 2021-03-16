@@ -50,6 +50,7 @@ captures/
 .idea/dictionaries
 .idea/libraries
 .idea/modules
+.idea/uiDesigner.xml
 # Android Studio 3 in .gitignore file.
 .idea/caches
 .idea/modules.xml
@@ -89,6 +90,5 @@ lint/generated/
 lint/outputs/
 lint/tmp/
 # lint/reports/
-
-# .DS_Store file in Mac 
+# .DS_Store file in Mac
 **/.DS_Store
