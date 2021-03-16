@@ -37,4 +37,18 @@
     <string name="buy_label">Buy</string>
     <string name="sell_label">Sell</string>
     <string name="try_it_out_label">Try it out</string>
+
+    <!-- Settings Screen-->
+    <string name="account_info">Account Information</string>
+    <string name="portfolio_settings">Portfolio Settings</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="use_bio">Sign-in using biometrics</string>
+    <string name="starting_amount">Starting Amount</string>
+    <string name="settings">Settings</string>
+    <string name="arrow">></string>
+    <string name="sample_email">sample@sample.com</string>
+    <string name="submit">Submit</string>
+    <string name="current_password">Current Password</string>
+    <string name="new_password">New Password</string>
 </resources>
