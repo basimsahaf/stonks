@@ -7,11 +7,19 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TextView;
+
 import androidx.annotation.Nullable;
+import androidx.core.util.Consumer;
+
+import com.stonks.android.model.HypotheticalViewModel;
+
+import java.util.Observable;
 
 public class HorizontalNumberPicker extends LinearLayout {
     private EditText etNumber;
     private int min, max;
+    HypotheticalViewModel model;
 
     public HorizontalNumberPicker(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -30,6 +38,8 @@ public class HorizontalNumberPicker extends LinearLayout {
         btnMore.setOnClickListener(new AddHandler(1));
     }
 
+    // addObserver(TextView)
+
     /** * HANDLERS */
     private class AddHandler implements OnClickListener {
         final int diff;
@@ -46,6 +56,7 @@ public class HorizontalNumberPicker extends LinearLayout {
             } else if (newValue > max) {
                 newValue = max;
             }
+            model.getNumberOfStocks().setValue(newValue);
             etNumber.setText(String.valueOf(newValue));
         }
     }
@@ -83,5 +94,9 @@ public class HorizontalNumberPicker extends LinearLayout {
 
     public void setMax(int max) {
         this.max = max;
+    }
+
+    public void setModel(HypotheticalViewModel hModel) {
+        this.model = hModel;
     }
 }
