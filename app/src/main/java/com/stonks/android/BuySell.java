@@ -10,7 +10,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.Fragment;
 import com.google.android.material.button.MaterialButton;
-import com.stonks.android.model.Mode;
+import com.stonks.android.model.TransactionMode;
 
 // Todos:
 // - check if user is able to buy/sell so we can gray out the button accordingly
@@ -20,10 +20,10 @@ import com.stonks.android.model.Mode;
 
 public class BuySell extends Fragment {
 
-    HorizontalNumberPicker np;
+    HorizontalNumberPicker numberPicker;
     MaterialButton buyBtn, sellBtn, tradeBtn;
     TextView costValueLabel, availableLabel;
-    Mode mode;
+    TransactionMode mode;
 
     @Nullable
     @Override
@@ -33,7 +33,8 @@ public class BuySell extends Fragment {
             @Nullable Bundle savedInstanceState) {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES); // force dark mode
 
-        mode = Mode.SELL; // for now; we would get this info from the screen that triggers this
+        // for now; we would get this info from the screen that triggers this
+        mode = TransactionMode.SELL;
 
         return inflater.inflate(R.layout.fragment_buy_sell, container, false);
     }
@@ -44,6 +45,7 @@ public class BuySell extends Fragment {
 
         buyBtn = getView().findViewById(R.id.buy_mode_button);
         sellBtn = getView().findViewById(R.id.sell_mode_button);
+        numberPicker = getView().findViewById(R.id.number_picker);
 
         costValueLabel = getView().findViewById(R.id.cost_value_label);
         availableLabel = getView().findViewById(R.id.available_label);
@@ -53,21 +55,16 @@ public class BuySell extends Fragment {
 
         buyBtn.setOnClickListener(
                 myView -> {
-                    switchView(Mode.BUY);
+                    switchView(TransactionMode.BUY);
                 });
         sellBtn.setOnClickListener(
                 myView -> {
-                    switchView(Mode.SELL);
+                    switchView(TransactionMode.SELL);
                 });
-
-        final HorizontalNumberPicker np_channel_nr =
-                (HorizontalNumberPicker) getView().findViewById(R.id.number_picker);
-
-        int number = np_channel_nr.getValue();
     }
 
-    private void switchView(Mode mode) {
-        if (mode == Mode.BUY) {
+    private void switchView(TransactionMode mode) {
+        if (mode == TransactionMode.BUY) {
             buyBtn.setChecked(true);
             sellBtn.setChecked(false);
             costValueLabel.setText(getString(R.string.estimated_cost_label));

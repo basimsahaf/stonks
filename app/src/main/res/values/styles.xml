@@ -94,6 +94,9 @@
         <item name="cornerFamily">rounded</item>
     </style>
 
+    <style name="AppTheme.Button.AddSubtractButton.ShapeOverlay" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="cornerSize">50%</item>
+        <item name="cornerFamily">rounded</item>
     <style name="AppTheme.ChartStyle">
         <item name="spark_lineColor">@color/colorPrimary</item>
         <item name="spark_lineWidth">3dp</item>
