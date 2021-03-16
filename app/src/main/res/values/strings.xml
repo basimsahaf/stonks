@@ -34,4 +34,7 @@
     <string name="zero_dollar_placeholder">$0.00</string>
     <string name="big_dollar_placeholder">$10,103.20</string>
     <string name="search_hint">Search companies...</string>
+    <string name="buy_label">Buy</string>
+    <string name="sell_label">Sell</string>
+    <string name="try_it_out_label">Try it out</string>
 </resources>
