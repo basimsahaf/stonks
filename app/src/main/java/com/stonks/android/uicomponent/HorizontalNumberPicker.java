@@ -1,4 +1,4 @@
-package com.stonks.android;
+package com.stonks.android.uicomponent;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -8,6 +8,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import androidx.annotation.Nullable;
+
+import com.stonks.android.R;
 import com.stonks.android.model.HypotheticalViewModel;
 
 public class HorizontalNumberPicker extends LinearLayout {

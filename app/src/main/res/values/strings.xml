@@ -40,7 +40,6 @@
     <string name="small_dollar_placeholder">$12.20</string>
     <string name="zero_dollar_placeholder">$0.00</string>
     <string name="big_dollar_placeholder">$10,103.20</string>
-    <string name="search_hint">Search companies...</string>
 
     <!-- Hypothetical Page Strings -->
     <string name="price_on_label">Price on</string>

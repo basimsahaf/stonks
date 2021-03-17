@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel;
 
 public class HypotheticalViewModel extends ViewModel {
 
-    // Create a LiveData with a String
     private MutableLiveData<Integer> numberOfStocks;
     private MutableLiveData<Integer> currentPrice;
 

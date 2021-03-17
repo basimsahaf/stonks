@@ -13,6 +13,8 @@ import androidx.lifecycle.ViewModelProviders;
 import com.stonks.android.adapter.StockChartAdapter;
 import com.stonks.android.model.HypotheticalViewModel;
 import com.stonks.android.uicomponent.CustomSparkView;
+import com.stonks.android.uicomponent.HorizontalNumberPicker;
+
 import java.util.Locale;
 import java.util.stream.Collectors;
 
