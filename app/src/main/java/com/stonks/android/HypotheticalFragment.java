@@ -1,21 +1,20 @@
 package com.stonks.android;
 
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
 import com.stonks.android.adapter.StockChartAdapter;
 import com.stonks.android.model.HypotheticalViewModel;
 import com.stonks.android.uicomponent.CustomSparkView;
 import java.util.Locale;
 import java.util.stream.Collectors;
-
 
 public class HypotheticalFragment extends Fragment {
 
@@ -27,18 +26,19 @@ public class HypotheticalFragment extends Fragment {
 
     HypotheticalViewModel viewModel;
 
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         viewModel = ViewModelProviders.of(this).get(HypotheticalViewModel.class);
-        final Observer<Integer> observer = new Observer<Integer>() {
-            @Override
-            public void onChanged(@Nullable final Integer newValue) {
-                float newEstimatedCost = newValue*currentPrice;
-                estimatedCost.setText(String.format(Locale.CANADA, "$%.2f", newEstimatedCost));
-            }
-        };
+        final Observer<Integer> observer =
+                new Observer<Integer>() {
+                    @Override
+                    public void onChanged(@Nullable final Integer newValue) {
+                        float newEstimatedCost = newValue * currentPrice;
+                        estimatedCost.setText(
+                                String.format(Locale.CANADA, "$%.2f", newEstimatedCost));
+                    }
+                };
 
         // Observe the LiveData, passing in this activity as the LifecycleOwner and the observer.
         viewModel.getNumberOfStocks().observe(this, observer);
@@ -54,7 +54,6 @@ public class HypotheticalFragment extends Fragment {
         this.numberPicker = view.findViewById(R.id.number_picker);
         this.numberPicker.setModel(viewModel);
 
-
         sparkView = view.findViewById(R.id.chart);
         StockChartAdapter dataAdapter =
                 new StockChartAdapter(
@@ -69,17 +68,18 @@ public class HypotheticalFragment extends Fragment {
                     if (value != null) {
                         currentPrice = Float.parseFloat(value.toString());
                         float numberOfShares = this.numberPicker.getValue();
-                        float newEstimatedCost = numberOfShares*Float.parseFloat(value.toString());
+                        float newEstimatedCost =
+                                numberOfShares * Float.parseFloat(value.toString());
                         costPerShare.setText(String.format(Locale.CANADA, "$%.2f", value));
-                        this.estimatedCost.setText(String.format(Locale.CANADA, "$%.2f", newEstimatedCost));
+                        this.estimatedCost.setText(
+                                String.format(Locale.CANADA, "$%.2f", newEstimatedCost));
                     }
                 });
-
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(
+            LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         this.currentPrice = Float.parseFloat(getArguments().getString("currentPrice"));
         View view = inflater.inflate(R.layout.fragment_hypothetical, container, false);

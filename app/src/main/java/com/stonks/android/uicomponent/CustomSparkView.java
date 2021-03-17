@@ -42,6 +42,5 @@ public class CustomSparkView extends SparkView {
     }
 
     @Override
-    public void onScrubEnded() {
-    }
+    public void onScrubEnded() {}
 }

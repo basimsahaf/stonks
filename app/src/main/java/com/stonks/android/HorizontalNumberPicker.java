@@ -7,16 +7,13 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-
 import androidx.annotation.Nullable;
-
 import com.stonks.android.model.HypotheticalViewModel;
 
 public class HorizontalNumberPicker extends LinearLayout {
     private final EditText etNumber;
     private int max;
     HypotheticalViewModel model;
-
 
     public HorizontalNumberPicker(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -32,7 +29,6 @@ public class HorizontalNumberPicker extends LinearLayout {
         final Button btnMore = findViewById(R.id.btn_more);
         btnMore.setOnClickListener(new AddHandler(1));
     }
-
 
     /** * HANDLERS */
     private class AddHandler implements OnClickListener {

@@ -4,4 +4,3 @@ public enum Mode {
     BUY,
     SELL
 }
-

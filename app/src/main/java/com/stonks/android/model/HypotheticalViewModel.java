@@ -9,7 +9,6 @@ public class HypotheticalViewModel extends ViewModel {
     private MutableLiveData<Integer> numberOfStocks;
     private MutableLiveData<Integer> currentPrice;
 
-
     public MutableLiveData<Integer> getNumberOfStocks() {
         if (numberOfStocks == null) {
             numberOfStocks = new MutableLiveData<Integer>();
@@ -24,4 +23,3 @@ public class HypotheticalViewModel extends ViewModel {
         return currentPrice;
     }
 }
-
