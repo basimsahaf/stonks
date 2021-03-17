@@ -21,16 +21,16 @@ public class MainActivity extends AppCompatActivity {
                 menuItem -> {
                     switch (menuItem.getItemId()) {
                         case R.id.home_nav:
-                            // switch to HomeFragment
+                            switchFragment(new HomePageFragment());
                             break;
                         case R.id.search_nav:
                             switchFragment(new SearchableFragment());
                             break;
                         case R.id.activity_nav:
-                            // switch to ActivityFragment
+                            switchFragment(new RecentTransactionsFragment());
                             break;
                         case R.id.settings_nav:
-                            // switch to SettingsFragment
+                            switchFragment(new SettingsFragment());
                             break;
                         default:
                             return false;

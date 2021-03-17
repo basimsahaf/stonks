@@ -63,14 +63,14 @@ public class SearchableFragment extends Fragment implements SearchView.OnQueryTe
 
     private ArrayList<SearchResult> getFakeSearchResults() {
         ArrayList<SearchResult> list = new ArrayList<>();
-        list.add(new SearchResult("Shopify", "SHOP"));
-        list.add(new SearchResult("Uber", "UBER"));
-        list.add(new SearchResult("Survey Monkey", "SVMK"));
-        list.add(new SearchResult("Google", "GOOGL"));
-        list.add(new SearchResult("Facebook", "FB"));
-        list.add(new SearchResult("Instacart", "ICART"));
-        list.add(new SearchResult("Salesforce", "CRM"));
 
+        list.add(new SearchResult("Google", "GOOGL"));
+        list.add(new SearchResult("Shopify", "SHOP"));
+        list.add(new SearchResult("Facebook", "FB"));
+        list.add(new SearchResult("Salesforce", "CRM"));
+        list.add(new SearchResult("Survey Monkey", "SVMK"));
+        list.add(new SearchResult("Instacart", "ICART"));
+        list.add(new SearchResult("Uber", "UBER"));
         list.add(new SearchResult("The Weather Network", "WNET"));
 
         return list;
