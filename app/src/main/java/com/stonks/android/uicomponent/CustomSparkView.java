@@ -8,6 +8,9 @@ import android.util.AttributeSet;
 import com.robinhood.spark.SparkView;
 
 public class CustomSparkView extends SparkView {
+
+    private boolean belongsToHypothetical;
+
     public CustomSparkView(Context context) {
         super(context);
     }
@@ -23,6 +26,7 @@ public class CustomSparkView extends SparkView {
     public CustomSparkView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
     }
+
 
     @Override
     protected void onFinishInflate() {
@@ -42,5 +46,13 @@ public class CustomSparkView extends SparkView {
     }
 
     @Override
-    public void onScrubEnded() {}
+    public void onScrubEnded() {
+        if (!belongsToHypothetical) {
+            super.onScrubEnded();
+        }
+    }
+
+    public void setBelongsToHypothetical() {
+        this.belongsToHypothetical = true;
+    }
 }

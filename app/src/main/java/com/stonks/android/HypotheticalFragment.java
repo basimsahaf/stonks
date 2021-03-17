@@ -23,31 +23,23 @@ public class HypotheticalFragment extends Fragment {
     TextView estimatedValue;
     HorizontalNumberPicker numberPicker;
     CustomSparkView sparkView;
-    float currentPrice;
+    private float currentPrice;
 
     HypotheticalViewModel viewModel;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        viewModel = ViewModelProviders.of(this).get(HypotheticalViewModel.class);
-        final Observer<Integer> observer =
-                new Observer<Integer>() {
-                    @Override
-                    public void onChanged(@Nullable final Integer newValue) {
-                        float newEstimatedCost = newValue * currentPrice;
-                        estimatedCost.setText(
-                                String.format(Locale.CANADA, "$%.2f", newEstimatedCost));
-                    }
-                };
-
-        // Observe the LiveData, passing in this activity as the LifecycleOwner and the observer.
-        viewModel.getNumberOfStocks().observe(this, observer);
-    }
-
-    @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        viewModel = ViewModelProviders.of(this).get(HypotheticalViewModel.class);
+        final Observer<Integer> observer =
+                newValue -> {
+                    float newEstimatedCost = newValue * currentPrice;
+                    estimatedCost.setText(
+                            String.format(Locale.CANADA, "$%.2f", newEstimatedCost));
+                };
+
+        viewModel.getNumberOfStocks().observe(getViewLifecycleOwner(), observer);
 
         final TextView costPerShare = view.findViewById(R.id.cost_per_share);
         this.estimatedCost = view.findViewById(R.id.estimated_cost);
@@ -56,6 +48,7 @@ public class HypotheticalFragment extends Fragment {
         this.numberPicker.setModel(viewModel);
 
         sparkView = view.findViewById(R.id.chart);
+        sparkView.setBelongsToHypothetical();
         StockChartAdapter dataAdapter =
                 new StockChartAdapter(
                         StockActivity.getFakeStockPrices().stream()
@@ -81,7 +74,6 @@ public class HypotheticalFragment extends Fragment {
     @Override
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         this.currentPrice = Float.parseFloat(getArguments().getString("currentPrice"));
         View view = inflater.inflate(R.layout.fragment_hypothetical, container, false);
         return view;
