@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".HypotheticalFragment"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageButton
+        android:id="@+id/cancel_button_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/stock_symbol"
+        android:layout_marginTop="@dimen/title_margin"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:background="#00000000"
+        android:src="@drawable/cancel_button"/>
+
+    <TextView
+        android:id="@+id/stock_symbol"
+        style="@style/AppTheme.TextAppearance.SmallLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/sym_placeholder"
+        android:layout_marginTop="@dimen/section_divider_margin"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/cancel_button_image"/>
+
+    <TextView
+        android:id="@+id/stock_name"
+        style="@style/AppTheme.TextAppearance.XXLLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/company_name_placeholder"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/stock_symbol" />
+
+    <com.stonks.android.uicomponent.CustomSparkView
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:id="@+id/chart"
+        android:layout_marginTop="@dimen/section_divider_margin"
+        app:layout_constraintTop_toBottomOf="@id/stock_name"
+        style="@style/AppTheme.ChartStyle"/>
+
+    <com.stonks.android.HorizontalNumberPicker
+        android:id="@+id/number_picker"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/section_margin"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/chart" />
+
+    <LinearLayout
+        android:id="@+id/row_1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/section_margin"
+        android:orientation="horizontal"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/number_picker">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/price_label"
+                style="@style/AppTheme.TextAppearance.MediumLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                android:text="@string/price_on_label" />
+
+            <TextView
+                android:id="@+id/price_date"
+                style="@style/AppTheme.TextAppearance.MediumLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:text="@string/sample_date"
+                android:layout_gravity="start"
+                />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/cost_per_share"
+            style="@style/AppTheme.TextAppearance.MediumLabel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_weight="1"
+            android:gravity="end"
+            android:text="$100" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/row_2"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/title_margin"
+        android:orientation="horizontal"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/row_1">
+
+        <TextView
+            android:id="@+id/estimated_cost_label"
+            style="@style/AppTheme.TextAppearance.MediumLabel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:layout_weight="1"
+            android:text="@string/estimated_cost_label" />
+
+        <TextView
+            android:id="@+id/estimated_cost"
+            style="@style/AppTheme.TextAppearance.MediumLabel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_weight="1"
+            android:gravity="end"
+            android:text="$100" />
+    </LinearLayout>
+
+    <View
+        android:id="@+id/section_divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        app:layout_constraintTop_toBottomOf="@id/row_2"
+        android:layout_marginTop="@dimen/section_divider_margin"
+        android:background="@android:color/darker_gray"/>
+
+    <LinearLayout
+        android:id="@+id/row_3"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/section_divider_margin"
+        android:orientation="horizontal"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/section_divider">
+
+        <TextView
+            android:id="@+id/estimated_value_label"
+            style="@style/AppTheme.TextAppearance.MediumLabel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:layout_weight="1"
+            android:text="@string/estimated_value_label" />
+
+        <TextView
+            android:id="@+id/estimated_value"
+            style="@style/AppTheme.TextAppearance.MediumLabel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_weight="1"
+            android:gravity="end"
+            android:text="$100" />
+    </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/row_4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/section_margin"
+            android:orientation="horizontal"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/row_3">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1">
+
+                <TextView
+                    android:id="@+id/date_label"
+                    style="@style/AppTheme.TextAppearance.MediumLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="start"
+                    android:text="@string/as_of_label" />
+
+                <TextView
+                    android:id="@+id/time"
+                    style="@style/AppTheme.TextAppearance.MediumLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:layout_gravity="start"
+                    />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/price_change"
+                style="@style/AppTheme.TextAppearance.MediumLabel"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_weight="1"
+                android:gravity="end"
+                android:text="⬆ $20.19 (34%)" />
+        </LinearLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
