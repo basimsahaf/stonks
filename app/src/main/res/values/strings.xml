@@ -54,7 +54,6 @@
     <string name="money_left_desc">left to trade</string>
     <string name="money_left">$000.00</string>
     <string name="your_portfolio">Your Portfolio</string>
-    <string name="recent_transactions">Recent Transactions</string>
 
     <!-- Activity Screen -->
     <string name="activity">Activity</string>

@@ -10,4 +10,5 @@
     <dimen name="btn_margin">8dp</dimen>
     <dimen name="dialog_elevation">5dp</dimen>
     <dimen name="overlay_elevation">3dp</dimen>
+    <dimen name="number_picker_margin">48dp</dimen>
 </resources>

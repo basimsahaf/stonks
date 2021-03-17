@@ -18,7 +18,7 @@ import com.stonks.android.model.TransactionMode;
 // - small thing but styling the +/- buttons to be circular
 // - calculate estimated cost/price
 
-public class BuySell extends Fragment {
+public class BuySellFragment extends Fragment {
 
     HorizontalNumberPicker numberPicker;
     MaterialButton buyBtn, sellBtn, tradeBtn;
