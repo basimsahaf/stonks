@@ -1,4 +1,4 @@
-package com.stonks.android.storage.tables;
+package com.stonks.android.storage;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -22,7 +22,7 @@ public class UserTable extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String createAuthTable =
+        String createUserTable =
                 "CREATE TABLE "
                         + USER_TABLE
                         + " ("
@@ -32,7 +32,7 @@ public class UserTable extends SQLiteOpenHelper {
                         + " TEXT"
                         + ")";
 
-        db.execSQL(createAuthTable);
+        db.execSQL(createUserTable);
     }
 
     @Override
@@ -55,7 +55,7 @@ public class UserTable extends SQLiteOpenHelper {
     public boolean checkIfUserExists(String username) {
         SQLiteDatabase db = this.getReadableDatabase();
         String queryString =
-                "SELECT * FROM " + USER_TABLE + " WHERE AUTH_TABLE.username = '" + username + "'";
+                "SELECT * FROM " + USER_TABLE + " WHERE USER_TABLE.username = '" + username + "'";
         Cursor cursor = db.rawQuery(queryString, null);
         boolean exists = cursor.moveToFirst();
         cursor.close();
@@ -68,9 +68,9 @@ public class UserTable extends SQLiteOpenHelper {
         String queryString =
                 "SELECT * FROM "
                         + USER_TABLE
-                        + " WHERE AUTH_TABLE.username = '"
+                        + " WHERE USER_TABLE.username = '"
                         + username
-                        + "' AND AUTH_TABLE.password = '"
+                        + "' AND USER_TABLE.password = '"
                         + password
                         + "'";
         Cursor cursor = db.rawQuery(queryString, null);
