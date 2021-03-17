@@ -130,7 +130,7 @@ public class LoginActivity extends BaseActivity {
                         (v, actionId, event) -> {
                             if (actionId == EditorInfo.IME_ACTION_DONE) {
                                 loginViewModel.login(
-                                        passwordField.getEditText().getText().toString(),
+                                        usernameField.getEditText().getText().toString(),
                                         passwordField.getEditText().getText().toString());
                             }
                             return false;
