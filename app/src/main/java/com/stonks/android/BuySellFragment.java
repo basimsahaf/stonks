@@ -25,8 +25,6 @@ public class BuySellFragment extends Fragment {
     TextView costValueLabel, availableLabel;
     TransactionMode mode;
 
-    public BuySellFragment() {}
-
     @Nullable
     @Override
     public View onCreateView(
