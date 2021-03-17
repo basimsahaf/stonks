@@ -27,7 +27,6 @@ public class CustomSparkView extends SparkView {
         super(context, attrs, defStyleAttr, defStyleRes);
     }
 
-
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
