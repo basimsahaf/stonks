@@ -2,30 +2,26 @@ package com.stonks.android.ui.login;
 
 import androidx.annotation.Nullable;
 
-/**
- * Authentication result : success (user details) or error message.
- */
-class LoginResult {
-    @Nullable
-    private LoggedInUserView success;
-    @Nullable
-    private Integer error;
+/** Authentication result : success (user details) or error message. */
+public class LoginResult {
+    @Nullable private LoggedInUserView success;
+    @Nullable private Integer error;
 
-    LoginResult(@Nullable Integer error) {
+    public LoginResult(@Nullable Integer error) {
         this.error = error;
     }
 
-    LoginResult(@Nullable LoggedInUserView success) {
+    public LoginResult(@Nullable LoggedInUserView success) {
         this.success = success;
     }
 
     @Nullable
-    LoggedInUserView getSuccess() {
+    public LoggedInUserView getSuccess() {
         return success;
     }
 
     @Nullable
-    Integer getError() {
+    public Integer getError() {
         return error;
     }
 }

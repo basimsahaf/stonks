@@ -1,4 +1,4 @@
-package com.stonks.android.models;
+package com.stonks.android.model;
 
 public class UserModel {
 

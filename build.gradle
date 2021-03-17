@@ -3,10 +3,14 @@ buildscript {
     repositories {
         google()
         jcenter()
+        mavenCentral()
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.1.2'
-        classpath 'com.google.gms:google-services:4.3.5'
+        classpath "com.android.tools.build:gradle:4.0.0"
+        classpath "com.diffplug.spotless:spotless-plugin-gradle:5.11.0"
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -17,9 +21,35 @@ allprojects {
     repositories {
         google()
         jcenter()
+        maven {
+            url "https://jitpack.io"
+        }
     }
-}
 
-task clean(type: Delete) {
-    delete rootProject.buildDir
+    apply plugin: "com.diffplug.spotless"
+
+    spotless {
+        java {
+            target "**/*.java"
+            indentWithSpaces()
+            trimTrailingWhitespace()
+            removeUnusedImports()
+            googleJavaFormat().aosp()
+            endWithNewline()
+        }
+
+        format 'misc', {
+            target '**/*.gradle', '**/*.md', '**/.gitignore'
+            indentWithSpaces()
+            trimTrailingWhitespace()
+            endWithNewline()
+        }
+
+        format 'xml', {
+            target "app/src/**/*.xml"
+            indentWithSpaces()
+            trimTrailingWhitespace()
+            endWithNewline()
+        }
+    }
 }

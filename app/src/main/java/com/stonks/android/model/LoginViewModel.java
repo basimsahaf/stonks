@@ -1,37 +1,34 @@
-package com.stonks.android.ui.login;
-
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
+package com.stonks.android.model;
 
 import android.util.Log;
 import android.util.Patterns;
-
-import com.stonks.android.data.LoginRepository;
-import com.stonks.android.data.Result;
-import com.stonks.android.data.model.LoggedInUser;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.ViewModel;
 import com.stonks.android.R;
+import com.stonks.android.ui.login.LoggedInUserView;
+import com.stonks.android.ui.login.LoginFormState;
+import com.stonks.android.ui.login.LoginResult;
 
 public class LoginViewModel extends ViewModel {
 
     private MutableLiveData<LoginFormState> loginFormState = new MutableLiveData<>();
-    private MutableLiveData<LoginResult>    loginResult = new MutableLiveData<>();
+    private MutableLiveData<LoginResult> loginResult = new MutableLiveData<>();
     private LoginRepository loginRepository;
 
-    LoginViewModel(LoginRepository loginRepository) {
+    public LoginViewModel(LoginRepository loginRepository) {
         this.loginRepository = loginRepository;
     }
 
-    LiveData<LoginFormState> getLoginFormState() {
+    public LiveData<LoginFormState> getLoginFormState() {
         return loginFormState;
     }
 
-    LiveData<LoginResult> getLoginResult() {
+    public LiveData<LoginResult> getLoginResult() {
         return loginResult;
     }
 
     public void login(String username, String password) {
-        // can be launched in a separate asynchronous job
         Result<LoggedInUser> result = loginRepository.login(username, password);
 
         if (result instanceof Result.Success) {
@@ -43,17 +40,26 @@ public class LoginViewModel extends ViewModel {
         }
     }
 
-    public void loginDataChanged(String username, String password) {
+    public void usernameChanged(String username) {
+        Log.d("Debug", "Changing");
         if (!isUserNameValid(username)) {
+            Log.d("Debug", "Valid");
             loginFormState.setValue(new LoginFormState(R.string.invalid_username, null));
-        } else if (!isPasswordValid(password)) {
+        } else {
+            Log.d("Debug", "Invalid");
+            loginFormState.setValue(new LoginFormState(true));
+            Log.d("Debug", "" + loginFormState.getValue().getPasswordError());
+        }
+    }
+
+    public void passwordChanged(String password) {
+        if (!isPasswordValid(password)) {
             loginFormState.setValue(new LoginFormState(null, R.string.invalid_password));
         } else {
             loginFormState.setValue(new LoginFormState(true));
         }
     }
 
-    // A placeholder username validation check
     private boolean isUserNameValid(String username) {
         if (username == null) {
             return false;
@@ -65,7 +71,6 @@ public class LoginViewModel extends ViewModel {
         }
     }
 
-    // A placeholder password validation check
     private boolean isPasswordValid(String password) {
         return password != null && password.trim().length() > 5;
     }

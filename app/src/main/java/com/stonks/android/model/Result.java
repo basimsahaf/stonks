@@ -1,12 +1,9 @@
-package com.stonks.android.data;
+package com.stonks.android.model;
 
-/**
- * A generic class that holds a result success w/ data or an error exception.
- */
+/** A generic class that holds a result success w/ data or an error exception. */
 public class Result<T> {
     // hide the private constructor to limit subclass types (Success, Error)
-    private Result() {
-    }
+    private Result() {}
 
     @Override
     public String toString() {
@@ -21,7 +18,7 @@ public class Result<T> {
     }
 
     // Success sub-class
-    public final static class Success<T> extends Result {
+    public static final class Success<T> extends Result {
         private T data;
 
         public Success(T data) {
@@ -34,7 +31,7 @@ public class Result<T> {
     }
 
     // Error sub-class
-    public final static class Error extends Result {
+    public static final class Error extends Result {
         private Exception error;
 
         public Error(Exception error) {

@@ -1,16 +1,14 @@
 package com.stonks.android.ui.login;
 
-/**
- * Class exposing authenticated user details to the UI.
- */
-class LoggedInUserView {
+/** Class exposing authenticated user details to the UI. */
+public class LoggedInUserView {
     private String displayName;
 
-    LoggedInUserView(String displayName) {
+    public LoggedInUserView(String displayName) {
         this.displayName = displayName;
     }
 
-    String getDisplayName() {
+    public String getDisplayName() {
         return displayName;
     }
 }
