@@ -1,0 +1,49 @@
+package com.stonks.android.model;
+
+public class PortfolioListItem {
+    private String stockSymbol;
+    private String companyName;
+    private float price;
+    private int multiplier;
+    private float priceChange;
+    private float changePercent;
+
+    public PortfolioListItem(
+            String stockSymbol,
+            String companyName,
+            float price,
+            int multiplier,
+            float priceChange,
+            float changePercent) {
+        this.stockSymbol = stockSymbol;
+        this.companyName = companyName;
+        this.price = price;
+        this.multiplier = multiplier;
+        this.priceChange = priceChange;
+        this.changePercent = changePercent;
+    }
+
+    public String getStockSymbol() {
+        return stockSymbol;
+    }
+
+    public String getCompanyName() {
+        return companyName;
+    }
+
+    public float getPrice() {
+        return price;
+    }
+
+    public int getMultiplier() {
+        return multiplier;
+    }
+
+    public float getPriceChange() {
+        return priceChange;
+    }
+
+    public float getChangePercent() {
+        return changePercent;
+    }
+}

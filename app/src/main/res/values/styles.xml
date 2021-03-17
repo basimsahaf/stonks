@@ -97,6 +97,7 @@
     <style name="AppTheme.Button.AddSubtractButton.ShapeOverlay" parent="Widget.MaterialComponents.Button.OutlinedButton">
         <item name="cornerSize">50%</item>
         <item name="cornerFamily">rounded</item>
+    </style>
     <style name="AppTheme.ChartStyle">
         <item name="spark_lineColor">@color/colorPrimary</item>
         <item name="spark_lineWidth">3dp</item>
@@ -112,8 +113,10 @@
 
         <item name="spark_animateChanges">true</item>
     </style>
-    <style name="AppTheme.Button.AddSubtractButton.ShapeOverlay" parent="Widget.MaterialComponents.Button.OutlinedButton">
-        <item name="cornerSize">50%</item>
-        <item name="cornerFamily">rounded</item>
+
+    <style name="AppTheme.BottomNav" parent="Widget.MaterialComponents.BottomNavigationView.PrimarySurface">
+        <item name="backgroundTint">@color/colorPrimaryDark</item>
+        <item name="itemTextColor">@drawable/bottom_nav_item_text</item>
+        <item name="itemIconTint">@drawable/bottom_nav_item_text</item>
     </style>
 </resources>

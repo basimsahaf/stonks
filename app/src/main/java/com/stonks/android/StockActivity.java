@@ -101,7 +101,7 @@ public class StockActivity extends BaseActivity {
         return list;
     }
 
-    private ArrayList<Transaction> getFakeTransactions() {
+    public static ArrayList<Transaction> getFakeTransactions() {
         ArrayList<Transaction> list = new ArrayList<>();
 
         list.add(
