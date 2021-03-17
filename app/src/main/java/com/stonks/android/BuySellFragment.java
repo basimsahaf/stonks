@@ -1,5 +1,6 @@
 package com.stonks.android;
 
+import androidx.fragment.app.Fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,7 +9,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatDelegate;
-import androidx.fragment.app.Fragment;
 import com.google.android.material.button.MaterialButton;
 import com.stonks.android.model.TransactionMode;
 
@@ -18,12 +18,15 @@ import com.stonks.android.model.TransactionMode;
 // - small thing but styling the +/- buttons to be circular
 // - calculate estimated cost/price
 
-public class BuySell extends Fragment {
+public class BuySellFragment extends Fragment {
 
     HorizontalNumberPicker numberPicker;
     MaterialButton buyBtn, sellBtn, tradeBtn;
     TextView costValueLabel, availableLabel;
     TransactionMode mode;
+
+    public BuySellFragment() {
+    }
 
     @Nullable
     @Override

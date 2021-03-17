@@ -40,7 +40,6 @@
     <string name="small_dollar_placeholder">$12.20</string>
     <string name="zero_dollar_placeholder">$0.00</string>
     <string name="big_dollar_placeholder">$10,103.20</string>
-    <string name="search_hint">Search companies...</string>
 
     <!-- Home Page Strings -->
     <string name="title_activity_home_page">ScrollingActivity</string>
@@ -51,7 +50,6 @@
     <string name="money_left_desc">left to trade</string>
     <string name="money_left">$000.00</string>
     <string name="your_portfolio">Your Portfolio</string>
-    <string name="recent_transactions">Recent Transactions</string>
 
     <!-- Activity Screen -->
     <string name="activity">Activity</string>

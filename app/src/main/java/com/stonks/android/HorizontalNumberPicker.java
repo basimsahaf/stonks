@@ -9,6 +9,8 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import androidx.annotation.Nullable;
 
+import com.google.android.material.button.MaterialButton;
+
 public class HorizontalNumberPicker extends LinearLayout {
     private final EditText etNumber;
     private int max;
@@ -21,10 +23,10 @@ public class HorizontalNumberPicker extends LinearLayout {
         max = 10000; // init here for now
         etNumber = findViewById(R.id.et_number);
 
-        final Button btnLess = findViewById(R.id.btn_less);
+        final MaterialButton btnLess = findViewById(R.id.btn_less);
         btnLess.setOnClickListener(new AddHandler(-1));
 
-        final Button btnMore = findViewById(R.id.btn_more);
+        final MaterialButton btnMore = findViewById(R.id.btn_more);
         btnMore.setOnClickListener(new AddHandler(1));
     }
 
