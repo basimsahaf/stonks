@@ -8,7 +8,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import androidx.annotation.Nullable;
-
 import com.stonks.android.R;
 import com.stonks.android.model.HypotheticalViewModel;
 
