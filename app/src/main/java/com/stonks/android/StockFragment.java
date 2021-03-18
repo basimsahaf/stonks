@@ -1,14 +1,18 @@
 package com.stonks.android;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.Pair;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.widget.NestedScrollView;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.stonks.android.adapter.StockChartAdapter;
@@ -27,8 +31,8 @@ import java.time.Month;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class StockActivity extends BaseActivity {
-    private static String TAG = StockActivity.class.getCanonicalName();
+public class StockFragment extends Fragment {
+    private static String TAG = StockFragment.class.getCanonicalName();
 
     private String symbol;
     private RecyclerView transactionList;
@@ -39,42 +43,53 @@ public class StockActivity extends BaseActivity {
     private NestedScrollView scrollView;
     private final StockChartAdapter dataAdapter = new StockChartAdapter(new ArrayList<>());
     private StockData stockData;
+    private TextView companyName, open, dailyLow, dailyHigh, yearlyLow, yearlyHigh;
+
+    @Nullable
+    @Override
+    public View onCreateView(
+            @NonNull LayoutInflater inflater,
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_stock, container, false);
+    }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_stock);
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
-        final ConstraintLayout buyButtonContainer = findViewById(R.id.buy_button_container);
-        final ConstraintLayout sellButtonContainer = findViewById(R.id.sell_button_container);
-        final ConstraintLayout tryButtonContainer = findViewById(R.id.try_button_container);
-        final ConstraintLayout positionContainer = findViewById(R.id.position_container);
+        final ConstraintLayout buyButtonContainer = view.findViewById(R.id.buy_button_container);
+        final ConstraintLayout sellButtonContainer = view.findViewById(R.id.sell_button_container);
+        final ConstraintLayout tryButtonContainer = view.findViewById(R.id.try_button_container);
+        final ConstraintLayout positionContainer = view.findViewById(R.id.position_container);
 
-        this.textViewSymbol = findViewById(R.id.stock_symbol);
-        this.overlay = findViewById(R.id.screen_overlay);
-        this.tradeButton = findViewById(R.id.trade_button);
-        this.transactionList = findViewById(R.id.history_list);
-        this.scrollView = findViewById(R.id.scroll_view);
-        this.currentPrice = findViewById(R.id.current_price);
-        this.priceChange = findViewById(R.id.change);
+        this.textViewSymbol = view.findViewById(R.id.stock_symbol);
+        this.overlay = view.findViewById(R.id.screen_overlay);
+        this.tradeButton = view.findViewById(R.id.trade_button);
+        this.transactionList = view.findViewById(R.id.history_list);
+        this.scrollView = view.findViewById(R.id.scroll_view);
+        this.currentPrice = view.findViewById(R.id.current_price);
+        this.priceChange = view.findViewById(R.id.change);
+        this.companyName = view.findViewById(R.id.stock_name);
+        this.open = view.findViewById(R.id.open);
+        this.dailyLow = view.findViewById(R.id.daily_low);
+        this.dailyHigh = view.findViewById(R.id.daily_high);
+        this.yearlyLow = view.findViewById(R.id.yearly_low);
+        this.yearlyHigh = view.findViewById(R.id.yearly_high);
 
         this.tradeButton.addToSpeedDial(buyButtonContainer);
         this.tradeButton.addToSpeedDial(sellButtonContainer);
         this.tradeButton.addToSpeedDial(tryButtonContainer);
 
-        RecyclerView.LayoutManager transactionListManager = new LinearLayoutManager(this);
+        RecyclerView.LayoutManager transactionListManager = new LinearLayoutManager(getContext());
         this.transactionList.setLayoutManager(transactionListManager);
-        this.transactionListAdapter = new TransactionViewAdapter(this.getFakeTransactions());
+        this.transactionListAdapter = new TransactionViewAdapter(getFakeTransactions());
         this.transactionList.setAdapter(this.transactionListAdapter);
 
-        Intent intent = getIntent();
-        this.symbol = intent.getStringExtra(getString(R.string.intent_extra_symbol));
-        getSupportActionBar().setDisplayShowTitleEnabled(true);
-        getSupportActionBar().setTitle(this.symbol);
-
+        this.symbol = getArguments().getString(getString(R.string.intent_extra_symbol));
         this.textViewSymbol.setText(this.symbol);
 
-        CustomSparkView sparkView = findViewById(R.id.stock_chart);
+        CustomSparkView sparkView = view.findViewById(R.id.stock_chart);
 
         sparkView.setAdapter(dataAdapter);
         sparkView.setOnEndedCallback(
@@ -149,20 +164,13 @@ public class StockActivity extends BaseActivity {
     }
 
     private void loadStats() {
-        final TextView companyName = findViewById(R.id.stock_name);
-        final TextView open = findViewById(R.id.open);
-        final TextView dailyLow = findViewById(R.id.daily_low);
-        final TextView dailyHigh = findViewById(R.id.daily_high);
-        final TextView yearlyLow = findViewById(R.id.yearly_low);
-        final TextView yearlyHigh = findViewById(R.id.yearly_high);
-
         this.currentPrice.setText(Formatters.formatPrice(this.stockData.getCurrentPrice()));
-        companyName.setText(this.stockData.getCompanyName());
-        dailyLow.setText(Formatters.formatPrice(this.stockData.getLow()));
-        dailyHigh.setText(Formatters.formatPrice(this.stockData.getHigh()));
-        open.setText(Formatters.formatPrice(this.stockData.getOpen()));
-        yearlyLow.setText(Formatters.formatPrice(this.stockData.getYearlyLow()));
-        yearlyHigh.setText(Formatters.formatPrice(this.stockData.getYearlyHigh()));
+        this.companyName.setText(this.stockData.getCompanyName());
+        this.dailyLow.setText(Formatters.formatPrice(this.stockData.getLow()));
+        this.dailyHigh.setText(Formatters.formatPrice(this.stockData.getHigh()));
+        this.open.setText(Formatters.formatPrice(this.stockData.getOpen()));
+        this.yearlyLow.setText(Formatters.formatPrice(this.stockData.getYearlyLow()));
+        this.yearlyHigh.setText(Formatters.formatPrice(this.stockData.getYearlyHigh()));
         this.priceChange.setText(this.generateChangeString());
     }
 
@@ -180,11 +188,12 @@ public class StockActivity extends BaseActivity {
     String generateChangeString(Float price) {
         float change = price - this.stockData.getOpen();
         float changePercentage = change * 100 / this.stockData.getOpen();
+        String sign = change >= 0 ? "+" : "-";
 
         String formattedPrice = Formatters.formatPrice(Math.abs(change));
 
         return String.format(
-                Locale.CANADA, "%s (%.2f)", formattedPrice, Math.abs(changePercentage));
+                Locale.CANADA, "%s%s (%.2f)", sign, formattedPrice, Math.abs(changePercentage));
     }
 
     // Determines whether the user owns shares of the stock

@@ -50,7 +50,7 @@ public class HypotheticalFragment extends Fragment {
 
         StockChartAdapter dataAdapter =
                 new StockChartAdapter(
-                        StockActivity.getFakeStockPrices().stream()
+                        StockFragment.getFakeStockPrices().stream()
                                 .map(p -> p.second)
                                 .collect(Collectors.toList()));
         dataAdapter.setBaseline(121.08f);
