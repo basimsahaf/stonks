@@ -29,8 +29,8 @@ public class PortfolioRecyclerViewAdapter
 
         view.setOnClickListener(
                 v -> {
-                    Intent intent = new Intent(view.getContext(), StockActivity.class);
-                    view.getContext().startActivity(intent);
+                    Intent intent = new Intent(v.getContext(), StockActivity.class);
+                    v.getContext().startActivity(intent);
                 });
 
         return new PortfolioRecyclerViewAdapter.ViewHolder(view);
