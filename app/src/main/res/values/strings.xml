@@ -57,6 +57,7 @@
 
     <!-- Activity Screen -->
     <string name="activity">Activity</string>
+    <string name="recent_transactions">Recent Transactions</string>
 
     <!-- Settings Screen-->
     <string name="account_info">Account Information</string>
