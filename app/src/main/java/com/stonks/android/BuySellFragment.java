@@ -9,22 +9,29 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
+
 import com.google.android.material.button.MaterialButton;
+import com.stonks.android.model.PickerLiveDataModel;
 import com.stonks.android.model.TransactionMode;
 import com.stonks.android.uicomponent.HorizontalNumberPicker;
+
+import java.util.Locale;
 
 // Todos:
 // - check if user is able to buy/sell so we can gray out the button accordingly
 // - cancel button onclick (close drawer/back)
-// - small thing but styling the +/- buttons to be circular
-// - calculate estimated cost/price
 
 public class BuySellFragment extends Fragment {
 
-    HorizontalNumberPicker numberPicker;
-    MaterialButton buyBtn, sellBtn, tradeBtn;
-    TextView costValueLabel, availableLabel;
-    TransactionMode mode;
+    private HorizontalNumberPicker numberPicker;
+    private MaterialButton buyBtn, sellBtn, tradeBtn;
+    private TextView costValueLabel, availableLabel, costPrice, price, available;
+    private TransactionMode mode;
+    private float currentPrice, availableToTrade;
+    private PickerLiveDataModel viewModel;
+    private int numSharesOwned;
 
     @Nullable
     @Override
@@ -36,6 +43,9 @@ public class BuySellFragment extends Fragment {
 
         // for now; we would get this info from the screen that triggers this
         mode = TransactionMode.SELL;
+        currentPrice = (float)232.0;
+        numSharesOwned = 103;
+        availableToTrade = (float)19032.23;
 
         return inflater.inflate(R.layout.fragment_buy_sell, container, false);
     }
@@ -46,14 +56,6 @@ public class BuySellFragment extends Fragment {
 
         buyBtn = getView().findViewById(R.id.buy_mode_button);
         sellBtn = getView().findViewById(R.id.sell_mode_button);
-        numberPicker = getView().findViewById(R.id.number_picker);
-
-        costValueLabel = getView().findViewById(R.id.cost_value_label);
-        availableLabel = getView().findViewById(R.id.available_label);
-        tradeBtn = getView().findViewById(R.id.trade_btn);
-
-        switchView(mode);
-
         buyBtn.setOnClickListener(
                 myView -> {
                     switchView(TransactionMode.BUY);
@@ -62,6 +64,30 @@ public class BuySellFragment extends Fragment {
                 myView -> {
                     switchView(TransactionMode.SELL);
                 });
+
+        costValueLabel = getView().findViewById(R.id.cost_value_label);
+        availableLabel = getView().findViewById(R.id.available_label);
+        tradeBtn = getView().findViewById(R.id.trade_btn);
+        available = getView().findViewById(R.id.available);
+
+        // things dealing with the viewmodel
+        price = getView().findViewById(R.id.price);
+        price.setText(String.format(Locale.CANADA, "$%.2f", currentPrice));
+
+        costPrice = getView().findViewById(R.id.cost_price);
+        numberPicker = getView().findViewById(R.id.number_picker);
+        viewModel = ViewModelProviders.of(this).get(PickerLiveDataModel.class);
+        final Observer<Integer> observer =
+                newValue -> {
+                    float newEstimatedCost = newValue * currentPrice;
+                    costPrice.setText(String.format(Locale.CANADA, "$%.2f", newEstimatedCost));
+                };
+
+        viewModel.getNumberOfStocks().observe(getViewLifecycleOwner(), observer);
+        this.numberPicker.setModel(viewModel);
+
+        switchView(mode);
+
     }
 
     private void switchView(TransactionMode mode) {
@@ -70,12 +96,14 @@ public class BuySellFragment extends Fragment {
             sellBtn.setChecked(false);
             costValueLabel.setText(getString(R.string.estimated_cost_label));
             availableLabel.setText(getString(R.string.available_to_trade_label));
+            available.setText(String.format(Locale.CANADA, "$%.2f", availableToTrade));
             tradeBtn.setText(getString(R.string.buy_button_label));
         } else {
             sellBtn.setChecked(true);
             buyBtn.setChecked(false);
             costValueLabel.setText(getString(R.string.estimated_value_label));
             availableLabel.setText(getString(R.string.available_to_sell_label));
+            available.setText(Integer.toString(numSharesOwned));
             tradeBtn.setText(getString(R.string.sell_button_label));
         }
     }
