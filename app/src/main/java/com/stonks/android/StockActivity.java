@@ -1,8 +1,10 @@
 package com.stonks.android;
 
 import android.content.Intent;
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.util.Pair;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -30,6 +32,7 @@ import java.util.Locale;
 import java.util.stream.Collectors;
 
 public class StockActivity extends BaseActivity {
+    private static final String TAG = "DEBUG";
     private String symbol;
     private RecyclerView transactionList;
     private RecyclerView.Adapter<TransactionViewAdapter.ViewHolder> transactionListAdapter;
@@ -63,6 +66,9 @@ public class StockActivity extends BaseActivity {
         this.tryButton = findViewById(R.id.try_button);
         this.tryButton.setOnClickListener(v -> {
             customSlideUpDrawer.openDrawer();
+            Log.d(TAG, "HEIGHT: " + customSlideUpDrawer.getHeight());
+            Log.d(TAG, "X y z: " + customSlideUpDrawer.getX() + " " + customSlideUpDrawer.getY() + " " + customSlideUpDrawer.getZ() );
+
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.add(R.id.sliding_drawer, new YourFragment());
             ft.commit();

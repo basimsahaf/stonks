@@ -21,7 +21,8 @@ public class CustomSlideUpDrawer extends SlidingUpPanelLayout {
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
-        setPanelState(PanelState.HIDDEN);
+        setPanelState(PanelState.COLLAPSED);
+        setPanelHeight(0);
         setAnchorPoint(0.8f);
     }
 

@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
 
         // disable the back button on the homepage
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-        startActivity(new Intent(MainActivity.this, TestDrawer.class));
+        startActivity(new Intent(MainActivity.this, StockActivity.class));
     }
 
     private void switchFragment(Fragment fragment) {
