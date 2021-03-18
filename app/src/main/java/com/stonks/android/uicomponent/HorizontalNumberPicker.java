@@ -9,12 +9,12 @@ import android.widget.LinearLayout;
 import androidx.annotation.Nullable;
 import com.google.android.material.button.MaterialButton;
 import com.stonks.android.R;
-import com.stonks.android.model.HypotheticalViewModel;
+import com.stonks.android.model.PickerLiveDataModel;
 
 public class HorizontalNumberPicker extends LinearLayout {
     private final EditText etNumber;
     private int max;
-    HypotheticalViewModel model;
+    PickerLiveDataModel model;
 
     public HorizontalNumberPicker(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -79,7 +79,7 @@ public class HorizontalNumberPicker extends LinearLayout {
         this.max = max;
     }
 
-    public void setModel(HypotheticalViewModel hModel) {
+    public void setModel(PickerLiveDataModel hModel) {
         this.model = hModel;
     }
 }

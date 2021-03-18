@@ -3,7 +3,7 @@ package com.stonks.android.model;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-public class HypotheticalViewModel extends ViewModel {
+public class PickerLiveDataModel extends ViewModel {
 
     private MutableLiveData<Integer> numberOfStocks;
     private MutableLiveData<Integer> currentPrice;

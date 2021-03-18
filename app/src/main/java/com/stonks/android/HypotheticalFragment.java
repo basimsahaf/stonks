@@ -11,7 +11,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import com.stonks.android.adapter.StockChartAdapter;
-import com.stonks.android.model.HypotheticalViewModel;
+import com.stonks.android.model.PickerLiveDataModel;
 import com.stonks.android.uicomponent.CustomSparkView;
 import com.stonks.android.uicomponent.HorizontalNumberPicker;
 import java.util.Locale;
@@ -24,13 +24,13 @@ public class HypotheticalFragment extends Fragment {
     private HorizontalNumberPicker numberPicker;
     private CustomSparkView sparkView;
     private float currentPrice;
-    private HypotheticalViewModel viewModel;
+    private PickerLiveDataModel viewModel;
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        viewModel = ViewModelProviders.of(this).get(HypotheticalViewModel.class);
+        viewModel = ViewModelProviders.of(this).get(PickerLiveDataModel.class);
         final Observer<Integer> observer =
                 newValue -> {
                     float newEstimatedCost = newValue * currentPrice;
