@@ -24,8 +24,7 @@ public class HypotheticalFragment extends Fragment {
     private HorizontalNumberPicker numberPicker;
     private CustomSparkView sparkView;
     private float currentPrice;
-
-    HypotheticalViewModel viewModel;
+    private HypotheticalViewModel viewModel;
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
