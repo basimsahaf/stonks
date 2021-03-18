@@ -14,6 +14,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        // home screen by default
+        switchFragment(new HomePageFragment());
 
         final BottomNavigationView bottomNav = findViewById(R.id.bottom_nav);
 
@@ -21,16 +23,16 @@ public class MainActivity extends AppCompatActivity {
                 menuItem -> {
                     switch (menuItem.getItemId()) {
                         case R.id.home_nav:
-                            // switch to HomeFragment
+                            switchFragment(new HomePageFragment());
                             break;
                         case R.id.search_nav:
                             switchFragment(new SearchableFragment());
                             break;
                         case R.id.activity_nav:
-                            // switch to ActivityFragment
+                            switchFragment(new RecentTransactionsFragment());
                             break;
                         case R.id.settings_nav:
-                            // switch to SettingsFragment
+                            switchFragment(new SettingsFragment());
                             break;
                         default:
                             return false;

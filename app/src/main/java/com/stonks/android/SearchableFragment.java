@@ -1,5 +1,7 @@
 package com.stonks.android;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -45,6 +47,15 @@ public class SearchableFragment extends Fragment implements SearchView.OnQueryTe
         searchView = view.findViewById(R.id.search_view);
         searchView.setIconifiedByDefault(false);
         searchView.setOnQueryTextListener(this);
+
+        searchResultList.setOnItemClickListener(
+                (adapterView, view1, position, l) -> {
+                    SearchResult item = searchResultAdapter.getItem(position);
+                    Activity activity = getActivity();
+                    Intent intent = new Intent(activity, StockActivity.class);
+                    intent.putExtra(getString(R.string.intent_extra_symbol), item.getSymbol());
+                    activity.startActivity(intent);
+                });
     }
 
     @Override
@@ -63,14 +74,14 @@ public class SearchableFragment extends Fragment implements SearchView.OnQueryTe
 
     private ArrayList<SearchResult> getFakeSearchResults() {
         ArrayList<SearchResult> list = new ArrayList<>();
-        list.add(new SearchResult("Shopify", "SHOP"));
-        list.add(new SearchResult("Uber", "UBER"));
-        list.add(new SearchResult("Survey Monkey", "SVMK"));
-        list.add(new SearchResult("Google", "GOOGL"));
-        list.add(new SearchResult("Facebook", "FB"));
-        list.add(new SearchResult("Instacart", "ICART"));
-        list.add(new SearchResult("Salesforce", "CRM"));
 
+        list.add(new SearchResult("Google", "GOOGL"));
+        list.add(new SearchResult("Shopify", "SHOP"));
+        list.add(new SearchResult("Facebook", "FB"));
+        list.add(new SearchResult("Salesforce", "CRM"));
+        list.add(new SearchResult("Survey Monkey", "SVMK"));
+        list.add(new SearchResult("Instacart", "ICART"));
+        list.add(new SearchResult("Uber", "UBER"));
         list.add(new SearchResult("The Weather Network", "WNET"));
 
         return list;
