@@ -11,12 +11,10 @@ import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
-
 import com.google.android.material.button.MaterialButton;
 import com.stonks.android.model.PickerLiveDataModel;
 import com.stonks.android.model.TransactionMode;
 import com.stonks.android.uicomponent.HorizontalNumberPicker;
-
 import java.util.Locale;
 
 // Todos:
@@ -43,9 +41,9 @@ public class BuySellFragment extends Fragment {
 
         // for now; we would get this info from the screen that triggers this
         mode = TransactionMode.SELL;
-        currentPrice = (float)232.0;
+        currentPrice = (float) 232.0;
         numSharesOwned = 103;
-        availableToTrade = (float)19032.23;
+        availableToTrade = (float) 19032.23;
 
         return inflater.inflate(R.layout.fragment_buy_sell, container, false);
     }
@@ -87,7 +85,6 @@ public class BuySellFragment extends Fragment {
         this.numberPicker.setModel(viewModel);
 
         switchView(mode);
-
     }
 
     private void switchView(TransactionMode mode) {
