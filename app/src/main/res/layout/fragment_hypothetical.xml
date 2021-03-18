@@ -6,7 +6,6 @@
     tools:context=".HypotheticalFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginBottom="40dp"
     android:padding="20sp">
 
     <androidx.constraintlayout.widget.ConstraintLayout

@@ -7,24 +7,30 @@ import android.graphics.Paint;
 import android.util.AttributeSet;
 import com.robinhood.spark.SparkView;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 public class CustomSparkView extends SparkView {
 
-    private boolean belongsToHypothetical;
+    private final AtomicBoolean scrubLineOnRelease;
 
     public CustomSparkView(Context context) {
         super(context);
+        this.scrubLineOnRelease = new AtomicBoolean(false);
     }
 
     public CustomSparkView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        this.scrubLineOnRelease = new AtomicBoolean(false);
     }
 
     public CustomSparkView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        this.scrubLineOnRelease = new AtomicBoolean(false);
     }
 
     public CustomSparkView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
+        this.scrubLineOnRelease = new AtomicBoolean(false);
     }
 
     @Override
@@ -46,12 +52,12 @@ public class CustomSparkView extends SparkView {
 
     @Override
     public void onScrubEnded() {
-        if (!belongsToHypothetical) {
+        if (!this.scrubLineOnRelease.get()) {
             super.onScrubEnded();
         }
     }
 
-    public void setBelongsToHypothetical() {
-        this.belongsToHypothetical = true;
+    public void keepScrubLineOnRelease() {
+        this.scrubLineOnRelease.set(true);
     }
 }
