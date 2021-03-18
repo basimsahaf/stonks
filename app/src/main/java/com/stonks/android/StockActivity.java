@@ -90,7 +90,7 @@ public class StockActivity extends BaseActivity {
         }
     }
 
-    private ArrayList<Pair<Float, Float>> getFakeStockPrices() {
+    public static ArrayList<Pair<Float, Float>> getFakeStockPrices() {
         ArrayList<Pair<Float, Float>> list = new ArrayList<>();
         float[] prices = Constants.stockDataPoints;
 
