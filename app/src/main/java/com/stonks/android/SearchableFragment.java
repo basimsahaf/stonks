@@ -1,7 +1,5 @@
 package com.stonks.android;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -51,10 +49,17 @@ public class SearchableFragment extends Fragment implements SearchView.OnQueryTe
         searchResultList.setOnItemClickListener(
                 (adapterView, view1, position, l) -> {
                     SearchResult item = searchResultAdapter.getItem(position);
-                    Activity activity = getActivity();
-                    Intent intent = new Intent(activity, StockActivity.class);
-                    intent.putExtra(getString(R.string.intent_extra_symbol), item.getSymbol());
-                    activity.startActivity(intent);
+
+                    Fragment stockFragment = new StockFragment();
+                    Bundle bundle = new Bundle();
+                    bundle.putString(getString(R.string.intent_extra_symbol), item.getSymbol());
+                    stockFragment.setArguments(bundle);
+                    getActivity()
+                            .getSupportFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.fragment_container, stockFragment)
+                            .addToBackStack(null)
+                            .commit();
                 });
     }
 

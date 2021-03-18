@@ -8,7 +8,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.stonks.android.R;
-import com.stonks.android.StockActivity;
+import com.stonks.android.StockFragment;
 import com.stonks.android.model.PortfolioListItem;
 import java.util.ArrayList;
 
@@ -29,7 +29,7 @@ public class PortfolioRecyclerViewAdapter
 
         view.setOnClickListener(
                 v -> {
-                    Intent intent = new Intent(v.getContext(), StockActivity.class);
+                    Intent intent = new Intent(v.getContext(), StockFragment.class);
                     v.getContext().startActivity(intent);
                 });
 
