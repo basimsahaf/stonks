@@ -95,55 +95,59 @@ public class StockActivity extends BaseActivity {
         this.fetchInitialData();
     }
 
-  private void fetchInitialData() {
-    final TextView currentPrice = findViewById(R.id.current_price);
-    final TextView open = findViewById(R.id.open);
-    final TextView dailyLow = findViewById(R.id.daily_low);
-    final TextView dailyHigh = findViewById(R.id.daily_high);
-    final Symbols symbols = new Symbols(Collections.singletonList(symbol));
-    final MarketDataService marketDataService = new MarketDataService();
+    private void fetchInitialData() {
+        final TextView currentPrice = findViewById(R.id.current_price);
+        final TextView open = findViewById(R.id.open);
+        final TextView dailyLow = findViewById(R.id.daily_low);
+        final TextView dailyHigh = findViewById(R.id.daily_high);
+        final Symbols symbols = new Symbols(Collections.singletonList(symbol));
+        final MarketDataService marketDataService = new MarketDataService();
 
-    Observable
-        .zip(marketDataService.getBars(AlpacaTimeframe.MINUTE, symbols),
-             marketDataService.getQuotes(symbols),
-             (bars, quotes) -> {
-               List<BarData> barData = bars.get(symbol);
-               QuoteData quoteData = quotes.get(symbol);
+        Observable.zip(
+                        marketDataService.getBars(AlpacaTimeframe.MINUTE, symbols),
+                        marketDataService.getQuotes(symbols),
+                        (bars, quotes) -> {
+                            List<BarData> barData = bars.get(symbol);
+                            QuoteData quoteData = quotes.get(symbol);
 
-               return new StockData(barData, quoteData);
-             })
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribeOn(Schedulers.io())
-        .subscribe(stockData -> {
-          List<BarData> barData = stockData.getGraphData();
+                            return new StockData(barData, quoteData);
+                        })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(
+                        stockData -> {
+                            List<BarData> barData = stockData.getGraphData();
 
-          dailyLow.setText(
-              String.format(Locale.CANADA, "$%.2f", stockData.getLow()));
-          dailyHigh.setText(
-              String.format(Locale.CANADA, "$%.2f", stockData.getHigh()));
-          open.setText(
-              String.format(Locale.CANADA, "$%.2f", stockData.getOpen()));
-          currentPrice.setText(String.format(Locale.CANADA, "$%.2f",
-                                             stockData.getCurrentPrice()));
+                            dailyLow.setText(
+                                    String.format(Locale.CANADA, "$%.2f", stockData.getLow()));
+                            dailyHigh.setText(
+                                    String.format(Locale.CANADA, "$%.2f", stockData.getHigh()));
+                            open.setText(
+                                    String.format(Locale.CANADA, "$%.2f", stockData.getOpen()));
+                            currentPrice.setText(
+                                    String.format(
+                                            Locale.CANADA, "$%.2f", stockData.getCurrentPrice()));
 
-          dataAdapter.setData(barData.stream()
-                                  .map(BarData::getClose)
-                                  .collect(Collectors.toList()));
-          dataAdapter.setBaseline(barData.get(0).getOpen());
-          dataAdapter.notifyDataSetChanged();
-        }, err -> Log.e(TAG, err.toString()));
-  }
+                            dataAdapter.setData(
+                                    barData.stream()
+                                            .map(BarData::getClose)
+                                            .collect(Collectors.toList()));
+                            dataAdapter.setBaseline(barData.get(0).getOpen());
+                            dataAdapter.notifyDataSetChanged();
+                        },
+                        err -> Log.e(TAG, err.toString()));
+    }
 
-  public static ArrayList<Pair<Float, Float>> getFakeStockPrices() {
-      ArrayList<Pair<Float, Float>> list = new ArrayList<>();
-      Float[] prices = Constants.stockDataPoints;
+    public static ArrayList<Pair<Float, Float>> getFakeStockPrices() {
+        ArrayList<Pair<Float, Float>> list = new ArrayList<>();
+        Float[] prices = Constants.stockDataPoints;
 
-      for (int i = 0; i < prices.length; i += 5) {
-          list.add(new Pair<>((float) i, prices[i]));
-      }
+        for (int i = 0; i < prices.length; i += 5) {
+            list.add(new Pair<>((float) i, prices[i]));
+        }
 
-      return list;
-  }
+        return list;
+    }
 
     private void loadStats(StockData stockData) {
         final TextView companyName = findViewById(R.id.stock_name);
@@ -168,14 +172,24 @@ public class StockActivity extends BaseActivity {
         return false;
     }
 
-  public static ArrayList<Transaction> getFakeTransactions() {
-    ArrayList<Transaction> list = new ArrayList<>();
+    public static ArrayList<Transaction> getFakeTransactions() {
+        ArrayList<Transaction> list = new ArrayList<>();
 
-    list.add(new Transaction("UBER", 100, 56.92f, "buy",
-                             LocalDateTime.of(2020, Month.AUGUST, 19, 13, 14)));
-    list.add(new Transaction("UBER", 268, 36.47f, "buy",
-                             LocalDateTime.of(2020, Month.AUGUST, 1, 9, 52)));
+        list.add(
+                new Transaction(
+                        "UBER",
+                        100,
+                        56.92f,
+                        "buy",
+                        LocalDateTime.of(2020, Month.AUGUST, 19, 13, 14)));
+        list.add(
+                new Transaction(
+                        "UBER",
+                        268,
+                        36.47f,
+                        "buy",
+                        LocalDateTime.of(2020, Month.AUGUST, 1, 9, 52)));
 
-    return list;
-  }
+        return list;
+    }
 }
