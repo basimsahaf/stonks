@@ -29,9 +29,7 @@ public class LoginActivity extends BaseActivity {
         setContentView(R.layout.activity_login);
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
 
-<<<<<<< HEAD
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-=======
         loginModeButton = findViewById(R.id.login_mode_button);
         signUpModeButton = findViewById(R.id.signup_mode_button);
 
@@ -45,7 +43,6 @@ public class LoginActivity extends BaseActivity {
                 myView -> {
                     switchView(AuthMode.SIGNUP);
                 });
->>>>>>> Adding Signup tab
 
         loginButton = findViewById(R.id.login_button);
         usernameField = findViewById(R.id.username_field);
