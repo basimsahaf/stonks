@@ -67,6 +67,10 @@ public class StockActivity extends BaseActivity {
         this.tryButton.setOnClickListener(v -> {
             customSlideUpDrawer.openDrawer();
             Log.d(TAG, "HEIGHT: " + customSlideUpDrawer.getHeight());
+            Log.d(TAG, "State: " + customSlideUpDrawer.getPanelState());
+            Log.d(TAG, "Trans: " + customSlideUpDrawer.getTransitionName());
+            Log.d(TAG, "Panel Height: " + customSlideUpDrawer.getPanelHeight());
+            Log.d(TAG, "Visibility: " + customSlideUpDrawer.getVisibility());
             Log.d(TAG, "X y z: " + customSlideUpDrawer.getX() + " " + customSlideUpDrawer.getY() + " " + customSlideUpDrawer.getZ() );
 
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
