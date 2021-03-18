@@ -16,6 +16,10 @@
     <string name="company_name_placeholder">Company Name</string>
     <string name="about_title">About</string>
     <string name="na_value">–</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="login">Log In</string>
+    <string name="login_incorrect_error">Invalid username/password</string>
     <string name="position_title">Position</string>
     <string name="shares_label">Shares</string>
     <string name="market_value_label">Market value</string>
@@ -60,13 +64,11 @@
 
     <!-- Activity Screen -->
     <string name="activity">Activity</string>
-    <string name="recent_transactions">Recent Transactions</string>
 
     <!-- Settings Screen-->
     <string name="account_info">Account Information</string>
     <string name="portfolio_settings">Portfolio Settings</string>
     <string name="email">Email</string>
-    <string name="password">Password</string>
     <string name="use_bio">Sign-in using biometrics</string>
     <string name="starting_amount">Starting Amount</string>
     <string name="settings">Settings</string>

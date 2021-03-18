@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="colorPrimary">#074EE8</color>
+<!-- eventually will be the same as colorPrimary but until we decide on a more darkmode-friendly colour,
+    added for better visibility -->
+    <color name="colorPrimaryOutline">#4E86FF</color>
     <color name="colorPrimaryDark">@color/black</color>
     <color name="colorAccent">#367BE4</color>
     <color name="secondaryTextColor">@android:color/secondary_text_dark</color>
