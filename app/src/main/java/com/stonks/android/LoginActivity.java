@@ -3,14 +3,14 @@ package com.stonks.android;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatDelegate;
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputLayout;
 import com.stonks.android.model.AuthMode;
-import com.stonks.android.model.TransactionMode;
-
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class LoginActivity extends BaseActivity {
 
@@ -20,8 +20,8 @@ public class LoginActivity extends BaseActivity {
     TextInputLayout usernameField;
     TextInputLayout passwordField;
     TextView errorMessage;
-    private Button loginModeButton;
-    private Button signUpModeButton;
+    private MaterialButton loginModeButton;
+    private MaterialButton signUpModeButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,8 +32,6 @@ public class LoginActivity extends BaseActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         loginModeButton = findViewById(R.id.login_mode_button);
         signUpModeButton = findViewById(R.id.signup_mode_button);
-
-
 
         loginModeButton.setOnClickListener(
                 myView -> {
@@ -49,7 +47,9 @@ public class LoginActivity extends BaseActivity {
         passwordField = findViewById(R.id.password_field);
         errorMessage = findViewById(R.id.error_message);
 
-        loginButton.setText(getString(R.string.login));
+        // toggle login mode by default
+        switchView(AuthMode.LOGIN);
+
         loginButton.setOnClickListener(
                 view -> {
                     String username = "";
@@ -76,10 +76,15 @@ public class LoginActivity extends BaseActivity {
     }
 
     private void switchView(AuthMode login) {
+        CheckBox biometricsCheckbox = findViewById(R.id.biometric_checkbox);
         if (login == AuthMode.LOGIN) {
-            // change layout
+            loginModeButton.setChecked(true);
+            loginButton.setText(getString(R.string.login));
+            biometricsCheckbox.setVisibility(View.GONE);
         } else {
-            // change layout
+            signUpModeButton.setChecked(true);
+            loginButton.setText(getString(R.string.create_account));
+            biometricsCheckbox.setVisibility(View.VISIBLE);
         }
     }
 }
