@@ -1,13 +1,10 @@
 package com.stonks.android;
 
-import android.graphics.Color;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.TextView;
-
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 public class TestDrawer extends AppCompatActivity {
@@ -27,7 +24,7 @@ public class TestDrawer extends AppCompatActivity {
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         int height = displayMetrics.heightPixels;
         int width = displayMetrics.widthPixels;
-        slidingUpPanelLayout.setPanelHeight(3*height/4);
+        slidingUpPanelLayout.setPanelHeight(3 * height / 4);
         slidingUpPanelLayout.setAnchorPoint(0.2f);
     }
 }

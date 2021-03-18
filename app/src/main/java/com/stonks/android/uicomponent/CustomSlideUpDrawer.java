@@ -2,7 +2,6 @@ package com.stonks.android.uicomponent;
 
 import android.content.Context;
 import android.util.AttributeSet;
-
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 public class CustomSlideUpDrawer extends SlidingUpPanelLayout {

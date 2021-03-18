@@ -1,23 +1,17 @@
 package com.stonks.android;
 
 import android.content.Intent;
-import android.nfc.Tag;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.Pair;
-import android.view.View;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.stonks.android.adapter.StockChartAdapter;
 import com.stonks.android.adapter.TransactionViewAdapter;
 import com.stonks.android.model.Transaction;
@@ -64,19 +58,27 @@ public class StockActivity extends BaseActivity {
         this.customSlideUpDrawer = findViewById(R.id.sliding_layout);
 
         this.tryButton = findViewById(R.id.try_button);
-        this.tryButton.setOnClickListener(v -> {
-            customSlideUpDrawer.openDrawer();
-            Log.d(TAG, "HEIGHT: " + customSlideUpDrawer.getHeight());
-            Log.d(TAG, "State: " + customSlideUpDrawer.getPanelState());
-            Log.d(TAG, "Trans: " + customSlideUpDrawer.getTransitionName());
-            Log.d(TAG, "Panel Height: " + customSlideUpDrawer.getPanelHeight());
-            Log.d(TAG, "Visibility: " + customSlideUpDrawer.getVisibility());
-            Log.d(TAG, "X y z: " + customSlideUpDrawer.getX() + " " + customSlideUpDrawer.getY() + " " + customSlideUpDrawer.getZ() );
+        this.tryButton.setOnClickListener(
+                v -> {
+                    customSlideUpDrawer.openDrawer();
+                    Log.d(TAG, "HEIGHT: " + customSlideUpDrawer.getHeight());
+                    Log.d(TAG, "State: " + customSlideUpDrawer.getPanelState());
+                    Log.d(TAG, "Trans: " + customSlideUpDrawer.getTransitionName());
+                    Log.d(TAG, "Panel Height: " + customSlideUpDrawer.getPanelHeight());
+                    Log.d(TAG, "Visibility: " + customSlideUpDrawer.getVisibility());
+                    Log.d(
+                            TAG,
+                            "X y z: "
+                                    + customSlideUpDrawer.getX()
+                                    + " "
+                                    + customSlideUpDrawer.getY()
+                                    + " "
+                                    + customSlideUpDrawer.getZ());
 
-            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            ft.add(R.id.sliding_drawer, new YourFragment());
-            ft.commit();
-        });
+                    FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                    ft.add(R.id.sliding_drawer, new HypotheticalFragment());
+                    ft.commit();
+                });
 
         RecyclerView.LayoutManager transactionListManager = new LinearLayoutManager(this);
         this.transactionList.setLayoutManager(transactionListManager);
@@ -120,7 +122,7 @@ public class StockActivity extends BaseActivity {
         }
     }
 
-    private ArrayList<Pair<Float, Float>> getFakeStockPrices() {
+    public static ArrayList<Pair<Float, Float>> getFakeStockPrices() {
         ArrayList<Pair<Float, Float>> list = new ArrayList<>();
         float[] prices = Constants.stockDataPoints;
 
