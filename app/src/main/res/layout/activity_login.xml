@@ -8,6 +8,7 @@
     tools:context=".LoginActivity">
 
     <TextView
+        android:id="@+id/title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/app_name"
@@ -15,7 +16,40 @@
         android:textSize="30sp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.8"
-        app:layout_constraintBottom_toTopOf="@id/username_field"/>
+        app:layout_constraintBottom_toTopOf="@id/toggleButton"/>
+
+    <com.google.android.material.button.MaterialButtonToggleGroup
+        android:id="@+id/toggleButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="@dimen/page_padding_horizontal"
+        android:weightSum="2"
+        app:layout_constraintBottom_toTopOf="@+id/username_field"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/title"
+        app:singleSelection="true">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/login_mode_button"
+            style="?attr/materialButtonOutlinedStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/buy_button_label"
+            android:theme="@style/AppTheme.Button.ButtonGroupButton" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/signup_mode_button"
+            style="?attr/materialButtonOutlinedStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/sell_button_label"
+            android:theme="@style/AppTheme.Button.ButtonGroupButton" />
+
+    </com.google.android.material.button.MaterialButtonToggleGroup>
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/username_field"

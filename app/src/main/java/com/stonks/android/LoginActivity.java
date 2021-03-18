@@ -7,6 +7,10 @@ import android.widget.Button;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatDelegate;
 import com.google.android.material.textfield.TextInputLayout;
+import com.stonks.android.model.AuthMode;
+import com.stonks.android.model.TransactionMode;
+
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class LoginActivity extends BaseActivity {
 
@@ -16,6 +20,8 @@ public class LoginActivity extends BaseActivity {
     TextInputLayout usernameField;
     TextInputLayout passwordField;
     TextView errorMessage;
+    private Button loginModeButton;
+    private Button signUpModeButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,7 +29,23 @@ public class LoginActivity extends BaseActivity {
         setContentView(R.layout.activity_login);
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
 
+<<<<<<< HEAD
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+=======
+        loginModeButton = findViewById(R.id.login_mode_button);
+        signUpModeButton = findViewById(R.id.signup_mode_button);
+
+
+
+        loginModeButton.setOnClickListener(
+                myView -> {
+                    switchView(AuthMode.LOGIN);
+                });
+        signUpModeButton.setOnClickListener(
+                myView -> {
+                    switchView(AuthMode.SIGNUP);
+                });
+>>>>>>> Adding Signup tab
 
         loginButton = findViewById(R.id.login_button);
         usernameField = findViewById(R.id.username_field);
@@ -54,5 +76,13 @@ public class LoginActivity extends BaseActivity {
                     Intent intent = new Intent(this, MainActivity.class);
                     startActivity(intent);
                 });
+    }
+
+    private void switchView(AuthMode login) {
+        if (login == AuthMode.LOGIN) {
+            // change layout
+        } else {
+            // change layout
+        }
     }
 }
