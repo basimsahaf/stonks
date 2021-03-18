@@ -58,11 +58,6 @@ public class CustomSparkView extends SparkView {
         }
     }
 
-    @Override
-    public void onScrubbed(float x, float y) {
-        super.onScrubbed(x, y);
-    }
-
     public void keepScrubLineOnRelease() {
         this.scrubLineOnRelease.set(true);
     }
