@@ -2,16 +2,24 @@ package com.stonks.android;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.util.Pair;
+import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.widget.NestedScrollView;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.stonks.android.adapter.StockChartAdapter;
 import com.stonks.android.adapter.TransactionViewAdapter;
 import com.stonks.android.model.Transaction;
+import com.stonks.android.uicomponent.CustomSlideUpDrawer;
 import com.stonks.android.uicomponent.CustomSparkView;
 import com.stonks.android.uicomponent.SpeedDialExtendedFab;
 import com.stonks.android.utility.Constants;
@@ -29,6 +37,8 @@ public class StockActivity extends BaseActivity {
     private SpeedDialExtendedFab tradeButton;
     private LinearLayout overlay;
     private NestedScrollView scrollView;
+    private FloatingActionButton tryButton;
+    private CustomSlideUpDrawer customSlideUpDrawer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +57,16 @@ public class StockActivity extends BaseActivity {
         this.tradeButton.addToSpeedDial(this.buyButtonContainer);
         this.tradeButton.addToSpeedDial(this.sellButtonContainer);
         this.tradeButton.addToSpeedDial(this.tryButtonContainer);
+
+        this.customSlideUpDrawer = findViewById(R.id.sliding_layout);
+
+        this.tryButton = findViewById(R.id.try_button);
+        this.tryButton.setOnClickListener(v -> {
+            customSlideUpDrawer.openDrawer();
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+            ft.add(R.id.sliding_drawer, new YourFragment());
+            ft.commit();
+        });
 
         RecyclerView.LayoutManager transactionListManager = new LinearLayoutManager(this);
         this.transactionList.setLayoutManager(transactionListManager);
