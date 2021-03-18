@@ -6,7 +6,6 @@ import android.graphics.DashPathEffect;
 import android.graphics.Paint;
 import android.util.AttributeSet;
 import com.robinhood.spark.SparkView;
-
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class CustomSparkView extends SparkView {

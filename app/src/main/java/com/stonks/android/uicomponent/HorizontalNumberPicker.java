@@ -7,9 +7,9 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import androidx.annotation.Nullable;
+import com.google.android.material.button.MaterialButton;
 import com.stonks.android.R;
 import com.stonks.android.model.HypotheticalViewModel;
-import com.google.android.material.button.MaterialButton;
 
 public class HorizontalNumberPicker extends LinearLayout {
     private final EditText etNumber;
