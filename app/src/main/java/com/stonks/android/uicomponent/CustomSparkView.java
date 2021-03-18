@@ -10,26 +10,22 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class CustomSparkView extends SparkView {
 
-    private final AtomicBoolean scrubLineOnRelease;
+    private final AtomicBoolean scrubLineOnRelease = new AtomicBoolean(false);
 
     public CustomSparkView(Context context) {
         super(context);
-        this.scrubLineOnRelease = new AtomicBoolean(false);
     }
 
     public CustomSparkView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        this.scrubLineOnRelease = new AtomicBoolean(false);
     }
 
     public CustomSparkView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        this.scrubLineOnRelease = new AtomicBoolean(false);
     }
 
     public CustomSparkView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
-        this.scrubLineOnRelease = new AtomicBoolean(false);
     }
 
     @Override
