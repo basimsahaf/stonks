@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.sothree.slidinguppanel.SlidingUpPanelLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:sothree="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/sliding_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="bottom"
+    style="@style/AppTheme.SlidingDrawer"
+    sothree:umanoPanelHeight="68dp"
+    sothree:umanoShadowHeight="4dp" >
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="top"
+        android:text="Main Content"
+        android:textSize="16sp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center|top"
+        android:backgroundTint="@color/white"
+        android:text="The Awesome Sliding Up Panel"
+        android:textSize="16sp" />
+</com.sothree.slidinguppanel.SlidingUpPanelLayout>

@@ -1,5 +1,6 @@
 package com.stonks.android;
 
+import android.content.Intent;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
@@ -43,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
 
         // disable the back button on the homepage
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        startActivity(new Intent(MainActivity.this, TestDrawer.class));
     }
 
     private void switchFragment(Fragment fragment) {
