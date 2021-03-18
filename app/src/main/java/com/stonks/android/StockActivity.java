@@ -155,7 +155,6 @@ public class StockActivity extends BaseActivity {
         final TextView dailyHigh = findViewById(R.id.daily_high);
         final TextView yearlyLow = findViewById(R.id.yearly_low);
         final TextView yearlyHigh = findViewById(R.id.yearly_high);
-        //                final TextView volume = findViewById(R.id.volume);
 
         this.currentPrice.setText(Formatters.formatPrice(this.stockData.getCurrentPrice()));
         companyName.setText(this.stockData.getCompanyName());
@@ -165,25 +164,27 @@ public class StockActivity extends BaseActivity {
         yearlyLow.setText(Formatters.formatPrice(this.stockData.getYearlyLow()));
         yearlyHigh.setText(Formatters.formatPrice(this.stockData.getYearlyHigh()));
         this.priceChange.setText(this.generateChangeString());
-        //        volume.setText(stockData.getVolume());
     }
 
     String generateChangeString() {
-        Float change = this.stockData.getCurrentPrice() - this.stockData.getOpen();
-        Float changePercentage = change * 100 / this.stockData.getOpen();
+        float change = this.stockData.getCurrentPrice() - this.stockData.getOpen();
+        float changePercentage = change * 100 / this.stockData.getOpen();
+        String sign = change >= 0 ? "+" : "-";
 
-        String formattedPrice = Formatters.formatPrice(change);
+        String formattedPrice = Formatters.formatPrice(Math.abs(change));
 
-        return String.format(Locale.CANADA, "%s (%.2f)", formattedPrice, changePercentage);
+        return String.format(
+                Locale.CANADA, "%s%s (%.2f)", sign, formattedPrice, Math.abs(changePercentage));
     }
 
     String generateChangeString(Float price) {
-        Float change = price - this.stockData.getOpen();
-        Float changePercentage = change * 100 / this.stockData.getOpen();
+        float change = price - this.stockData.getOpen();
+        float changePercentage = change * 100 / this.stockData.getOpen();
 
-        String formattedPrice = Formatters.formatPrice(change);
+        String formattedPrice = Formatters.formatPrice(Math.abs(change));
 
-        return String.format(Locale.CANADA, "%s (%.2f)", formattedPrice, changePercentage);
+        return String.format(
+                Locale.CANADA, "%s (%.2f)", formattedPrice, Math.abs(changePercentage));
     }
 
     // Determines whether the user owns shares of the stock
