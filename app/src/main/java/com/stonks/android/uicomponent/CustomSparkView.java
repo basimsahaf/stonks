@@ -9,8 +9,8 @@ import com.robinhood.spark.SparkView;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class CustomSparkView extends SparkView {
-
     private final AtomicBoolean scrubLineOnRelease = new AtomicBoolean(false);
+    private OnEndedCallback onEndedCallback = () -> {};
 
     public CustomSparkView(Context context) {
         super(context);
@@ -45,14 +45,30 @@ public class CustomSparkView extends SparkView {
         setScrubEnabled(true);
     }
 
+    public void setOnEndedCallback(OnEndedCallback onEndedCallback) {
+        this.onEndedCallback = onEndedCallback;
+    }
+
     @Override
     public void onScrubEnded() {
+        this.onEndedCallback.callback();
+
         if (!this.scrubLineOnRelease.get()) {
             super.onScrubEnded();
         }
     }
 
+    @Override
+    public void onScrubbed(float x, float y) {
+        super.onScrubbed(x, y);
+    }
+
     public void keepScrubLineOnRelease() {
         this.scrubLineOnRelease.set(true);
+    }
+
+    @FunctionalInterface
+    public interface OnEndedCallback {
+        void callback();
     }
 }

@@ -33,11 +33,12 @@ public class StockActivity extends BaseActivity {
     private String symbol;
     private RecyclerView transactionList;
     private RecyclerView.Adapter<TransactionViewAdapter.ViewHolder> transactionListAdapter;
-    private TextView textViewSymbol, currentPrice;
+    private TextView textViewSymbol, currentPrice, priceChange;
     private SpeedDialExtendedFab tradeButton;
     private LinearLayout overlay;
     private NestedScrollView scrollView;
     private final StockChartAdapter dataAdapter = new StockChartAdapter(new ArrayList<>());
+    private StockData stockData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +56,7 @@ public class StockActivity extends BaseActivity {
         this.transactionList = findViewById(R.id.history_list);
         this.scrollView = findViewById(R.id.scroll_view);
         this.currentPrice = findViewById(R.id.current_price);
+        this.priceChange = findViewById(R.id.change);
 
         this.tradeButton.addToSpeedDial(buyButtonContainer);
         this.tradeButton.addToSpeedDial(sellButtonContainer);
@@ -75,13 +77,21 @@ public class StockActivity extends BaseActivity {
         CustomSparkView sparkView = findViewById(R.id.stock_chart);
 
         sparkView.setAdapter(dataAdapter);
+        sparkView.setOnEndedCallback(
+                () -> {
+                    this.currentPrice.setText(Formatters.formatPrice(stockData.getCurrentPrice()));
+                    this.priceChange.setText(this.generateChangeString());
+                });
         sparkView.setScrubListener(
                 value -> {
                     // disable scrolling when a value is selected
                     scrollView.requestDisallowInterceptTouchEvent(value != null);
 
                     if (value != null) {
-                        currentPrice.setText(Formatters.formatPrice((Float) value));
+                        Float price = (Float) value;
+
+                        currentPrice.setText(Formatters.formatPrice(price));
+                        this.priceChange.setText(this.generateChangeString(price));
                     }
                 });
 
@@ -96,10 +106,6 @@ public class StockActivity extends BaseActivity {
     }
 
     private void fetchInitialData() {
-        final TextView currentPrice = findViewById(R.id.current_price);
-        final TextView open = findViewById(R.id.open);
-        final TextView dailyLow = findViewById(R.id.daily_low);
-        final TextView dailyHigh = findViewById(R.id.daily_high);
         final Symbols symbols = new Symbols(Collections.singletonList(symbol));
         final MarketDataService marketDataService = new MarketDataService();
 
@@ -117,16 +123,9 @@ public class StockActivity extends BaseActivity {
                 .subscribe(
                         stockData -> {
                             List<BarData> barData = stockData.getGraphData();
+                            this.stockData = stockData;
 
-                            dailyLow.setText(
-                                    String.format(Locale.CANADA, "$%.2f", stockData.getLow()));
-                            dailyHigh.setText(
-                                    String.format(Locale.CANADA, "$%.2f", stockData.getHigh()));
-                            open.setText(
-                                    String.format(Locale.CANADA, "$%.2f", stockData.getOpen()));
-                            currentPrice.setText(
-                                    String.format(
-                                            Locale.CANADA, "$%.2f", stockData.getCurrentPrice()));
+                            this.loadStats();
 
                             dataAdapter.setData(
                                     barData.stream()
@@ -149,21 +148,42 @@ public class StockActivity extends BaseActivity {
         return list;
     }
 
-    private void loadStats(StockData stockData) {
+    private void loadStats() {
         final TextView companyName = findViewById(R.id.stock_name);
         final TextView open = findViewById(R.id.open);
         final TextView dailyLow = findViewById(R.id.daily_low);
         final TextView dailyHigh = findViewById(R.id.daily_high);
         final TextView yearlyLow = findViewById(R.id.yearly_low);
         final TextView yearlyHigh = findViewById(R.id.yearly_high);
+        //                final TextView volume = findViewById(R.id.volume);
 
-        this.currentPrice.setText(Formatters.formatPrice(stockData.getCurrentPrice()));
-        companyName.setText(stockData.getCompanyName());
-        dailyLow.setText(Formatters.formatPrice(stockData.getLow()));
-        dailyHigh.setText(Formatters.formatPrice(stockData.getHigh()));
-        open.setText(Formatters.formatPrice(stockData.getOpen()));
-        yearlyLow.setText(Formatters.formatPrice(stockData.getYearlyLow()));
-        yearlyHigh.setText(Formatters.formatPrice(stockData.getYearlyHigh()));
+        this.currentPrice.setText(Formatters.formatPrice(this.stockData.getCurrentPrice()));
+        companyName.setText(this.stockData.getCompanyName());
+        dailyLow.setText(Formatters.formatPrice(this.stockData.getLow()));
+        dailyHigh.setText(Formatters.formatPrice(this.stockData.getHigh()));
+        open.setText(Formatters.formatPrice(this.stockData.getOpen()));
+        yearlyLow.setText(Formatters.formatPrice(this.stockData.getYearlyLow()));
+        yearlyHigh.setText(Formatters.formatPrice(this.stockData.getYearlyHigh()));
+        this.priceChange.setText(this.generateChangeString());
+        //        volume.setText(stockData.getVolume());
+    }
+
+    String generateChangeString() {
+        Float change = this.stockData.getCurrentPrice() - this.stockData.getOpen();
+        Float changePercentage = change * 100 / this.stockData.getOpen();
+
+        String formattedPrice = Formatters.formatPrice(change);
+
+        return String.format(Locale.CANADA, "%s (%.2f)", formattedPrice, changePercentage);
+    }
+
+    String generateChangeString(Float price) {
+        Float change = price - this.stockData.getOpen();
+        Float changePercentage = change * 100 / this.stockData.getOpen();
+
+        String formattedPrice = Formatters.formatPrice(change);
+
+        return String.format(Locale.CANADA, "%s (%.2f)", formattedPrice, changePercentage);
     }
 
     // Determines whether the user owns shares of the stock
