@@ -44,6 +44,7 @@
     <!-- Hypothetical Page Strings -->
     <string name="price_on_label">Price on</string>
     <string name="sample_date">03-15-2021, 5:00PM EST</string>
+    <string name="sample_time">3:21PM</string>
     <string name="as_of_label">as of today at</string>
 
 

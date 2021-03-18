@@ -38,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
 
                     return true;
                 });
+        switchFragment(new HypotheticalFragment());
 
         // disable the back button on the homepage
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
