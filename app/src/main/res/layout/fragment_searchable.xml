@@ -15,6 +15,7 @@
         android:layout_marginStart="@dimen/page_padding_horizontal"
         android:background="@drawable/search_view"
         android:queryHint="@string/search_hint"
+        android:layout_marginEnd="@dimen/page_padding_horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">

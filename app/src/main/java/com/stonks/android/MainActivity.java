@@ -14,6 +14,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        // home screen by default
+        switchFragment(new HomePageFragment());
 
         final BottomNavigationView bottomNav = findViewById(R.id.bottom_nav);
 
