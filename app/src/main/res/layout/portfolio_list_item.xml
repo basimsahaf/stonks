@@ -8,7 +8,8 @@
     android:background="?attr/selectableItemBackground"
     android:clickable="true"
     android:focusable="true"
-    android:padding="10sp">
+    android:paddingVertical="@dimen/row_margin"
+    android:paddingHorizontal="@dimen/page_padding_horizontal">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
