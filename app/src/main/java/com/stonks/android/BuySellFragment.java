@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.Fragment;
 import com.google.android.material.button.MaterialButton;
 import com.stonks.android.model.TransactionMode;
+import com.stonks.android.uicomponent.HorizontalNumberPicker;
 
 // Todos:
 // - check if user is able to buy/sell so we can gray out the button accordingly

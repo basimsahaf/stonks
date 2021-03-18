@@ -1,4 +1,4 @@
-package com.stonks.android;
+package com.stonks.android.uicomponent;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -8,10 +8,13 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import androidx.annotation.Nullable;
 import com.google.android.material.button.MaterialButton;
+import com.stonks.android.R;
+import com.stonks.android.model.PickerLiveDataModel;
 
 public class HorizontalNumberPicker extends LinearLayout {
     private final EditText etNumber;
     private int max;
+    private PickerLiveDataModel model;
 
     public HorizontalNumberPicker(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -45,6 +48,7 @@ public class HorizontalNumberPicker extends LinearLayout {
                 newValue = max;
             }
             etNumber.setText(String.valueOf(newValue));
+            model.getNumberOfStocks().setValue(newValue);
         }
     }
 
@@ -73,5 +77,9 @@ public class HorizontalNumberPicker extends LinearLayout {
 
     public void setMax(int max) {
         this.max = max;
+    }
+
+    public void setModel(PickerLiveDataModel hModel) {
+        this.model = hModel;
     }
 }
