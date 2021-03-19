@@ -14,6 +14,7 @@ import androidx.lifecycle.ViewModelProviders;
 import com.google.android.material.button.MaterialButton;
 import com.stonks.android.model.PickerLiveDataModel;
 import com.stonks.android.model.TransactionMode;
+import com.stonks.android.uicomponent.CustomSlideUpDrawer;
 import com.stonks.android.uicomponent.HorizontalNumberPicker;
 import java.util.Locale;
 
@@ -30,6 +31,7 @@ public class BuySellFragment extends Fragment {
     private float currentPrice, availableToTrade;
     private PickerLiveDataModel viewModel;
     private int numSharesOwned;
+    private CustomSlideUpDrawer customSlideUpDrawer;
 
     @Nullable
     @Override
@@ -83,6 +85,12 @@ public class BuySellFragment extends Fragment {
 
         viewModel.getNumberOfStocks().observe(getViewLifecycleOwner(), observer);
         this.numberPicker.setModel(viewModel);
+
+        this.customSlideUpDrawer = getActivity().findViewById(R.id.sliding_layout);
+
+        tradeBtn.setOnClickListener(myView -> {
+            this.customSlideUpDrawer.closeDrawer();
+        });
 
         switchView(mode);
     }

@@ -47,6 +47,8 @@ public class StockFragment extends Fragment {
     private StockData stockData;
     private TextView companyName, open, dailyLow, dailyHigh, yearlyLow, yearlyHigh;
     private FloatingActionButton tryButton;
+    private FloatingActionButton buyButton;
+    private FloatingActionButton sellButton;
     private CustomSlideUpDrawer customSlideUpDrawer;
 
     @Nullable
@@ -149,6 +151,36 @@ public class StockFragment extends Fragment {
                             .addToBackStack(null)
                             .commit();
                 });
+
+        this.buyButton = this.tryButton = view.findViewById(R.id.buy_button);
+        this.sellButton = this.tryButton = view.findViewById(R.id.sell_button);
+
+        this.buyButton.setOnClickListener(v -> {
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("stockData", this.stockData);
+            bundle.putInt("transactionMode", 0);
+            Fragment buyFrag = new HypotheticalFragment();
+            buyFrag.setArguments(bundle);
+            getActivity()
+                    .getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.sliding_drawer, buyFrag, null)
+                    .addToBackStack(null)
+                    .commit();
+        });
+        this.sellButton.setOnClickListener(v -> {
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("stockData", this.stockData);
+            bundle.putInt("transactionMode", 1);
+            Fragment sellFrag = new HypotheticalFragment();
+            sellFrag.setArguments(bundle);
+            getActivity()
+                    .getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.sliding_drawer, sellFrag, null)
+                    .addToBackStack(null)
+                    .commit();
+        });
 
         this.fetchInitialData();
     }
