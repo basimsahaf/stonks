@@ -18,8 +18,6 @@
     <string name="na_value">–</string>
     <string name="username">Username</string>
     <string name="password">Password</string>
-    <string name="login">Log In</string>
-    <string name="login_incorrect_error">Invalid username/password</string>
     <string name="position_title">Position</string>
     <string name="shares_label">Shares</string>
     <string name="market_value_label">Market value</string>
@@ -44,6 +42,13 @@
     <string name="small_dollar_placeholder">$12.20</string>
     <string name="zero_dollar_placeholder">$0.00</string>
     <string name="big_dollar_placeholder">$10,103.20</string>
+
+    <!-- Login Page Strings -->
+    <string name="sign_up_button_label">Sign up</string>
+    <string name="sign_in_button_label">Sign in</string>
+    <string name="login">Login</string>
+    <string name="create_account">Create account</string>
+    <string name="login_incorrect_error">Invalid username/password</string>
 
     <!-- Home Page Strings -->
     <string name="title_activity_home_page">ScrollingActivity</string>
