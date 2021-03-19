@@ -43,7 +43,7 @@ public class HomePageFragment extends Fragment {
         CustomSparkView sparkView = view.findViewById(R.id.stock_chart);
         StockChartAdapter dataAdapter =
                 new StockChartAdapter(
-                        StockActivity.getFakeStockPrices().stream()
+                        StockFragment.getFakeStockPrices().stream()
                                 .map(p -> p.second)
                                 .collect(Collectors.toList()));
         dataAdapter.setBaseline(121.08f);
