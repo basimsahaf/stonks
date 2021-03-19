@@ -159,7 +159,7 @@ public class StockFragment extends Fragment {
             Bundle bundle = new Bundle();
             bundle.putSerializable("stockData", this.stockData);
             bundle.putInt("transactionMode", 0);
-            Fragment buyFrag = new HypotheticalFragment();
+            Fragment buyFrag = new BuySellFragment();
             buyFrag.setArguments(bundle);
             getActivity()
                     .getSupportFragmentManager()
@@ -167,12 +167,13 @@ public class StockFragment extends Fragment {
                     .replace(R.id.sliding_drawer, buyFrag, null)
                     .addToBackStack(null)
                     .commit();
+            customSlideUpDrawer.openDrawer();
         });
         this.sellButton.setOnClickListener(v -> {
             Bundle bundle = new Bundle();
             bundle.putSerializable("stockData", this.stockData);
             bundle.putInt("transactionMode", 1);
-            Fragment sellFrag = new HypotheticalFragment();
+            Fragment sellFrag = new BuySellFragment();
             sellFrag.setArguments(bundle);
             getActivity()
                     .getSupportFragmentManager()
@@ -180,6 +181,7 @@ public class StockFragment extends Fragment {
                     .replace(R.id.sliding_drawer, sellFrag, null)
                     .addToBackStack(null)
                     .commit();
+            customSlideUpDrawer.openDrawer();
         });
 
         this.fetchInitialData();

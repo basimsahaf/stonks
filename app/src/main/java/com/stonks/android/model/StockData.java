@@ -21,7 +21,20 @@ public class StockData implements Serializable {
 
     public StockData(List<BarData> barData, QuoteData quoteData) {
         this.symbol = quoteData.getSymbol();
-        this.companyName = "Company Name";
+        switch (this.symbol) {
+            case "UBER":
+                this.companyName = "Uber";
+                break;
+            case "SHOP":
+                this.companyName = "Shopify";
+                break;
+            case "AMZN":
+                this.companyName = "Amazon";
+                break;
+            default:
+                this.companyName = "Facebook";
+                break;
+        }
         this.currentPrice = barData.get(barData.size() - 1).getClose();
         this.open = barData.get(0).getOpen();
         this.volume = quoteData.getTotalVolume();

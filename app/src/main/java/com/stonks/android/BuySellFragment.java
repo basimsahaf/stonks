@@ -13,6 +13,7 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import com.google.android.material.button.MaterialButton;
 import com.stonks.android.model.PickerLiveDataModel;
+import com.stonks.android.model.StockData;
 import com.stonks.android.model.TransactionMode;
 import com.stonks.android.uicomponent.CustomSlideUpDrawer;
 import com.stonks.android.uicomponent.HorizontalNumberPicker;
@@ -42,8 +43,17 @@ public class BuySellFragment extends Fragment {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES); // force dark mode
 
         // for now; we would get this info from the screen that triggers this
-        mode = TransactionMode.SELL;
-        currentPrice = (float) 232.0;
+        Bundle arg = getArguments();
+        int modeInt = arg.getInt("transactionMode");
+        if (modeInt == 0) {
+            mode = TransactionMode.BUY;
+        } else {
+            mode = TransactionMode.SELL;
+        }
+
+//        StockData stockData = new StockData()
+
+        currentPrice = 1700f;
         numSharesOwned = 103;
         availableToTrade = (float) 19032.23;
 
