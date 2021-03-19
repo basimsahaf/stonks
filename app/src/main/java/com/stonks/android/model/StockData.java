@@ -1,9 +1,10 @@
 package com.stonks.android.model;
 
+import java.io.Serializable;
 import java.util.Comparator;
 import java.util.List;
 
-public class StockData {
+public class StockData implements Serializable {
     private final String symbol;
     private final String companyName;
     private final Float currentPrice;
