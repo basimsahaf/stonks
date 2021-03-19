@@ -13,12 +13,16 @@ import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.stonks.android.adapter.StockChartAdapter;
 import com.stonks.android.adapter.TransactionViewAdapter;
 import com.stonks.android.external.MarketDataService;
 import com.stonks.android.model.*;
+import com.stonks.android.uicomponent.CustomSlideUpDrawer;
 import com.stonks.android.uicomponent.CustomSparkView;
 import com.stonks.android.uicomponent.SpeedDialExtendedFab;
 import com.stonks.android.utility.Constants;
@@ -44,6 +48,8 @@ public class StockFragment extends Fragment {
     private final StockChartAdapter dataAdapter = new StockChartAdapter(new ArrayList<>());
     private StockData stockData;
     private TextView companyName, open, dailyLow, dailyHigh, yearlyLow, yearlyHigh;
+    private FloatingActionButton tryButton;
+    private CustomSlideUpDrawer customSlideUpDrawer;
 
     @Nullable
     @Override
@@ -116,6 +122,33 @@ public class StockFragment extends Fragment {
         if (!this.doesUserPositionExist()) {
             positionContainer.setVisibility(View.GONE);
         }
+
+        this.customSlideUpDrawer = view.findViewById(R.id.sliding_layout);
+
+        this.tryButton = view.findViewById(R.id.try_button);
+        this.tryButton.setOnClickListener(
+                v -> {
+                    customSlideUpDrawer.openDrawer();
+                    Log.d(TAG, "HEIGHT: " + customSlideUpDrawer.getHeight());
+                    Log.d(TAG, "State: " + customSlideUpDrawer.getPanelState());
+                    Log.d(TAG, "Trans: " + customSlideUpDrawer.getTransitionName());
+                    Log.d(TAG, "Panel Height: " + customSlideUpDrawer.getPanelHeight());
+                    Log.d(TAG, "Visibility: " + customSlideUpDrawer.getVisibility());
+                    Log.d(
+                            TAG,
+                            "X y z: "
+                                    + customSlideUpDrawer.getX()
+                                    + " "
+                                    + customSlideUpDrawer.getY()
+                                    + " "
+                                    + customSlideUpDrawer.getZ());
+
+                    Fragment hypotheticalFragment = new HypotheticalFragment();
+                    getActivity().getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.sliding_drawer, hypotheticalFragment, null)
+                            .addToBackStack(null)
+                            .commit();
+                });
 
         this.fetchInitialData();
     }

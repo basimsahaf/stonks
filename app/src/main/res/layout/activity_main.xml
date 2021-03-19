@@ -1,4 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
+<com.stonks.android.uicomponent.CustomSlideUpDrawer
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:sothree="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/sliding_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="bottom"
+    android:elevation="6dp"
+    style="@style/AppTheme.SlidingDrawer"
+    sothree:umanoPanelHeight="68dp"
+    sothree:umanoShadowHeight="4dp" >
 <androidx.constraintlayout.widget.ConstraintLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
@@ -28,3 +39,12 @@
     />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+    <ScrollView
+        android:id="@+id/sliding_drawer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center|top"
+        android:text="The Awesome Sliding Up Panel"
+        android:elevation="6dp"
+        android:textSize="16sp" />
+</com.stonks.android.uicomponent.CustomSlideUpDrawer>
