@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="20sp"
     tools:context=".SettingsFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -18,6 +17,8 @@
             style="@style/AppTheme.TextAppearance.XXLLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:paddingTop="@dimen/page_padding_vertical"
+            android:paddingLeft="@dimen/page_padding_horizontal"
             android:text="@string/settings"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -27,7 +28,8 @@
             style="@style/AppTheme.TextAppearance.XLLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginVertical="10sp"
+            android:paddingVertical="@dimen/label_margin"
+            android:paddingLeft="@dimen/page_padding_horizontal"
             android:text="@string/account_info"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toBottomOf="@id/settings_header" />
@@ -37,6 +39,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="?attr/selectableItemBackground"
+            android:paddingHorizontal="@dimen/page_padding_horizontal"
+            android:paddingVertical="@dimen/row_margin"
             android:clickable="true"
             android:focusable="true"
             app:layout_constraintLeft_toLeftOf="parent"
@@ -47,8 +51,6 @@
                 style="@style/AppTheme.TextAppearance.LargeLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingVertical="10sp"
-                android:paddingLeft="10sp"
                 android:text="@string/email"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -80,6 +82,8 @@
             android:id="@+id/password_setting"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:paddingHorizontal="@dimen/page_padding_horizontal"
+            android:paddingVertical="@dimen/row_margin"
             android:background="?attr/selectableItemBackground"
             android:clickable="true"
             android:focusable="true"
@@ -91,8 +95,6 @@
                 style="@style/AppTheme.TextAppearance.LargeLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingVertical="10sp"
-                android:paddingLeft="10sp"
                 android:text="@string/password"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -112,6 +114,8 @@
             android:id="@+id/biometrics_setting"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:paddingHorizontal="@dimen/page_padding_horizontal"
+            android:paddingVertical="@dimen/row_margin"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toBottomOf="@id/password_setting">
 
@@ -120,11 +124,10 @@
                 style="@style/AppTheme.TextAppearance.LargeLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingVertical="10sp"
-                android:paddingLeft="10sp"
                 android:text="@string/use_bio"
                 app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"/>
 
             <CheckBox
                 android:layout_width="wrap_content"
@@ -140,7 +143,8 @@
             style="@style/AppTheme.TextAppearance.XLLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginVertical="10sp"
+            android:paddingLeft="@dimen/page_padding_horizontal"
+            android:paddingVertical="@dimen/label_margin"
             android:text="@string/portfolio_settings"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toBottomOf="@id/biometrics_setting" />
@@ -149,6 +153,8 @@
             android:id="@+id/money_setting"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:paddingHorizontal="@dimen/page_padding_horizontal"
+            android:paddingVertical="@dimen/row_margin"
             android:background="?attr/selectableItemBackground"
             android:clickable="true"
             android:focusable="true"
@@ -160,8 +166,6 @@
                 style="@style/AppTheme.TextAppearance.LargeLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingVertical="10sp"
-                android:paddingLeft="10sp"
                 android:text="@string/starting_amount"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
