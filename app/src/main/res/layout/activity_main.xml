@@ -8,6 +8,7 @@
     android:gravity="bottom"
     android:elevation="6dp"
     style="@style/AppTheme.SlidingDrawer"
+    sothree:umanoScrollableView="@id/sliding_drawer"
     sothree:umanoPanelHeight="68dp"
     sothree:umanoShadowHeight="4dp" >
 <androidx.constraintlayout.widget.ConstraintLayout

@@ -123,7 +123,7 @@ public class StockFragment extends Fragment {
             positionContainer.setVisibility(View.GONE);
         }
 
-        this.customSlideUpDrawer = view.findViewById(R.id.sliding_layout);
+        this.customSlideUpDrawer = getActivity().findViewById(R.id.sliding_layout);
 
         this.tryButton = view.findViewById(R.id.try_button);
         this.tryButton.setOnClickListener(
