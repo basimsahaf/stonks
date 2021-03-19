@@ -1,12 +1,14 @@
 package com.stonks.android.adapter;
 
-import android.content.Intent;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
+import com.stonks.android.MainActivity;
 import com.stonks.android.R;
 import com.stonks.android.StockFragment;
 import com.stonks.android.model.PortfolioListItem;
@@ -29,8 +31,21 @@ public class PortfolioRecyclerViewAdapter
 
         view.setOnClickListener(
                 v -> {
-                    Intent intent = new Intent(v.getContext(), StockFragment.class);
-                    v.getContext().startActivity(intent);
+                    TextView stockSymbolTextView = v.findViewById(R.id.stock_symbol);
+                    Fragment stockFragment = new StockFragment();
+                    Bundle bundle = new Bundle();
+                    bundle.putString(
+                            view.getContext().getString(R.string.intent_extra_symbol),
+                            String.valueOf(stockSymbolTextView.getText()));
+                    stockFragment.setArguments(bundle);
+
+                    // this feels dangerous
+                    ((MainActivity) v.getContext())
+                            .getSupportFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.fragment_container, stockFragment)
+                            .addToBackStack(null)
+                            .commit();
                 });
 
         return new PortfolioRecyclerViewAdapter.ViewHolder(view);
