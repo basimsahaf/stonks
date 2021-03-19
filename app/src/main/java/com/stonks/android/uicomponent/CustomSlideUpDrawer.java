@@ -1,6 +1,7 @@
 package com.stonks.android.uicomponent;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.util.AttributeSet;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
@@ -23,6 +24,7 @@ public class CustomSlideUpDrawer extends SlidingUpPanelLayout {
         setPanelHeight(0);
         setAnchorPoint(0.8f);
         setPanelState(PanelState.COLLAPSED);
+        setBackgroundColor(Color.TRANSPARENT);
     }
 
     public void openDrawer() {

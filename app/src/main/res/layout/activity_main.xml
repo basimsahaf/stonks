@@ -10,7 +10,7 @@
     style="@style/AppTheme.SlidingDrawer"
     sothree:umanoScrollableView="@id/sliding_drawer"
     sothree:umanoPanelHeight="68dp"
-    sothree:umanoShadowHeight="4dp" >
+    sothree:umanoShadowHeight="0dp" >
 <androidx.constraintlayout.widget.ConstraintLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
@@ -45,7 +45,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center|top"
-        android:text="The Awesome Sliding Up Panel"
         android:elevation="6dp"
         android:textSize="16sp" />
 </com.stonks.android.uicomponent.CustomSlideUpDrawer>

@@ -6,6 +6,7 @@
         tools:context=".HypotheticalFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@drawable/slide_up_drawer"
         android:padding="20sp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
