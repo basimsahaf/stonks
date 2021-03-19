@@ -73,7 +73,7 @@ public class HypotheticalFragment extends Fragment {
     @Override
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-//        this.currentPrice = Float.parseFloat(getArguments().getString("currentPrice"));
+        //        this.currentPrice = Float.parseFloat(getArguments().getString("currentPrice"));
         View view = inflater.inflate(R.layout.fragment_hypothetical, container, false);
         return view;
     }

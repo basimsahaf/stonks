@@ -13,10 +13,8 @@ import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.stonks.android.adapter.StockChartAdapter;
 import com.stonks.android.adapter.TransactionViewAdapter;
@@ -144,7 +142,9 @@ public class StockFragment extends Fragment {
                                     + customSlideUpDrawer.getZ());
 
                     Fragment hypotheticalFragment = new HypotheticalFragment();
-                    getActivity().getSupportFragmentManager().beginTransaction()
+                    getActivity()
+                            .getSupportFragmentManager()
+                            .beginTransaction()
                             .replace(R.id.sliding_drawer, hypotheticalFragment, null)
                             .addToBackStack(null)
                             .commit();
