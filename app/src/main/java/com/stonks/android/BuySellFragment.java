@@ -13,7 +13,6 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import com.google.android.material.button.MaterialButton;
 import com.stonks.android.model.PickerLiveDataModel;
-import com.stonks.android.model.StockData;
 import com.stonks.android.model.TransactionMode;
 import com.stonks.android.uicomponent.CustomSlideUpDrawer;
 import com.stonks.android.uicomponent.HorizontalNumberPicker;
@@ -51,9 +50,9 @@ public class BuySellFragment extends Fragment {
             mode = TransactionMode.SELL;
         }
 
-//        StockData stockData = new StockData()
+        //        StockData stockData = new StockData()
 
-        currentPrice = 1700f;
+        currentPrice = 1117.54f;
         numSharesOwned = 103;
         availableToTrade = (float) 19032.23;
 
@@ -66,6 +65,7 @@ public class BuySellFragment extends Fragment {
 
         buyBtn = getView().findViewById(R.id.buy_mode_button);
         sellBtn = getView().findViewById(R.id.sell_mode_button);
+        MaterialButton cancelBtn = getView().findViewById(R.id.cancel_btn);
         buyBtn.setOnClickListener(
                 myView -> {
                     switchView(TransactionMode.BUY);
@@ -98,9 +98,15 @@ public class BuySellFragment extends Fragment {
 
         this.customSlideUpDrawer = getActivity().findViewById(R.id.sliding_layout);
 
-        tradeBtn.setOnClickListener(myView -> {
-            this.customSlideUpDrawer.closeDrawer();
-        });
+        tradeBtn.setOnClickListener(
+                myView -> {
+                    this.customSlideUpDrawer.closeDrawer();
+                });
+
+        cancelBtn.setOnClickListener(
+                myView -> {
+                    this.customSlideUpDrawer.closeDrawer();
+                });
 
         switchView(mode);
     }

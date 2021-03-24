@@ -33,6 +33,6 @@ public class CustomSlideUpDrawer extends SlidingUpPanelLayout {
 
     public void closeDrawer() {
         smoothToBottom();
-        setPanelState(PanelState.HIDDEN);
+        setPanelState(PanelState.COLLAPSED);
     }
 }

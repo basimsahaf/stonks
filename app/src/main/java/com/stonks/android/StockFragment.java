@@ -89,11 +89,12 @@ public class StockFragment extends Fragment {
 
         RecyclerView.LayoutManager transactionListManager = new LinearLayoutManager(getContext());
         this.transactionList.setLayoutManager(transactionListManager);
-        this.transactionListAdapter = new TransactionViewAdapter(getFakeTransactions());
-        this.transactionList.setAdapter(this.transactionListAdapter);
 
         this.symbol = getArguments().getString(getString(R.string.intent_extra_symbol));
         this.textViewSymbol.setText(this.symbol);
+        this.transactionListAdapter =
+                new TransactionViewAdapter(this.getFakeTransactionsForStock());
+        this.transactionList.setAdapter(this.transactionListAdapter);
 
         CustomSparkView sparkView = view.findViewById(R.id.stock_chart);
 
@@ -155,34 +156,36 @@ public class StockFragment extends Fragment {
         this.buyButton = this.tryButton = view.findViewById(R.id.buy_button);
         this.sellButton = this.tryButton = view.findViewById(R.id.sell_button);
 
-        this.buyButton.setOnClickListener(v -> {
-            Bundle bundle = new Bundle();
-            bundle.putSerializable("stockData", this.stockData);
-            bundle.putInt("transactionMode", 0);
-            Fragment buyFrag = new BuySellFragment();
-            buyFrag.setArguments(bundle);
-            getActivity()
-                    .getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.sliding_drawer, buyFrag, null)
-                    .addToBackStack(null)
-                    .commit();
-            customSlideUpDrawer.openDrawer();
-        });
-        this.sellButton.setOnClickListener(v -> {
-            Bundle bundle = new Bundle();
-            bundle.putSerializable("stockData", this.stockData);
-            bundle.putInt("transactionMode", 1);
-            Fragment sellFrag = new BuySellFragment();
-            sellFrag.setArguments(bundle);
-            getActivity()
-                    .getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.sliding_drawer, sellFrag, null)
-                    .addToBackStack(null)
-                    .commit();
-            customSlideUpDrawer.openDrawer();
-        });
+        this.buyButton.setOnClickListener(
+                v -> {
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable("stockData", this.stockData);
+                    bundle.putInt("transactionMode", 0);
+                    Fragment buyFrag = new BuySellFragment();
+                    buyFrag.setArguments(bundle);
+                    getActivity()
+                            .getSupportFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.sliding_drawer, buyFrag, null)
+                            .addToBackStack(null)
+                            .commit();
+                    customSlideUpDrawer.openDrawer();
+                });
+        this.sellButton.setOnClickListener(
+                v -> {
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable("stockData", this.stockData);
+                    bundle.putInt("transactionMode", 1);
+                    Fragment sellFrag = new BuySellFragment();
+                    sellFrag.setArguments(bundle);
+                    getActivity()
+                            .getSupportFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.sliding_drawer, sellFrag, null)
+                            .addToBackStack(null)
+                            .commit();
+                    customSlideUpDrawer.openDrawer();
+                });
 
         this.fetchInitialData();
     }
@@ -269,19 +272,40 @@ public class StockFragment extends Fragment {
         return false;
     }
 
-    public static ArrayList<Transaction> getFakeTransactions() {
+    public ArrayList<Transaction> getFakeTransactionsForStock() {
         ArrayList<Transaction> list = new ArrayList<>();
 
         list.add(
                 new Transaction(
-                        "UBER",
+                        this.symbol,
                         100,
                         56.92f,
                         "buy",
                         LocalDateTime.of(2020, Month.AUGUST, 19, 13, 14)));
         list.add(
                 new Transaction(
-                        "UBER",
+                        this.symbol,
+                        268,
+                        36.47f,
+                        "buy",
+                        LocalDateTime.of(2020, Month.AUGUST, 1, 9, 52)));
+
+        return list;
+    }
+
+    public static ArrayList<Transaction> getFakeTransactions() {
+        ArrayList<Transaction> list = new ArrayList<>();
+
+        list.add(
+                new Transaction(
+                        "SHOP",
+                        100,
+                        56.92f,
+                        "buy",
+                        LocalDateTime.of(2020, Month.AUGUST, 19, 13, 14)));
+        list.add(
+                new Transaction(
+                        "SHOP",
                         268,
                         36.47f,
                         "buy",
