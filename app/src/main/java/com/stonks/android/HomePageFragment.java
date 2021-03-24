@@ -1,9 +1,13 @@
 package com.stonks.android;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -39,6 +43,40 @@ public class HomePageFragment extends Fragment {
         RecyclerView.Adapter portfolioListAdapter =
                 new PortfolioRecyclerViewAdapter(this.getMockItems());
         portfolioList.setAdapter(portfolioListAdapter);
+
+        NestedScrollView scrollView = view.findViewById(R.id.scroll_view);
+        ConstraintLayout currentInfoHeader = view.findViewById(R.id.current_info_header);
+
+        currentInfoHeader
+                .getViewTreeObserver()
+                .addOnGlobalLayoutListener(
+                        new ViewTreeObserver.OnGlobalLayoutListener() {
+                            @Override
+                            public void onGlobalLayout() {
+                                currentInfoHeader
+                                        .getViewTreeObserver()
+                                        .removeOnGlobalLayoutListener(this);
+                                Log.d("initial data accurate:", currentInfoHeader.getHeight() + "");
+                            }
+                        });
+
+        int[] locWindow = {-1, -1};
+
+        currentInfoHeader.getLocationInWindow(locWindow);
+        int initialOffset = locWindow[1];
+        int height = currentInfoHeader.getHeight();
+
+        Log.d("Initial numbers - offset: ", initialOffset + " and height: " + height);
+
+        scrollView.setOnScrollChangeListener(
+                (View.OnScrollChangeListener)
+                        (view1, scrollX, scrollY, oldScrollX, oldScrollY) -> {
+                            currentInfoHeader.getLocationInWindow(locWindow);
+
+                            Log.d("Scrollbar", scrollX + ", " + scrollY);
+                            Log.d("Window", locWindow[0] + ", " + locWindow[1]);
+                            Log.d("Height", currentInfoHeader.getHeight() + "");
+                        });
 
         CustomSparkView sparkView = view.findViewById(R.id.stock_chart);
         StockChartAdapter dataAdapter =
