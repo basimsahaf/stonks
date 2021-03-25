@@ -68,8 +68,6 @@ public class LoginActivity extends BaseActivity {
                     usernameField.getEditText().setText("");
                     passwordField.getEditText().setText("");
 
-                    // errorMessage.setVisibility(View.VISIBLE);
-
                     Intent intent = new Intent(this, MainActivity.class);
                     startActivity(intent);
                 });

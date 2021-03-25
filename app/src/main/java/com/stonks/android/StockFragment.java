@@ -160,7 +160,7 @@ public class StockFragment extends Fragment {
                 v -> {
                     Bundle bundle = new Bundle();
                     bundle.putSerializable("stockData", this.stockData);
-                    bundle.putInt("transactionMode", 0);
+                    bundle.putSerializable("transactionMode", TransactionMode.BUY);
                     Fragment buyFrag = new BuySellFragment();
                     buyFrag.setArguments(bundle);
                     getActivity()

@@ -13,6 +13,8 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import com.google.android.material.button.MaterialButton;
 import com.stonks.android.model.PickerLiveDataModel;
+import com.stonks.android.model.StockData;
+import com.stonks.android.model.Transaction;
 import com.stonks.android.model.TransactionMode;
 import com.stonks.android.uicomponent.CustomSlideUpDrawer;
 import com.stonks.android.uicomponent.HorizontalNumberPicker;
@@ -43,16 +45,14 @@ public class BuySellFragment extends Fragment {
 
         // for now; we would get this info from the screen that triggers this
         Bundle arg = getArguments();
-        int modeInt = arg.getInt("transactionMode");
-        if (modeInt == 0) {
-            mode = TransactionMode.BUY;
-        } else {
-            mode = TransactionMode.SELL;
-        }
 
-        //        StockData stockData = new StockData()
+        mode = (TransactionMode) arg.getSerializable("transactionMode");
 
-        currentPrice = 1117.54f;
+        StockData stockData = (StockData) arg.getSerializable("stockData");
+
+        currentPrice = stockData.getCurrentPrice();
+
+        // TODO: get these variables from Bundle
         numSharesOwned = 103;
         availableToTrade = (float) 19032.23;
 
