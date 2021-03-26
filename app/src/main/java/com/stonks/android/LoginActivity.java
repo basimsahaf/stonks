@@ -116,7 +116,7 @@ public class LoginActivity extends BaseActivity {
         field.getEditText().addTextChangedListener(textWatcher);
     }
 
-    private void updateUiWithUser(LoggedInUserView model) {
+    private void showLoginSucceeded(LoggedInUserView model) {
         String welcome = getString(R.string.welcome) + model.getDisplayName();
         Toast.makeText(getApplicationContext(), welcome, Toast.LENGTH_LONG).show();
         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
@@ -166,7 +166,7 @@ public class LoginActivity extends BaseActivity {
                                 showLoginFailed(loginResult.getError());
                             }
                             if (loginResult.getSuccess() != null) {
-                                updateUiWithUser(loginResult.getSuccess());
+                                showLoginSucceeded(loginResult.getSuccess());
                             }
                             setResult(Activity.RESULT_OK);
                         });
