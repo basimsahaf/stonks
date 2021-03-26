@@ -1,6 +1,6 @@
 package com.stonks.android.model;
 
-import com.stonks.android.storage.tables.UserTable;
+import com.stonks.android.storage.UserTable;
 import java.io.IOException;
 
 /** Class that handles authentication w/ login credentials and retrieves user information. */

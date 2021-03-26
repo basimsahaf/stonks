@@ -18,16 +18,16 @@ import com.stonks.android.model.LoggedInUserView;
 import com.stonks.android.model.LoginDataSource;
 import com.stonks.android.model.LoginRepository;
 import com.stonks.android.model.LoginViewModel;
-import com.stonks.android.storage.tables.UserTable;
+import com.stonks.android.storage.UserTable;
 
 public class LoginActivity extends BaseActivity {
 
     final String TAG = this.getClass().getSimpleName();
 
-    Button loginButton;
-    TextInputLayout usernameField;
-    TextInputLayout passwordField;
-    TextView errorMessage;
+    private Button loginButton;
+    private TextInputLayout usernameField;
+    private TextInputLayout passwordField;
+    private TextView errorMessage;
     private LoginViewModel loginViewModel;
 
     @Override
@@ -44,86 +44,10 @@ public class LoginActivity extends BaseActivity {
         passwordField = findViewById(R.id.password_field);
         errorMessage = findViewById(R.id.error_message);
 
-        loginViewModel
-                .getLoginFormState()
-                .observe(
-                        this,
-                        loginFormState -> {
-                            if (loginFormState == null) {
-                                return;
-                            }
-                            loginButton.setEnabled(loginFormState.isDataValid());
-                            if (loginFormState.getUsernameError() != null) {
-                                Log.d(TAG, "Error username");
-                                usernameField.setError(
-                                        getString(loginFormState.getUsernameError()));
-                            } else {
-                                usernameField.setError(null);
-                            }
-                            if (loginFormState.getPasswordError() != null) {
-                                passwordField.setError(
-                                        getString(loginFormState.getPasswordError()));
-                            } else {
-                                passwordField.setError(null);
-                            }
-                        });
+        setLoginViewModelListeners();
+        setTextWatcher(usernameField);
+        setTextWatcher(passwordField);
 
-        loginViewModel
-                .getLoginResult()
-                .observe(
-                        this,
-                        loginResult -> {
-                            if (loginResult == null) {
-                                return;
-                            }
-                            if (loginResult.getError() != null) {
-                                showLoginFailed(loginResult.getError());
-                            }
-                            if (loginResult.getSuccess() != null) {
-                                updateUiWithUser(loginResult.getSuccess());
-                            }
-                            setResult(Activity.RESULT_OK);
-                        });
-
-        TextWatcher usernameListener =
-                new TextWatcher() {
-                    @Override
-                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                        // ignore
-                    }
-
-                    @Override
-                    public void onTextChanged(CharSequence s, int start, int before, int count) {
-                        // ignore
-                    }
-
-                    @Override
-                    public void afterTextChanged(Editable s) {
-                        loginViewModel.usernameChanged(
-                                usernameField.getEditText().getText().toString());
-                    }
-                };
-
-        TextWatcher passswordListener =
-                new TextWatcher() {
-                    @Override
-                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                        // ignore
-                    }
-
-                    @Override
-                    public void onTextChanged(CharSequence s, int start, int before, int count) {
-                        // ignore
-                    }
-
-                    @Override
-                    public void afterTextChanged(Editable s) {
-                        loginViewModel.passwordChanged(
-                                passwordField.getEditText().getText().toString());
-                    }
-                };
-        usernameField.getEditText().addTextChangedListener(usernameListener);
-        passwordField.getEditText().addTextChangedListener(passswordListener);
         passwordField
                 .getEditText()
                 .setOnEditorActionListener(
@@ -160,6 +84,38 @@ public class LoginActivity extends BaseActivity {
                 });
     }
 
+    private void setTextWatcher(TextInputLayout field) {
+
+        TextWatcher textWatcher = new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                // ignore
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                // ignore
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (field == usernameField) {
+                    loginViewModel.usernameChanged(
+                            field.getEditText().getText().toString());
+                } else {
+                    loginViewModel.passwordChanged(
+                            field.getEditText().getText().toString());
+                }
+            }
+
+
+
+
+        };
+
+        field.getEditText().addTextChangedListener(textWatcher);
+    }
+
     private void updateUiWithUser(LoggedInUserView model) {
         String welcome = getString(R.string.welcome) + model.getDisplayName();
         Toast.makeText(getApplicationContext(), welcome, Toast.LENGTH_LONG).show();
@@ -169,5 +125,50 @@ public class LoginActivity extends BaseActivity {
 
     private void showLoginFailed(@StringRes Integer errorString) {
         Toast.makeText(getApplicationContext(), errorString, Toast.LENGTH_SHORT).show();
+    }
+
+    private void setLoginViewModelListeners() {
+        loginViewModel
+                .getLoginFormState()
+                .observe(
+                        this,
+                        loginFormState -> {
+                            if (loginFormState == null) {
+                                return;
+                            }
+                            loginButton.setEnabled(loginFormState.isDataValid());
+                            if (loginFormState.getUsernameError() != null) {
+                                Log.d(TAG, "Error username");
+                                usernameField.setError(
+                                        getString(loginFormState.getUsernameError()));
+                                loginButton.setClickable(false);
+                            } else {
+                                usernameField.setError(null);
+//                                loginButton.setClickable(true);
+                            }
+                            if (loginFormState.getPasswordError() != null) {
+                                passwordField.setError(
+                                        getString(loginFormState.getPasswordError()));
+                            } else {
+                                passwordField.setError(null);
+                            }
+                        });
+
+        loginViewModel
+                .getLoginResult()
+                .observe(
+                        this,
+                        loginResult -> {
+                            if (loginResult == null) {
+                                return;
+                            }
+                            if (loginResult.getError() != null) {
+                                showLoginFailed(loginResult.getError());
+                            }
+                            if (loginResult.getSuccess() != null) {
+                                updateUiWithUser(loginResult.getSuccess());
+                            }
+                            setResult(Activity.RESULT_OK);
+                        });
     }
 }
