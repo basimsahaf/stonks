@@ -6,7 +6,6 @@
         tools:context=".HypotheticalFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/slide_up_drawer"
         android:padding="20sp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -18,7 +17,7 @@
                 style="@style/AppTheme.TextAppearance.SmallLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="SHOP"
+                android:text="@string/sym_placeholder"
                 android:layout_marginTop="@dimen/section_divider_margin"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -28,7 +27,7 @@
                 style="@style/AppTheme.TextAppearance.XXLLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Shopify"
+                android:text="@string/company_name_placeholder"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/stock_symbol" />
 

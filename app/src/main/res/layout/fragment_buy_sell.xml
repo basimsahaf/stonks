@@ -57,7 +57,7 @@
                 style="@style/AppTheme.TextAppearance.SmallLabelSecondary"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="SHOP"
+                android:text="@string/sym_placeholder"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -67,7 +67,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/label_margin"
-                android:text="Shopify"
+                android:text="@string/company_name_placeholder"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/stock_symbol" />
 
