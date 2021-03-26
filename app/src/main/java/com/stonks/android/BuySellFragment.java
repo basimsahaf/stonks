@@ -14,7 +14,6 @@ import androidx.lifecycle.ViewModelProviders;
 import com.google.android.material.button.MaterialButton;
 import com.stonks.android.model.PickerLiveDataModel;
 import com.stonks.android.model.StockData;
-import com.stonks.android.model.Transaction;
 import com.stonks.android.model.TransactionMode;
 import com.stonks.android.uicomponent.CustomSlideUpDrawer;
 import com.stonks.android.uicomponent.HorizontalNumberPicker;
