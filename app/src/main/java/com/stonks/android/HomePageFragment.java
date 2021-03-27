@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.os.Parcel;
 import android.text.*;
 import android.text.style.ForegroundColorSpan;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,7 +21,7 @@ import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 public class HomePageFragment extends BaseFragment {
-    int currentInfoHeaderHeight = -1, currentInfoHeaderOffset = -1;
+    private int currentInfoHeaderHeight = -1;
 
     @Override
     public View onCreateView(
@@ -55,22 +54,15 @@ public class HomePageFragment extends BaseFragment {
                                         .removeOnGlobalLayoutListener(this);
                                 currentInfoHeaderHeight = currentInfoHeader.getHeight();
                                 currentInfoHeader.getLocationInWindow(locWindow);
-                                currentInfoHeaderOffset = locWindow[1];
-                                Log.d(
-                                        "initial data accurate:",
-                                        currentInfoHeaderHeight + ", " + currentInfoHeaderOffset);
                             }
                         });
 
-        getActionBar().setDisplayShowTitleEnabled(true);
-        getActionBar().setDisplayHomeAsUpEnabled(false);
-        AlphaForegroundColorSpan colorSpan = new AlphaForegroundColorSpan(Color.WHITE);
-        colorSpan.setAlpha(0);
-        Spannable actionBarTitle = new SpannableString("Portfolio $129.32");
+        MainActivity activity = (MainActivity) getActivity();
 
-        actionBarTitle.setSpan(
-                colorSpan, 0, actionBarTitle.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        getActionBar().setTitle(actionBarTitle);
+        getActionBar().setDisplayHomeAsUpEnabled(false);
+
+        activity.setActionBarCustomViewAlpha(0);
+        activity.setPortfolioValue(129.32f);
 
         scrollView.setOnScrollChangeListener(
                 (View.OnScrollChangeListener)
@@ -84,13 +76,7 @@ public class HomePageFragment extends BaseFragment {
                                                                     - scrollY)
                                                     / currentInfoHeaderHeight));
 
-                            colorSpan.setAlpha(alpha);
-                            actionBarTitle.setSpan(
-                                    colorSpan,
-                                    0,
-                                    actionBarTitle.length(),
-                                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                            getActionBar().setTitle(actionBarTitle);
+                            activity.setActionBarCustomViewAlpha(alpha);
                         });
 
         CustomSparkView sparkView = view.findViewById(R.id.stock_chart);

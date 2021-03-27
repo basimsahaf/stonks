@@ -1,15 +1,20 @@
 package com.stonks.android;
 
+import android.content.Context;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
+import com.stonks.android.utility.Formatters;
 
 public class MainActivity extends AppCompatActivity {
-
     private SlidingUpPanelLayout slidingUpPanel;
 
     @Override
@@ -44,14 +49,57 @@ public class MainActivity extends AppCompatActivity {
                     return true;
                 });
 
+        LayoutInflater inflator =
+                (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View actionBarView = inflator.inflate(R.layout.actionbar_layout, null);
+
         // each fragment can update these properties as needed
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
+        getSupportActionBar().setDisplayShowCustomEnabled(true);
+        getSupportActionBar().setCustomView(actionBarView);
 
         // initializing sliding drawer
         slidingUpPanel = findViewById(R.id.sliding_layout);
         slidingUpPanel.setPanelHeight(0);
         slidingUpPanel.setAnchorPoint(1.0f);
+    }
+
+    public void setPortfolioValue(float value) {
+        TextView globalTitle =
+                getSupportActionBar().getCustomView().findViewById(R.id.global_title);
+
+        LinearLayout portfolioTitle =
+                getSupportActionBar().getCustomView().findViewById(R.id.portfolio_title);
+
+        globalTitle.setVisibility(View.GONE);
+        portfolioTitle.setVisibility(View.VISIBLE);
+
+        updatePortfolioValue(value);
+    }
+
+    public void updatePortfolioValue(float value) {
+        TextView currentValue =
+                getSupportActionBar().getCustomView().findViewById(R.id.current_value);
+        currentValue.setText(Formatters.formatPrice(value));
+    }
+
+    public void setGlobalTitle(String title) {
+        TextView globalTitle =
+                getSupportActionBar().getCustomView().findViewById(R.id.global_title);
+        globalTitle.setText(title);
+
+        LinearLayout portfolioTitle =
+                getSupportActionBar().getCustomView().findViewById(R.id.portfolio_title);
+
+        portfolioTitle.setVisibility(View.GONE);
+        globalTitle.setVisibility(View.VISIBLE);
+    }
+
+    public void setActionBarCustomViewAlpha(float alpha) {
+        LinearLayout portfolioTitle =
+                getSupportActionBar().getCustomView().findViewById(R.id.portfolio_title);
+        portfolioTitle.setAlpha(alpha);
     }
 
     private void switchFragment(Fragment fragment) {

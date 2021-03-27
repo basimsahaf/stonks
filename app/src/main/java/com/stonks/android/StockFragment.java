@@ -88,9 +88,11 @@ public class StockFragment extends BaseFragment {
         this.transactionList.setLayoutManager(transactionListManager);
 
         this.symbol = getArguments().getString(getString(R.string.intent_extra_symbol));
-        getActionBar().setDisplayShowTitleEnabled(true);
+
+        MainActivity activity = (MainActivity) getActivity();
+
         getActionBar().setDisplayHomeAsUpEnabled(true);
-        getActionBar().setTitle(this.symbol);
+        activity.setGlobalTitle(this.symbol);
         this.textViewSymbol.setText(this.symbol);
         this.transactionListAdapter =
                 new TransactionViewAdapter(this.getFakeTransactionsForStock());
