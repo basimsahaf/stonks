@@ -21,6 +21,7 @@ public class StockData implements Serializable {
 
     public StockData(List<BarData> barData, QuoteData quoteData) {
         this.symbol = quoteData.getSymbol();
+        // TODO: define this.companyName
         switch (this.symbol) {
             case "UBER":
                 this.companyName = "Uber";
