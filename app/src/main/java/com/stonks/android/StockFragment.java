@@ -128,7 +128,7 @@ public class StockFragment extends Fragment {
                     Fragment hypotheticalFragment = new HypotheticalFragment();
 
                     Bundle bundle = new Bundle();
-                    bundle.putFloat("currentPrice", stockData.getCurrentPrice());
+                    bundle.putFloat(BuySellFragment.CURRENT_PRICE_ARG, stockData.getCurrentPrice());
                     getActivity()
                             .getSupportFragmentManager()
                             .beginTransaction()
@@ -143,8 +143,8 @@ public class StockFragment extends Fragment {
         this.buyButton.setOnClickListener(
                 v -> {
                     Bundle bundle = new Bundle();
-                    bundle.putSerializable("stockData", this.stockData);
-                    bundle.putSerializable("transactionMode", TransactionMode.BUY);
+                    bundle.putSerializable(BuySellFragment.STOCK_DATA_ARG, this.stockData);
+                    bundle.putSerializable(BuySellFragment.TRANSACTION_MODE_ARG, TransactionMode.BUY);
                     Fragment buyFrag = new BuySellFragment();
                     buyFrag.setArguments(bundle);
                     getActivity()
@@ -157,8 +157,8 @@ public class StockFragment extends Fragment {
         this.sellButton.setOnClickListener(
                 v -> {
                     Bundle bundle = new Bundle();
-                    bundle.putSerializable("stockData", this.stockData);
-                    bundle.putSerializable("transactionMode", TransactionMode.SELL);
+                    bundle.putSerializable(BuySellFragment.STOCK_DATA_ARG, this.stockData);
+                    bundle.putSerializable(BuySellFragment.TRANSACTION_MODE_ARG, TransactionMode.BUY);
                     Fragment sellFrag = new BuySellFragment();
                     sellFrag.setArguments(bundle);
                     getActivity()
