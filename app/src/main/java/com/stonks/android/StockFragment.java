@@ -12,7 +12,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.widget.NestedScrollView;
-import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -32,7 +31,7 @@ import java.time.Month;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class StockFragment extends Fragment {
+public class StockFragment extends BaseFragment {
     private static String TAG = StockFragment.class.getCanonicalName();
 
     private String symbol;
@@ -89,6 +88,9 @@ public class StockFragment extends Fragment {
         this.transactionList.setLayoutManager(transactionListManager);
 
         this.symbol = getArguments().getString(getString(R.string.intent_extra_symbol));
+        getActionBar().setDisplayShowTitleEnabled(true);
+        getActionBar().setDisplayHomeAsUpEnabled(true);
+        getActionBar().setTitle(this.symbol);
         this.textViewSymbol.setText(this.symbol);
         this.transactionListAdapter =
                 new TransactionViewAdapter(this.getFakeTransactionsForStock());

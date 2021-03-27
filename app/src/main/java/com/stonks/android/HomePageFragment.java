@@ -1,6 +1,10 @@
 package com.stonks.android;
 
+import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Parcel;
+import android.text.*;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,7 +12,6 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.widget.NestedScrollView;
-import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.stonks.android.adapter.PortfolioRecyclerViewAdapter;
@@ -18,15 +21,8 @@ import com.stonks.android.uicomponent.CustomSparkView;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
-public class HomePageFragment extends Fragment {
-    public HomePageFragment() {}
-
-    public static HomePageFragment newInstance() {
-        HomePageFragment fragment = new HomePageFragment();
-        Bundle args = new Bundle();
-        fragment.setArguments(args);
-        return fragment;
-    }
+public class HomePageFragment extends BaseFragment {
+    int currentInfoHeaderHeight = -1, currentInfoHeaderOffset = -1;
 
     @Override
     public View onCreateView(
@@ -46,6 +42,7 @@ public class HomePageFragment extends Fragment {
 
         NestedScrollView scrollView = view.findViewById(R.id.scroll_view);
         ConstraintLayout currentInfoHeader = view.findViewById(R.id.current_info_header);
+        int[] locWindow = {-1, -1};
 
         currentInfoHeader
                 .getViewTreeObserver()
@@ -56,29 +53,49 @@ public class HomePageFragment extends Fragment {
                                 currentInfoHeader
                                         .getViewTreeObserver()
                                         .removeOnGlobalLayoutListener(this);
-                                Log.d("initial data accurate:", currentInfoHeader.getHeight() + "");
+                                currentInfoHeaderHeight = currentInfoHeader.getHeight();
+                                currentInfoHeader.getLocationInWindow(locWindow);
+                                currentInfoHeaderOffset = locWindow[1];
+                                Log.d(
+                                        "initial data accurate:",
+                                        currentInfoHeaderHeight + ", " + currentInfoHeaderOffset);
                             }
                         });
 
-        int[] locWindow = {-1, -1};
+        getActionBar().setDisplayShowTitleEnabled(true);
+        getActionBar().setDisplayHomeAsUpEnabled(false);
+        AlphaForegroundColorSpan colorSpan = new AlphaForegroundColorSpan(Color.WHITE);
+        colorSpan.setAlpha(0);
+        Spannable actionBarTitle = new SpannableString("Portfolio $129.32");
 
-        currentInfoHeader.getLocationInWindow(locWindow);
-        int initialOffset = locWindow[1];
-        int height = currentInfoHeader.getHeight();
-
-        Log.d("Initial numbers - offset: ", initialOffset + " and height: " + height);
+        actionBarTitle.setSpan(
+                colorSpan, 0, actionBarTitle.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        getActionBar().setTitle(actionBarTitle);
 
         scrollView.setOnScrollChangeListener(
                 (View.OnScrollChangeListener)
                         (view1, scrollX, scrollY, oldScrollX, oldScrollY) -> {
                             currentInfoHeader.getLocationInWindow(locWindow);
+                            float alpha =
+                                    (1f
+                                            - (Math.max(
+                                                            0f,
+                                                            (float) currentInfoHeaderHeight
+                                                                    - scrollY)
+                                                    / currentInfoHeaderHeight));
 
-                            Log.d("Scrollbar", scrollX + ", " + scrollY);
-                            Log.d("Window", locWindow[0] + ", " + locWindow[1]);
-                            Log.d("Height", currentInfoHeader.getHeight() + "");
+                            colorSpan.setAlpha(alpha);
+                            actionBarTitle.setSpan(
+                                    colorSpan,
+                                    0,
+                                    actionBarTitle.length(),
+                                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                            getActionBar().setTitle(actionBarTitle);
                         });
 
         CustomSparkView sparkView = view.findViewById(R.id.stock_chart);
+        sparkView.setScrubListener(
+                value -> scrollView.requestDisallowInterceptTouchEvent(value != null));
         StockChartAdapter dataAdapter =
                 new StockChartAdapter(
                         StockFragment.getFakeStockPrices().stream()
@@ -102,5 +119,40 @@ public class HomePageFragment extends Fragment {
         list.add(new PortfolioListItem("GOOG", "Google", 30.81f, 22, 1.11f, 3.33f));
 
         return list;
+    }
+
+    public static class AlphaForegroundColorSpan extends ForegroundColorSpan {
+        private float mAlpha = 1;
+
+        public AlphaForegroundColorSpan(int color) {
+            super(color);
+        }
+
+        public void writeToParcel(Parcel dest, int flags) {
+            super.writeToParcel(dest, flags);
+            dest.writeFloat(mAlpha);
+        }
+
+        @Override
+        public void updateDrawState(TextPaint ds) {
+            ds.setColor(getAlphaColor());
+        }
+
+        public void setAlpha(float alpha) {
+            mAlpha = alpha;
+        }
+
+        public float getAlpha() {
+            return mAlpha;
+        }
+
+        private int getAlphaColor() {
+            int foregroundColor = getForegroundColor();
+            return Color.argb(
+                    (int) (mAlpha * 255),
+                    Color.red(foregroundColor),
+                    Color.green(foregroundColor),
+                    Color.blue(foregroundColor));
+        }
     }
 }

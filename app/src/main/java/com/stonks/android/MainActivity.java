@@ -44,8 +44,9 @@ public class MainActivity extends AppCompatActivity {
                     return true;
                 });
 
-        // disable the back button on the homepage
+        // each fragment can update these properties as needed
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         // initializing sliding drawer
         slidingUpPanel = findViewById(R.id.sliding_layout);

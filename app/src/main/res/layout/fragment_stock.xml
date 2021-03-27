@@ -135,13 +135,13 @@
             tools:context=".StockFragment"
             android:layout_height="match_parent"
             android:layout_width="match_parent"
+            android:overScrollMode="never"
             android:elevation="1dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingHorizontal="@dimen/page_padding_horizontal"
-                android:paddingVertical="@dimen/page_padding_vertical">
+                android:paddingHorizontal="@dimen/page_padding_horizontal">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/header"
@@ -467,7 +467,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/section_margin"
-                    app:layout_constraintTop_toBottomOf="@id/history_section">
+                    app:layout_constraintTop_toBottomOf="@id/history_section"
+                    android:paddingBottom="@dimen/section_margin">
 
                 <TextView
                         android:layout_width="wrap_content"

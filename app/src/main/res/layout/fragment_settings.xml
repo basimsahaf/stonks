@@ -17,7 +17,6 @@
             style="@style/AppTheme.TextAppearance.XXLLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingTop="@dimen/page_padding_vertical"
             android:paddingLeft="@dimen/page_padding_horizontal"
             android:text="@string/settings"
             app:layout_constraintLeft_toLeftOf="parent"
@@ -28,8 +27,8 @@
             style="@style/AppTheme.TextAppearance.XLLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingVertical="@dimen/label_margin"
             android:paddingLeft="@dimen/page_padding_horizontal"
+            android:layout_marginTop="@dimen/section_margin"
             android:text="@string/account_info"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toBottomOf="@id/settings_header" />
@@ -44,7 +43,8 @@
             android:clickable="true"
             android:focusable="true"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/account_subheader">
+            app:layout_constraintTop_toBottomOf="@id/account_subheader"
+            android:layout_marginTop="@dimen/label_margin">
 
             <TextView
                 android:id="@+id/email_label"
@@ -130,6 +130,8 @@
                 app:layout_constraintBottom_toBottomOf="parent"/>
 
             <CheckBox
+                android:minWidth="0dp"
+                android:minHeight="0dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -144,10 +146,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingLeft="@dimen/page_padding_horizontal"
-            android:paddingVertical="@dimen/label_margin"
             android:text="@string/portfolio_settings"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/biometrics_setting" />
+            app:layout_constraintTop_toBottomOf="@id/biometrics_setting"
+            android:layout_marginTop="@dimen/section_margin"/>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/money_setting"
@@ -159,7 +161,8 @@
             android:clickable="true"
             android:focusable="true"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/portfolio_subheading">
+            app:layout_constraintTop_toBottomOf="@id/portfolio_subheading"
+            android:layout_marginTop="@dimen/label_margin">
 
             <TextView
                 android:id="@+id/money_label"
