@@ -10,6 +10,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.stonks.android.adapter.StockChartAdapter;
 import com.stonks.android.model.PickerLiveDataModel;
 import com.stonks.android.uicomponent.CustomSparkView;
@@ -18,18 +19,21 @@ import java.util.Locale;
 import java.util.stream.Collectors;
 
 public class HypotheticalFragment extends Fragment {
-
+    private final String TAG = getClass().getCanonicalName();
     private TextView estimatedCost;
     private TextView estimatedValue;
     private HorizontalNumberPicker numberPicker;
     private CustomSparkView sparkView;
     private float currentPrice;
     private PickerLiveDataModel viewModel;
+    private SlidingUpPanelLayout slidingUpPanel;
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
+        this.slidingUpPanel = getActivity().findViewById(R.id.sliding_layout);
+        // TODO: Set custom sliding drawer height
+        slidingUpPanel.setPanelState(SlidingUpPanelLayout.PanelState.ANCHORED);
         viewModel = ViewModelProviders.of(this).get(PickerLiveDataModel.class);
         final Observer<Integer> observer =
                 newValue -> {
@@ -73,7 +77,7 @@ public class HypotheticalFragment extends Fragment {
     @Override
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        this.currentPrice = Float.parseFloat(getArguments().getString("currentPrice"));
+        //        this.currentPrice = Float.parseFloat(getArguments().getString("currentPrice"));
         View view = inflater.inflate(R.layout.fragment_hypothetical, container, false);
         return view;
     }

@@ -16,7 +16,6 @@ import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.stonks.android.model.PickerLiveDataModel;
 import com.stonks.android.model.StockData;
 import com.stonks.android.model.TransactionMode;
-import com.stonks.android.uicomponent.CustomSlideUpDrawer;
 import com.stonks.android.uicomponent.HorizontalNumberPicker;
 import java.util.Locale;
 
@@ -25,7 +24,7 @@ import java.util.Locale;
 // - cancel button onclick (close drawer/back)
 
 public class BuySellFragment extends Fragment {
-
+    private final String TAG = getClass().getCanonicalName();
     private HorizontalNumberPicker numberPicker;
     private MaterialButton buyBtn, sellBtn, tradeBtn;
     private TextView costValueLabel, availableLabel, costPrice, price, available;
@@ -33,7 +32,7 @@ public class BuySellFragment extends Fragment {
     private float currentPrice, availableToTrade;
     private PickerLiveDataModel viewModel;
     private int numSharesOwned;
-    private SlidingUpPanelLayout slideUpPanel;
+    private SlidingUpPanelLayout slidingUpPanel;
 
     @Nullable
     @Override
@@ -59,7 +58,9 @@ public class BuySellFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
+        this.slidingUpPanel = getActivity().findViewById(R.id.sliding_layout);
+        // TODO: Set custom sliding drawer height
+        slidingUpPanel.setPanelState(SlidingUpPanelLayout.PanelState.ANCHORED);
         buyBtn = getView().findViewById(R.id.buy_mode_button);
         sellBtn = getView().findViewById(R.id.sell_mode_button);
         MaterialButton cancelBtn = getView().findViewById(R.id.cancel_btn);
@@ -93,16 +94,14 @@ public class BuySellFragment extends Fragment {
         viewModel.getNumberOfStocks().observe(getViewLifecycleOwner(), observer);
         this.numberPicker.setModel(viewModel);
 
-        this.slideUpPanel = getActivity().findViewById(R.id.sliding_layout);
-
         tradeBtn.setOnClickListener(
                 myView -> {
-                    this.slideUpPanel.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+                    this.slidingUpPanel.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
                 });
 
         cancelBtn.setOnClickListener(
                 myView -> {
-                    this.slideUpPanel.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+                    this.slidingUpPanel.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
                 });
 
         switchView(mode);
