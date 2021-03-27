@@ -58,6 +58,7 @@ public class HypotheticalFragment extends Fragment {
         this.estimatedValue = view.findViewById(R.id.estimated_value);
         this.numberPicker = view.findViewById(R.id.number_picker);
         this.numberPicker.setModel(viewModel);
+        // TODO: remove this when the picker defaults to 1
         this.numberPicker.setValue(1);
 
         sparkView = view.findViewById(R.id.chart);
