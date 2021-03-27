@@ -49,8 +49,8 @@ public class BuySellFragment extends Fragment {
 
         // for now; we would get this info from the screen that triggers this
         Bundle arg = getArguments();
-        mode = (TransactionMode) arg.getSerializable("transactionMode");
-        StockData stockData = (StockData) arg.getSerializable("stockData");
+        mode = (TransactionMode) arg.getSerializable(TRANSACTION_MODE_ARG);
+        StockData stockData = (StockData) arg.getSerializable(STOCK_DATA_ARG);
         currentPrice = stockData.getCurrentPrice();
 
         // TODO: get these variables from Bundle
