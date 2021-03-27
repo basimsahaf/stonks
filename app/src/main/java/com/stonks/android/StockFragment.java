@@ -16,11 +16,11 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.stonks.android.adapter.StockChartAdapter;
 import com.stonks.android.adapter.TransactionViewAdapter;
 import com.stonks.android.external.MarketDataService;
 import com.stonks.android.model.*;
-import com.stonks.android.uicomponent.CustomSlideUpDrawer;
 import com.stonks.android.uicomponent.CustomSparkView;
 import com.stonks.android.uicomponent.SpeedDialExtendedFab;
 import com.stonks.android.utility.Constants;
@@ -49,7 +49,7 @@ public class StockFragment extends Fragment {
     private FloatingActionButton tryButton;
     private FloatingActionButton buyButton;
     private FloatingActionButton sellButton;
-    private CustomSlideUpDrawer customSlideUpDrawer;
+    private SlidingUpPanelLayout slidingUpPanel;
 
     @Nullable
     @Override
@@ -124,12 +124,12 @@ public class StockFragment extends Fragment {
             positionContainer.setVisibility(View.GONE);
         }
 
-        this.customSlideUpDrawer = getActivity().findViewById(R.id.sliding_layout);
+        this.slidingUpPanel = getActivity().findViewById(R.id.sliding_layout);
 
         this.tryButton = view.findViewById(R.id.try_button);
         this.tryButton.setOnClickListener(
                 v -> {
-                    customSlideUpDrawer.openDrawer();
+                    slidingUpPanel.setPanelState(SlidingUpPanelLayout.PanelState.ANCHORED);
                     Fragment hypotheticalFragment = new HypotheticalFragment();
                     Bundle bundle = new Bundle();
                     bundle.putFloat("currentPrice", stockData.getCurrentPrice());
@@ -157,7 +157,7 @@ public class StockFragment extends Fragment {
                             .replace(R.id.sliding_drawer, buyFrag, null)
                             .addToBackStack(null)
                             .commit();
-                    customSlideUpDrawer.openDrawer();
+                    slidingUpPanel.setPanelState(SlidingUpPanelLayout.PanelState.ANCHORED);
                 });
         this.sellButton.setOnClickListener(
                 v -> {
@@ -172,7 +172,7 @@ public class StockFragment extends Fragment {
                             .replace(R.id.sliding_drawer, sellFrag, null)
                             .addToBackStack(null)
                             .commit();
-                    customSlideUpDrawer.openDrawer();
+                    slidingUpPanel.setPanelState(SlidingUpPanelLayout.PanelState.ANCHORED);
                 });
 
         this.fetchInitialData();

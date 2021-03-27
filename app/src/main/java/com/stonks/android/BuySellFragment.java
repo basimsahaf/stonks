@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import com.google.android.material.button.MaterialButton;
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.stonks.android.model.PickerLiveDataModel;
 import com.stonks.android.model.StockData;
 import com.stonks.android.model.TransactionMode;
@@ -32,7 +33,7 @@ public class BuySellFragment extends Fragment {
     private float currentPrice, availableToTrade;
     private PickerLiveDataModel viewModel;
     private int numSharesOwned;
-    private CustomSlideUpDrawer customSlideUpDrawer;
+    private SlidingUpPanelLayout slideUpPanel;
 
     @Nullable
     @Override
@@ -92,16 +93,16 @@ public class BuySellFragment extends Fragment {
         viewModel.getNumberOfStocks().observe(getViewLifecycleOwner(), observer);
         this.numberPicker.setModel(viewModel);
 
-        this.customSlideUpDrawer = getActivity().findViewById(R.id.sliding_layout);
+        this.slideUpPanel = getActivity().findViewById(R.id.sliding_layout);
 
         tradeBtn.setOnClickListener(
                 myView -> {
-                    this.customSlideUpDrawer.closeDrawer();
+                    this.slideUpPanel.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
                 });
 
         cancelBtn.setOnClickListener(
                 myView -> {
-                    this.customSlideUpDrawer.closeDrawer();
+                    this.slideUpPanel.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
                 });
 
         switchView(mode);
