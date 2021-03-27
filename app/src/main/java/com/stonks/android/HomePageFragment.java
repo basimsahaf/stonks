@@ -41,8 +41,8 @@ public class HomePageFragment extends BaseFragment {
 
         NestedScrollView scrollView = view.findViewById(R.id.scroll_view);
         ConstraintLayout currentInfoHeader = view.findViewById(R.id.current_info_header);
-        int[] locWindow = {-1, -1};
 
+        // get the height of the header
         currentInfoHeader
                 .getViewTreeObserver()
                 .addOnGlobalLayoutListener(
@@ -53,30 +53,20 @@ public class HomePageFragment extends BaseFragment {
                                         .getViewTreeObserver()
                                         .removeOnGlobalLayoutListener(this);
                                 currentInfoHeaderHeight = currentInfoHeader.getHeight();
-                                currentInfoHeader.getLocationInWindow(locWindow);
                             }
                         });
 
-        MainActivity activity = (MainActivity) getActivity();
-
         getActionBar().setDisplayHomeAsUpEnabled(false);
-
-        activity.setActionBarCustomViewAlpha(0);
-        activity.setPortfolioValue(129.32f);
+        getMainActivity().setActionBarCustomViewAlpha(0);
+        getMainActivity().setPortfolioValue(129.32f);
 
         scrollView.setOnScrollChangeListener(
                 (View.OnScrollChangeListener)
                         (view1, scrollX, scrollY, oldScrollX, oldScrollY) -> {
-                            currentInfoHeader.getLocationInWindow(locWindow);
-                            float alpha =
-                                    (1f
-                                            - (Math.max(
-                                                            0f,
-                                                            (float) currentInfoHeaderHeight
-                                                                    - scrollY)
-                                                    / currentInfoHeaderHeight));
+                            float offset = currentInfoHeaderHeight - scrollY;
+                            float alpha = (1f - (Math.max(0f, offset) / currentInfoHeaderHeight));
 
-                            activity.setActionBarCustomViewAlpha(alpha);
+                            getMainActivity().setActionBarCustomViewAlpha(alpha);
                         });
 
         CustomSparkView sparkView = view.findViewById(R.id.stock_chart);

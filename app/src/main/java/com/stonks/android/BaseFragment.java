@@ -10,4 +10,8 @@ public class BaseFragment extends Fragment {
     public ActionBar getActionBar() {
         return ((AppCompatActivity) Objects.requireNonNull(getActivity())).getSupportActionBar();
     }
+
+    public MainActivity getMainActivity() {
+        return (MainActivity) getActivity();
+    }
 }
