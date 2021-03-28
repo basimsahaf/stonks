@@ -63,7 +63,7 @@ public class SettingsFragment extends BaseFragment {
                     submitButton.setText(getString(R.string.reset_training_period));
                     submitButton.setBackgroundColor(
                             ResourcesCompat.getColor(
-                                    getResources(), R.color.red, null)); // without theme
+                                    getResources(), R.color.red, null));
                 });
 
         submitButton.setOnClickListener(
@@ -77,7 +77,7 @@ public class SettingsFragment extends BaseFragment {
                     submitButton.setText(getString(R.string.submit));
                     submitButton.setBackgroundColor(
                             ResourcesCompat.getColor(
-                                    getResources(), R.color.colorPrimary, null)); // without theme);
+                                    getResources(), R.color.colorPrimary, null));
                 });
     }
 }
