@@ -32,7 +32,7 @@ import java.time.Month;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class StockFragment extends Fragment {
+public class StockFragment extends BaseFragment {
     private static String TAG = StockFragment.class.getCanonicalName();
 
     private String symbol;
@@ -89,6 +89,9 @@ public class StockFragment extends Fragment {
         this.transactionList.setLayoutManager(transactionListManager);
 
         this.symbol = getArguments().getString(getString(R.string.intent_extra_symbol));
+
+        getActionBar().setDisplayHomeAsUpEnabled(true);
+        getMainActivity().setGlobalTitle(this.symbol);
         this.textViewSymbol.setText(this.symbol);
         this.transactionListAdapter =
                 new TransactionViewAdapter(this.getFakeTransactionsForStock());
