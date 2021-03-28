@@ -34,6 +34,8 @@ public class LoginActivity extends BaseActivity {
     private LoginViewModel loginViewModel;
     private MaterialButton loginModeButton;
     private MaterialButton signUpModeButton;
+    private boolean usernameChanged;
+    private boolean passwordChanged;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +44,7 @@ public class LoginActivity extends BaseActivity {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
 
         UserTable userTable = new UserTable(this);
+        Log.d(TAG, userTable.getDatabaseName());
         loginViewModel = new LoginViewModel(new LoginRepository(new LoginDataSource(userTable)));
 
         loginModeButton = findViewById(R.id.login_mode_button);
@@ -60,9 +63,9 @@ public class LoginActivity extends BaseActivity {
                     switchView(AuthMode.SIGNUP);
                 });
 
-        setLoginViewModelListeners();
         setTextWatcher(usernameField);
         setTextWatcher(passwordField);
+        setLoginViewModelListeners();
 
         passwordField
                 .getEditText()
@@ -121,6 +124,11 @@ public class LoginActivity extends BaseActivity {
 
                     @Override
                     public void afterTextChanged(Editable s) {
+                        if (field == usernameField) {
+                            usernameChanged = true;
+                        } else {
+                            passwordChanged = true;
+                        }
                         loginViewModel.loginDataChanged(
                                 usernameField.getEditText().getText().toString(),
                                 passwordField.getEditText().getText().toString());
@@ -151,17 +159,15 @@ public class LoginActivity extends BaseActivity {
                                 return;
                             }
                             loginButton.setEnabled(loginFormState.isDataValid());
-                            if (loginFormState.getUsernameError() != null) {
+                            if (usernameChanged && loginFormState.getUsernameError() != null) {
                                 Log.d(TAG, "Error username");
                                 usernameField.setError(
                                         getString(loginFormState.getUsernameError()));
-                                loginButton.setClickable(false);
                             } else {
                                 Log.d(TAG, "Valid username");
                                 usernameField.setError(null);
-                                //                                loginButton.setClickable(true);
                             }
-                            if (loginFormState.getPasswordError() != null) {
+                            if (passwordChanged && loginFormState.getPasswordError() != null) {
                                 passwordField.setError(
                                         getString(loginFormState.getPasswordError()));
                             } else {

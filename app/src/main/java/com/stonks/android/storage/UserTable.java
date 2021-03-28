@@ -12,12 +12,10 @@ import com.stonks.android.model.UserModel;
 public class UserTable extends SQLiteOpenHelper {
     public static final String USER_TABLE = "USER_TABLE";
     public static final String COLUMN_USERNAME = "username";
-    public static final String COLUMN_FIRST_NAME = "first_name";
-    public static final String COLUMN_LAST_NAME = "last_name";
     public static final String COLUMN_PASSWORD = "password";
 
     public UserTable(@Nullable Context context) {
-        super(context, "stonks_db", null, 1);
+        super(context, "stonks_db2", null, 1);
     }
 
     @Override
