@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="visible"
-        tools:visibility="gone">
+        >
 
         <TextView
             android:id="@+id/settings_header"
@@ -198,10 +198,10 @@
         android:layout_height="wrap_content"
         android:paddingHorizontal="@dimen/page_padding_horizontal"
         android:paddingVertical="@dimen/page_padding_vertical"
-        android:visibility="gone"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:visibility="gone">
+        android:visibility="gone"
+        >
 
         <TextView
             android:id="@+id/email_change_label"
@@ -234,10 +234,10 @@
         android:layout_height="wrap_content"
         android:paddingHorizontal="@dimen/page_padding_horizontal"
         android:paddingVertical="@dimen/page_padding_vertical"
-        android:visibility="gone"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:visibility="gone">
+        android:visibility="gone"
+        >
 
         <TextView
             android:id="@+id/password_change_label"
@@ -284,10 +284,10 @@
         android:layout_height="wrap_content"
         android:paddingHorizontal="@dimen/page_padding_horizontal"
         android:paddingVertical="@dimen/page_padding_vertical"
-        android:visibility="gone"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:visibility="visible">
+        android:visibility="gone"
+        >
 
         <TextView
             android:id="@+id/amount_change_label"
@@ -323,9 +323,9 @@
         android:layout_marginRight="@dimen/page_padding_horizontal"
         android:layout_marginBottom="@dimen/page_padding_vertical"
         android:text="@string/submit"
-        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        tools:visibility="gone" />
+        android:visibility="gone"
+        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
