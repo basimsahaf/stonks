@@ -28,6 +28,7 @@ public class SearchableFragment extends BaseFragment implements SearchView.OnQue
 
         getActionBar().setDisplayHomeAsUpEnabled(false);
         getActionBar().setDisplayShowTitleEnabled(false);
+        getMainActivity().hideActionBarCustomViews();
 
         searchResultList = view.findViewById(R.id.list_view);
         searchResultAdapter = new SearchResultAdapter(getActivity(), getFakeSearchResults());

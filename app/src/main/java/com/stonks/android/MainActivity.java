@@ -16,6 +16,8 @@ import com.stonks.android.utility.Formatters;
 
 public class MainActivity extends AppCompatActivity {
     private SlidingUpPanelLayout slidingUpPanel;
+    private LinearLayout portfolioTitle;
+    private TextView globalTitle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +61,10 @@ public class MainActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowCustomEnabled(true);
         getSupportActionBar().setCustomView(actionBarView);
 
+        this.portfolioTitle =
+                getSupportActionBar().getCustomView().findViewById(R.id.portfolio_title);
+        this.globalTitle = getSupportActionBar().getCustomView().findViewById(R.id.global_title);
+
         // initializing sliding drawer
         slidingUpPanel = findViewById(R.id.sliding_layout);
         slidingUpPanel.setPanelHeight(0);
@@ -66,12 +72,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void setPortfolioValue(float value) {
-        TextView globalTitle =
-                getSupportActionBar().getCustomView().findViewById(R.id.global_title);
-
-        LinearLayout portfolioTitle =
-                getSupportActionBar().getCustomView().findViewById(R.id.portfolio_title);
-
         globalTitle.setVisibility(View.GONE);
         portfolioTitle.setVisibility(View.VISIBLE);
 
@@ -85,21 +85,19 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void setGlobalTitle(String title) {
-        TextView globalTitle =
-                getSupportActionBar().getCustomView().findViewById(R.id.global_title);
         globalTitle.setText(title);
-
-        LinearLayout portfolioTitle =
-                getSupportActionBar().getCustomView().findViewById(R.id.portfolio_title);
 
         portfolioTitle.setVisibility(View.GONE);
         globalTitle.setVisibility(View.VISIBLE);
     }
 
     public void setActionBarCustomViewAlpha(float alpha) {
-        LinearLayout portfolioTitle =
-                getSupportActionBar().getCustomView().findViewById(R.id.portfolio_title);
         portfolioTitle.setAlpha(alpha);
+    }
+
+    public void hideActionBarCustomViews() {
+        globalTitle.setVisibility(View.GONE);
+        portfolioTitle.setVisibility(View.GONE);
     }
 
     private void switchFragment(Fragment fragment) {
