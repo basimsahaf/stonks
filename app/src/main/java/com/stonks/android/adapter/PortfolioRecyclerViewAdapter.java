@@ -4,8 +4,10 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 import com.stonks.android.MainActivity;
@@ -58,8 +60,17 @@ public class PortfolioRecyclerViewAdapter
         holder.stockSymbol.setText(item.getStockSymbol());
         holder.companyName.setText(item.getCompanyName());
         holder.price.setText(String.format("$%.2f (x%d)", item.getPrice(), item.getMultiplier()));
-        holder.priceChange.setText(
-                String.format("$%.2f (%.2f%%)", item.getPriceChange(), item.getChangePercent()));
+
+        if (item.getPriceChange() < 0) {
+            holder.priceChange.setText(
+                    String.format("$%.2f (%.2f%%)", item.getPriceChange() * -1.0, item.getChangePercent() * -1.0));
+            holder.priceChange.setTextColor(ContextCompat.getColor(holder.priceChange.getContext(), R.color.red));
+            holder.arrowIndicator.setImageResource(R.drawable.ic_baseline_arrow_drop_down_24);
+        } else {
+            holder.priceChange.setText(
+                    String.format("$%.2f (%.2f%%)", item.getPriceChange(), item.getChangePercent()));
+        }
+
     }
 
     @Override
@@ -77,6 +88,7 @@ public class PortfolioRecyclerViewAdapter
         public final TextView companyName;
         public final TextView price;
         public final TextView priceChange;
+        public final ImageView arrowIndicator;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -86,6 +98,7 @@ public class PortfolioRecyclerViewAdapter
             companyName = this.view.findViewById(R.id.company_name);
             price = this.view.findViewById(R.id.current_price);
             priceChange = this.view.findViewById(R.id.change_desc);
+            arrowIndicator = this.view.findViewById(R.id.arrow_indicator);
         }
     }
 }
