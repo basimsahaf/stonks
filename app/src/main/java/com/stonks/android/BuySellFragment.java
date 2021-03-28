@@ -61,7 +61,8 @@ public class BuySellFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        this.slidingUpPanel = getActivity().findViewById(R.id.sliding_layout);
+        MainActivity mainActivity = (MainActivity) getActivity();
+        this.slidingUpPanel = mainActivity.getSlidingUpPanel();
         // TODO: Set custom sliding drawer height
         slidingUpPanel.setPanelState(SlidingUpPanelLayout.PanelState.ANCHORED);
         buyBtn = getView().findViewById(R.id.buy_mode_button);

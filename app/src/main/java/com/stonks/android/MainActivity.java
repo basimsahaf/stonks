@@ -10,6 +10,8 @@ import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 public class MainActivity extends AppCompatActivity {
 
+    private SlidingUpPanelLayout slidingUpPanel;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
 
         // initializing sliding drawer
-        SlidingUpPanelLayout slidingUpPanel = findViewById(R.id.sliding_layout);
+        slidingUpPanel = findViewById(R.id.sliding_layout);
         slidingUpPanel.setPanelHeight(0);
         slidingUpPanel.setAnchorPoint(1.0f);
     }
@@ -55,5 +57,9 @@ public class MainActivity extends AppCompatActivity {
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.fragment_container, fragment);
         ft.commit();
+    }
+
+    public SlidingUpPanelLayout getSlidingUpPanel() {
+        return slidingUpPanel;
     }
 }
