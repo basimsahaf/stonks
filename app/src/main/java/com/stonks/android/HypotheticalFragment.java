@@ -44,11 +44,9 @@ public class HypotheticalFragment extends Fragment {
         final Observer<Integer> observer =
                 newValue -> {
                     float newEstimatedCost = newValue * scrubbedPrice;
-                    this.estimatedCost.setText(
-                            String.format(Locale.CANADA, "$%.2f", newEstimatedCost));
+                    this.estimatedCost.setText(Formatters.formatPrice(newEstimatedCost));
                     float newEstimatedValue = newValue * currentPrice;
-                    this.estimatedValue.setText(
-                            String.format(Locale.CANADA, "$%.2f", newEstimatedValue));
+                    this.estimatedValue.setText(Formatters.formatPrice(newEstimatedValue));
                 };
 
         viewModel.getNumberOfStocks().observe(getViewLifecycleOwner(), observer);
