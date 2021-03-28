@@ -24,11 +24,9 @@ import java.util.Locale;
 // - cancel button onclick (close drawer/back)
 
 public class BuySellFragment extends Fragment {
-    // static strings
-    static String TRANSACTION_MODE_ARG = "transactionMode";
-    static String CURRENT_PRICE_ARG = "currentPrice";
-    static String STOCK_DATA_ARG = "stockData";
-
+    static final String TRANSACTION_MODE_ARG = "transactionMode";
+    static final String CURRENT_PRICE_ARG = "currentPrice";
+    static final String STOCK_DATA_ARG = "stockData";
     private final String TAG = getClass().getCanonicalName();
     private HorizontalNumberPicker numberPicker;
     private MaterialButton buyBtn, sellBtn, tradeBtn;

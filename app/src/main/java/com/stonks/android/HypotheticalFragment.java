@@ -20,9 +20,7 @@ import java.util.Locale;
 import java.util.stream.Collectors;
 
 public class HypotheticalFragment extends Fragment {
-    // static fields
     static final String CURRENT_PRICE_ARG = "currentPrice";
-
     private final String TAG = getClass().getCanonicalName();
     private TextView estimatedCost;
     private TextView estimatedValue;
@@ -93,8 +91,8 @@ public class HypotheticalFragment extends Fragment {
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Bundle arg = getArguments();
-        this.currentPrice = (float) arg.getFloat(CURRENT_PRICE_ARG);
-        this.scrubbedPrice = (float) arg.getFloat(CURRENT_PRICE_ARG);
+        this.currentPrice = arg.getFloat(CURRENT_PRICE_ARG);
+        this.scrubbedPrice = arg.getFloat(CURRENT_PRICE_ARG);
         View view = inflater.inflate(R.layout.fragment_hypothetical, container, false);
         return view;
     }
