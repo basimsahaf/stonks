@@ -62,8 +62,7 @@ public class SettingsFragment extends BaseFragment {
                     // change text and save button to red since it's a destructive action
                     submitButton.setText(getString(R.string.reset_training_period));
                     submitButton.setBackgroundColor(
-                            ResourcesCompat.getColor(
-                                    getResources(), R.color.red, null));
+                            ResourcesCompat.getColor(getResources(), R.color.red, null));
                 });
 
         submitButton.setOnClickListener(
@@ -76,8 +75,7 @@ public class SettingsFragment extends BaseFragment {
                     // reset back to blue + save text case returning from change training period
                     submitButton.setText(getString(R.string.submit));
                     submitButton.setBackgroundColor(
-                            ResourcesCompat.getColor(
-                                    getResources(), R.color.colorPrimary, null));
+                            ResourcesCompat.getColor(getResources(), R.color.colorPrimary, null));
                 });
     }
 }
