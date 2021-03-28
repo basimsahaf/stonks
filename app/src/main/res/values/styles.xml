@@ -133,4 +133,7 @@
         <item name="itemTextColor">@drawable/bottom_nav_item_text</item>
         <item name="itemIconTint">@drawable/bottom_nav_item_text</item>
     </style>
+    <style name="AppTheme.SlidingDrawer">
+        <item name="android:windowActionBarOverlay">true</item>
+    </style>
 </resources>

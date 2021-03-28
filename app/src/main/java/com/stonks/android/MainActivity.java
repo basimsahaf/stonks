@@ -6,8 +6,11 @@ import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 public class MainActivity extends AppCompatActivity {
+
+    private SlidingUpPanelLayout slidingUpPanel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,11 +46,20 @@ public class MainActivity extends AppCompatActivity {
 
         // disable the back button on the homepage
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+
+        // initializing sliding drawer
+        slidingUpPanel = findViewById(R.id.sliding_layout);
+        slidingUpPanel.setPanelHeight(0);
+        slidingUpPanel.setAnchorPoint(1.0f);
     }
 
     private void switchFragment(Fragment fragment) {
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.fragment_container, fragment);
         ft.commit();
+    }
+
+    public SlidingUpPanelLayout getSlidingUpPanel() {
+        return slidingUpPanel;
     }
 }

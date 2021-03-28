@@ -14,7 +14,7 @@ import com.stonks.android.model.AuthMode;
 
 public class LoginActivity extends BaseActivity {
 
-    final String TAG = this.getClass().getSimpleName();
+    private final String TAG = this.getClass().getSimpleName();
 
     Button loginButton;
     TextInputLayout usernameField;
@@ -67,8 +67,6 @@ public class LoginActivity extends BaseActivity {
 
                     usernameField.getEditText().setText("");
                     passwordField.getEditText().setText("");
-
-                    // errorMessage.setVisibility(View.VISIBLE);
 
                     Intent intent = new Intent(this, MainActivity.class);
                     startActivity(intent);
