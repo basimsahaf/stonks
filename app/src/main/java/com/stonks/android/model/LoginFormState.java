@@ -1,4 +1,4 @@
-package com.stonks.android.ui.login;
+package com.stonks.android.model;
 
 import androidx.annotation.Nullable;
 

@@ -44,9 +44,12 @@ public class LoginActivity extends BaseActivity {
         UserTable userTable = new UserTable(this);
         loginViewModel = new LoginViewModel(new LoginRepository(new LoginDataSource(userTable)));
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         loginModeButton = findViewById(R.id.login_mode_button);
         signUpModeButton = findViewById(R.id.signup_mode_button);
+        usernameField = findViewById(R.id.username_field);
+        passwordField = findViewById(R.id.password_field);
+        loginButton = findViewById(R.id.login_button);
+        errorMessage = findViewById(R.id.error_message);
 
         loginModeButton.setOnClickListener(
                 myView -> {
@@ -56,11 +59,6 @@ public class LoginActivity extends BaseActivity {
                 myView -> {
                     switchView(AuthMode.SIGNUP);
                 });
-
-        loginButton = findViewById(R.id.login_button);
-        usernameField = findViewById(R.id.username_field);
-        passwordField = findViewById(R.id.password_field);
-        errorMessage = findViewById(R.id.error_message);
 
         setLoginViewModelListeners();
         setTextWatcher(usernameField);
@@ -79,9 +77,6 @@ public class LoginActivity extends BaseActivity {
                         });
 
         loginButton.setText(getString(R.string.login));
-        // toggle login mode by default
-        switchView(AuthMode.LOGIN);
-
         loginButton.setOnClickListener(
                 view -> {
                     String username = "";
@@ -102,6 +97,12 @@ public class LoginActivity extends BaseActivity {
                     errorMessage.setVisibility(View.VISIBLE);
                     loginViewModel.login(username, password);
                 });
+
+        // disable the back button on the login page
+        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+
+        // toggle login mode by default
+        switchView(AuthMode.LOGIN);
     }
 
     private void setTextWatcher(TextInputLayout field) {
@@ -119,13 +120,8 @@ public class LoginActivity extends BaseActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                if (field == usernameField) {
-                    loginViewModel.usernameChanged(
-                            field.getEditText().getText().toString());
-                } else {
-                    loginViewModel.passwordChanged(
-                            field.getEditText().getText().toString());
-                }
+                loginViewModel.loginDataChanged(usernameField.getEditText().getText().toString(),
+                        passwordField.getEditText().getText().toString());
             }
         };
 
@@ -159,6 +155,7 @@ public class LoginActivity extends BaseActivity {
                                         getString(loginFormState.getUsernameError()));
                                 loginButton.setClickable(false);
                             } else {
+                                Log.d(TAG, "Valid username");
                                 usernameField.setError(null);
 //                                loginButton.setClickable(true);
                             }

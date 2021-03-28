@@ -6,7 +6,6 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import com.stonks.android.R;
-import com.stonks.android.ui.login.LoginFormState;
 
 public class LoginViewModel extends ViewModel {
 
@@ -41,10 +40,10 @@ public class LoginViewModel extends ViewModel {
     public void usernameChanged(String username) {
         Log.d("Debug", "Changing");
         if (!isUserNameValid(username)) {
-            Log.d("Debug", "Valid");
+            Log.d("Debug", "InValid");
             loginFormState.setValue(new LoginFormState(R.string.invalid_username, null));
         } else {
-            Log.d("Debug", "Invalid");
+            Log.d("Debug", "Valid");
             loginFormState.setValue(new LoginFormState(true));
             Log.d("Debug", "" + loginFormState.getValue().getPasswordError());
         }
@@ -57,6 +56,19 @@ public class LoginViewModel extends ViewModel {
             loginFormState.setValue(new LoginFormState(true));
         }
     }
+
+    public void loginDataChanged(String username, String password) {
+        if (!isUserNameValid(username) && !isPasswordValid(password)) {
+            loginFormState.setValue(new LoginFormState(R.string.invalid_username, R.string.invalid_password));
+        } else if (!isPasswordValid(password)) {
+            loginFormState.setValue(new LoginFormState(null, R.string.invalid_password));
+        } else if (!isUserNameValid(username)) {
+            loginFormState.setValue(new LoginFormState(R.string.invalid_username, null));
+        } else {
+            loginFormState.setValue(new LoginFormState(true));
+        }
+    }
+
 
     private boolean isUserNameValid(String username) {
         if (username == null) {
