@@ -10,7 +10,6 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatDelegate;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputLayout;
-import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.stonks.android.model.AuthMode;
 
 public class LoginActivity extends BaseActivity {
