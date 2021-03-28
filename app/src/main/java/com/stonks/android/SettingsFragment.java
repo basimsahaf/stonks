@@ -1,5 +1,6 @@
 package com.stonks.android;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,7 +15,7 @@ public class SettingsFragment extends BaseFragment {
             emailChangeScreen,
             passwordSetting,
             passwordChangeScreen,
-            amountSetting,
+            trainingPeriodSetting,
             amountChangeScreen;
     private Button submitButton;
 
@@ -35,8 +36,8 @@ public class SettingsFragment extends BaseFragment {
         emailChangeScreen = view.findViewById(R.id.email_change);
         passwordSetting = view.findViewById(R.id.password_setting);
         passwordChangeScreen = view.findViewById(R.id.password_change);
-        amountSetting = view.findViewById(R.id.money_setting);
-        amountChangeScreen = view.findViewById(R.id.starting_amount_change);
+        trainingPeriodSetting = view.findViewById(R.id.money_setting);
+        amountChangeScreen = view.findViewById(R.id.training_period_change);
         submitButton = view.findViewById(R.id.submit_button);
 
         emailSetting.setOnClickListener(
@@ -53,11 +54,14 @@ public class SettingsFragment extends BaseFragment {
                     submitButton.setVisibility(View.VISIBLE);
                 });
 
-        amountSetting.setOnClickListener(
+        trainingPeriodSetting.setOnClickListener(
                 v -> {
                     settingsScreen.setVisibility(View.GONE);
                     amountChangeScreen.setVisibility(View.VISIBLE);
                     submitButton.setVisibility(View.VISIBLE);
+                    // change text and save button to red since it's a destructive action
+                    submitButton.setText(getString(R.string.reset_training_period));
+                    submitButton.setBackgroundColor(getResources().getColor(R.color.red));
                 });
 
         submitButton.setOnClickListener(
@@ -67,6 +71,9 @@ public class SettingsFragment extends BaseFragment {
                     amountChangeScreen.setVisibility(View.GONE);
                     submitButton.setVisibility(View.GONE);
                     settingsScreen.setVisibility(View.VISIBLE);
+                    // reset back to blue + save text case returning from change training period
+                    submitButton.setText(getString(R.string.submit));
+                    submitButton.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
                 });
     }
 }
