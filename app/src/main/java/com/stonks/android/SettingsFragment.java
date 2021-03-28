@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.res.ResourcesCompat;
 
 public class SettingsFragment extends BaseFragment {
 
@@ -60,7 +61,7 @@ public class SettingsFragment extends BaseFragment {
                     submitButton.setVisibility(View.VISIBLE);
                     // change text and save button to red since it's a destructive action
                     submitButton.setText(getString(R.string.reset_training_period));
-                    submitButton.setBackgroundColor(getResources().getColor(R.color.red));
+                    submitButton.setBackgroundColor(ResourcesCompat.getColor(getResources(), R.color.red, null)); //without theme
                 });
 
         submitButton.setOnClickListener(
@@ -72,7 +73,7 @@ public class SettingsFragment extends BaseFragment {
                     settingsScreen.setVisibility(View.VISIBLE);
                     // reset back to blue + save text case returning from change training period
                     submitButton.setText(getString(R.string.submit));
-                    submitButton.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                    submitButton.setBackgroundColor(ResourcesCompat.getColor(getResources(), R.color.colorPrimary, null)); //without theme);
                 });
     }
 }
