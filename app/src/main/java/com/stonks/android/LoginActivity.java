@@ -16,12 +16,12 @@ import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatDelegate;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputLayout;
+import com.stonks.android.model.AuthMode;
 import com.stonks.android.model.LoggedInUserView;
 import com.stonks.android.model.LoginDataSource;
 import com.stonks.android.model.LoginRepository;
 import com.stonks.android.model.LoginViewModel;
 import com.stonks.android.storage.UserTable;
-import com.stonks.android.model.AuthMode;
 
 public class LoginActivity extends BaseActivity {
 
@@ -107,23 +107,25 @@ public class LoginActivity extends BaseActivity {
 
     private void setTextWatcher(TextInputLayout field) {
 
-        TextWatcher textWatcher = new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                // ignore
-            }
+        TextWatcher textWatcher =
+                new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                        // ignore
+                    }
 
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                // ignore
-            }
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+                        // ignore
+                    }
 
-            @Override
-            public void afterTextChanged(Editable s) {
-                loginViewModel.loginDataChanged(usernameField.getEditText().getText().toString(),
-                        passwordField.getEditText().getText().toString());
-            }
-        };
+                    @Override
+                    public void afterTextChanged(Editable s) {
+                        loginViewModel.loginDataChanged(
+                                usernameField.getEditText().getText().toString(),
+                                passwordField.getEditText().getText().toString());
+                    }
+                };
 
         field.getEditText().addTextChangedListener(textWatcher);
     }
@@ -157,7 +159,7 @@ public class LoginActivity extends BaseActivity {
                             } else {
                                 Log.d(TAG, "Valid username");
                                 usernameField.setError(null);
-//                                loginButton.setClickable(true);
+                                //                                loginButton.setClickable(true);
                             }
                             if (loginFormState.getPasswordError() != null) {
                                 passwordField.setError(
@@ -185,7 +187,7 @@ public class LoginActivity extends BaseActivity {
                             }
                             setResult(Activity.RESULT_OK);
                         });
-                    // errorMessage.setVisibility(View.VISIBLE);
+        // errorMessage.setVisibility(View.VISIBLE);
 
     }
 
