@@ -1,10 +1,6 @@
 package com.stonks.android;
 
-import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Parcel;
-import android.text.*;
-import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,18 +39,7 @@ public class HomePageFragment extends BaseFragment {
         ConstraintLayout currentInfoHeader = view.findViewById(R.id.current_info_header);
 
         // get the height of the header
-        currentInfoHeader
-                .getViewTreeObserver()
-                .addOnGlobalLayoutListener(
-                        new ViewTreeObserver.OnGlobalLayoutListener() {
-                            @Override
-                            public void onGlobalLayout() {
-                                currentInfoHeader
-                                        .getViewTreeObserver()
-                                        .removeOnGlobalLayoutListener(this);
-                                currentInfoHeaderHeight = currentInfoHeader.getHeight();
-                            }
-                        });
+        currentInfoHeader.post(() -> currentInfoHeaderHeight = currentInfoHeader.getHeight());
 
         getActionBar().setDisplayHomeAsUpEnabled(false);
         getMainActivity().setActionBarCustomViewAlpha(0);
@@ -95,40 +80,5 @@ public class HomePageFragment extends BaseFragment {
         list.add(new PortfolioListItem("GOOG", "Google", 30.81f, 22, 1.11f, 3.33f));
 
         return list;
-    }
-
-    public static class AlphaForegroundColorSpan extends ForegroundColorSpan {
-        private float mAlpha = 1;
-
-        public AlphaForegroundColorSpan(int color) {
-            super(color);
-        }
-
-        public void writeToParcel(Parcel dest, int flags) {
-            super.writeToParcel(dest, flags);
-            dest.writeFloat(mAlpha);
-        }
-
-        @Override
-        public void updateDrawState(TextPaint ds) {
-            ds.setColor(getAlphaColor());
-        }
-
-        public void setAlpha(float alpha) {
-            mAlpha = alpha;
-        }
-
-        public float getAlpha() {
-            return mAlpha;
-        }
-
-        private int getAlphaColor() {
-            int foregroundColor = getForegroundColor();
-            return Color.argb(
-                    (int) (mAlpha * 255),
-                    Color.red(foregroundColor),
-                    Color.green(foregroundColor),
-                    Color.blue(foregroundColor));
-        }
     }
 }

@@ -41,7 +41,7 @@
                             style="@style/AppTheme.TextAppearance.SmallLabel"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
-                            android:text="@string/current_value"/>
+                            android:text="@string/account_value"/>
 
                     <TextView
                             android:id="@+id/current_value_price"
