@@ -61,7 +61,9 @@ public class SettingsFragment extends BaseFragment {
                     submitButton.setVisibility(View.VISIBLE);
                     // change text and save button to red since it's a destructive action
                     submitButton.setText(getString(R.string.reset_training_period));
-                    submitButton.setBackgroundColor(ResourcesCompat.getColor(getResources(), R.color.red, null)); //without theme
+                    submitButton.setBackgroundColor(
+                            ResourcesCompat.getColor(
+                                    getResources(), R.color.red, null)); // without theme
                 });
 
         submitButton.setOnClickListener(
@@ -73,7 +75,9 @@ public class SettingsFragment extends BaseFragment {
                     settingsScreen.setVisibility(View.VISIBLE);
                     // reset back to blue + save text case returning from change training period
                     submitButton.setText(getString(R.string.submit));
-                    submitButton.setBackgroundColor(ResourcesCompat.getColor(getResources(), R.color.colorPrimary, null)); //without theme);
+                    submitButton.setBackgroundColor(
+                            ResourcesCompat.getColor(
+                                    getResources(), R.color.colorPrimary, null)); // without theme);
                 });
     }
 }
