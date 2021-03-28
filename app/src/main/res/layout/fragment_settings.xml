@@ -10,7 +10,8 @@
         android:id="@+id/settings_main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="visible">
+        android:visibility="visible"
+        >
 
         <TextView
             android:id="@+id/settings_header"
@@ -24,11 +25,12 @@
 
         <TextView
             android:id="@+id/account_subheader"
-            style="@style/AppTheme.TextAppearance.XLLabel"
+            style="@style/AppTheme.TextAppearance.MediumLabelSecondary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingLeft="@dimen/page_padding_horizontal"
             android:layout_marginTop="@dimen/section_margin"
+            android:paddingVertical="@dimen/label_margin"
+            android:paddingLeft="@dimen/page_padding_horizontal"
             android:text="@string/account_info"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toBottomOf="@id/settings_header" />
@@ -37,21 +39,22 @@
             android:id="@+id/email_setting"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/label_margin"
             android:background="?attr/selectableItemBackground"
-            android:paddingHorizontal="@dimen/page_padding_horizontal"
-            android:paddingVertical="@dimen/row_margin"
             android:clickable="true"
             android:focusable="true"
+            android:paddingHorizontal="@dimen/page_padding_horizontal"
+            android:paddingVertical="@dimen/row_margin"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/account_subheader"
-            android:layout_marginTop="@dimen/label_margin">
+            app:layout_constraintTop_toBottomOf="@id/account_subheader">
 
             <TextView
                 android:id="@+id/email_label"
-                style="@style/AppTheme.TextAppearance.LargeLabel"
+                style="@style/AppTheme.TextAppearance.SmallLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/email"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -71,7 +74,7 @@
                 style="@style/AppTheme.TextAppearance.LargeLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/arrow"
+                android:drawableLeft="@drawable/ic_baseline_chevron_right_24"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -82,20 +85,21 @@
             android:id="@+id/password_setting"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingHorizontal="@dimen/page_padding_horizontal"
-            android:paddingVertical="@dimen/row_margin"
             android:background="?attr/selectableItemBackground"
             android:clickable="true"
             android:focusable="true"
+            android:paddingHorizontal="@dimen/page_padding_horizontal"
+            android:paddingVertical="@dimen/row_margin"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toBottomOf="@id/email_setting">
 
             <TextView
                 android:id="@+id/password_label"
-                style="@style/AppTheme.TextAppearance.LargeLabel"
+                style="@style/AppTheme.TextAppearance.SmallLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/password"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -103,7 +107,7 @@
                 style="@style/AppTheme.TextAppearance.LargeLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/arrow"
+                android:drawableLeft="@drawable/ic_baseline_chevron_right_24"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -115,61 +119,64 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingHorizontal="@dimen/page_padding_horizontal"
-            android:paddingVertical="@dimen/row_margin"
+            android:paddingVertical="@dimen/checkbox_vertical_padding"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toBottomOf="@id/password_setting">
 
             <TextView
                 android:id="@+id/biometrics_label"
-                style="@style/AppTheme.TextAppearance.LargeLabel"
+                style="@style/AppTheme.TextAppearance.SmallLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/use_bio"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"/>
+                app:layout_constraintTop_toTopOf="parent" />
 
-            <CheckBox
-                android:minWidth="0dp"
-                android:minHeight="0dp"
+            <com.google.android.material.checkbox.MaterialCheckBox
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:minHeight="0dp"
+                android:minWidth="0dp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <TextView
             android:id="@+id/portfolio_subheading"
-            style="@style/AppTheme.TextAppearance.XLLabel"
+            style="@style/AppTheme.TextAppearance.MediumLabelSecondary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/section_margin"
+            android:paddingVertical="@dimen/label_margin"
             android:paddingLeft="@dimen/page_padding_horizontal"
             android:text="@string/portfolio_settings"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/biometrics_setting"
-            android:layout_marginTop="@dimen/section_margin"/>
+            app:layout_constraintTop_toBottomOf="@id/biometrics_setting" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/money_setting"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingHorizontal="@dimen/page_padding_horizontal"
-            android:paddingVertical="@dimen/row_margin"
+            android:layout_marginTop="@dimen/label_margin"
             android:background="?attr/selectableItemBackground"
             android:clickable="true"
             android:focusable="true"
+            android:paddingHorizontal="@dimen/page_padding_horizontal"
+            android:paddingVertical="@dimen/row_margin"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/portfolio_subheading"
-            android:layout_marginTop="@dimen/label_margin">
+            app:layout_constraintTop_toBottomOf="@id/portfolio_subheading">
 
             <TextView
                 android:id="@+id/money_label"
-                style="@style/AppTheme.TextAppearance.LargeLabel"
+                style="@style/AppTheme.TextAppearance.SmallLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/starting_amount"
+                android:text="@string/training_settings"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -177,7 +184,7 @@
                 style="@style/AppTheme.TextAppearance.LargeLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/arrow"
+                android:drawableLeft="@drawable/ic_baseline_chevron_right_24"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -190,18 +197,19 @@
         android:id="@+id/email_change"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:visibility="gone"
-        android:paddingVertical="@dimen/page_padding_vertical"
         android:paddingHorizontal="@dimen/page_padding_horizontal"
+        android:paddingVertical="@dimen/page_padding_vertical"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        android:visibility="gone"
+        >
 
         <TextView
             android:id="@+id/email_change_label"
-            style="@style/AppTheme.TextAppearance.XXLLabel"
+            style="@style/AppTheme.TextAppearance.LargeLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/email"
+            android:text="@string/update_email"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -214,7 +222,8 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/section_divider_margin" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -224,15 +233,16 @@
         android:id="@+id/password_change"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:visibility="gone"
-        android:paddingVertical="@dimen/page_padding_vertical"
         android:paddingHorizontal="@dimen/page_padding_horizontal"
+        android:paddingVertical="@dimen/page_padding_vertical"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        android:visibility="gone"
+        >
 
         <TextView
             android:id="@+id/password_change_label"
-            style="@style/AppTheme.TextAppearance.XXLLabel"
+            style="@style/AppTheme.TextAppearance.LargeLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/password"
@@ -243,6 +253,7 @@
             android:id="@+id/old_password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/section_divider_margin"
             android:hint="@string/current_password"
             app:layout_constraintTop_toBottomOf="@id/password_change_label">
 
@@ -256,9 +267,9 @@
             android:id="@+id/new_password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/row_margin"
             android:hint="@string/new_password"
-            app:layout_constraintTop_toBottomOf="@id/old_password"
-            android:layout_marginTop="10sp">
+            app:layout_constraintTop_toBottomOf="@id/old_password">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
@@ -269,21 +280,22 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/starting_amount_change"
+        android:id="@+id/training_period_change"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:visibility="gone"
-        android:paddingVertical="@dimen/page_padding_vertical"
         android:paddingHorizontal="@dimen/page_padding_horizontal"
+        android:paddingVertical="@dimen/page_padding_vertical"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        android:visibility="gone"
+        >
 
         <TextView
             android:id="@+id/amount_change_label"
-            style="@style/AppTheme.TextAppearance.XXLLabel"
+            style="@style/AppTheme.TextAppearance.LargeLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/starting_amount"
+            android:text="@string/training_settings"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -291,8 +303,10 @@
             android:id="@+id/amount_input"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/starting_amount"
-            app:layout_constraintTop_toBottomOf="@id/amount_change_label">
+            android:layout_marginTop="@dimen/section_divider_margin"
+            android:hint="@string/amount_to_trade"
+            app:layout_constraintTop_toBottomOf="@id/amount_change_label"
+            tools:layout_editor_absoluteX="16dp">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
@@ -304,14 +318,15 @@
 
     <Button
         android:id="@+id/submit_button"
+        style="@style/AppTheme.Button.PrimaryButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginRight="@dimen/page_padding_horizontal"
+        android:layout_marginBottom="@dimen/page_padding_vertical"
         android:text="@string/submit"
-        style="@style/AppTheme.Button.PrimaryButton"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginBottom="@dimen/page_padding_vertical"
-        android:layout_marginRight="@dimen/page_padding_horizontal"
-        android:visibility="gone"/>
+        android:visibility="gone"
+        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
