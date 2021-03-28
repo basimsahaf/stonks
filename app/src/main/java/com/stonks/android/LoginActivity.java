@@ -9,16 +9,19 @@ import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatDelegate;
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputLayout;
 import com.stonks.android.model.LoggedInUserView;
 import com.stonks.android.model.LoginDataSource;
 import com.stonks.android.model.LoginRepository;
 import com.stonks.android.model.LoginViewModel;
 import com.stonks.android.storage.UserTable;
+import com.stonks.android.model.AuthMode;
 
 public class LoginActivity extends BaseActivity {
 
@@ -29,6 +32,8 @@ public class LoginActivity extends BaseActivity {
     private TextInputLayout passwordField;
     private TextView errorMessage;
     private LoginViewModel loginViewModel;
+    private MaterialButton loginModeButton;
+    private MaterialButton signUpModeButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +43,19 @@ public class LoginActivity extends BaseActivity {
 
         UserTable userTable = new UserTable(this);
         loginViewModel = new LoginViewModel(new LoginRepository(new LoginDataSource(userTable)));
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        loginModeButton = findViewById(R.id.login_mode_button);
+        signUpModeButton = findViewById(R.id.signup_mode_button);
+
+        loginModeButton.setOnClickListener(
+                myView -> {
+                    switchView(AuthMode.LOGIN);
+                });
+        signUpModeButton.setOnClickListener(
+                myView -> {
+                    switchView(AuthMode.SIGNUP);
+                });
 
         loginButton = findViewById(R.id.login_button);
         usernameField = findViewById(R.id.username_field);
@@ -61,6 +79,9 @@ public class LoginActivity extends BaseActivity {
                         });
 
         loginButton.setText(getString(R.string.login));
+        // toggle login mode by default
+        switchView(AuthMode.LOGIN);
+
         loginButton.setOnClickListener(
                 view -> {
                     String username = "";
@@ -78,7 +99,6 @@ public class LoginActivity extends BaseActivity {
 
                     usernameField.getEditText().setText("");
                     passwordField.getEditText().setText("");
-
                     errorMessage.setVisibility(View.VISIBLE);
                     loginViewModel.login(username, password);
                 });
@@ -107,10 +127,6 @@ public class LoginActivity extends BaseActivity {
                             field.getEditText().getText().toString());
                 }
             }
-
-
-
-
         };
 
         field.getEditText().addTextChangedListener(textWatcher);
@@ -167,8 +183,25 @@ public class LoginActivity extends BaseActivity {
                             }
                             if (loginResult.getSuccess() != null) {
                                 showLoginSucceeded(loginResult.getSuccess());
+                                Intent intent = new Intent(this, MainActivity.class);
+                                startActivity(intent);
                             }
                             setResult(Activity.RESULT_OK);
                         });
+                    // errorMessage.setVisibility(View.VISIBLE);
+
+    }
+
+    private void switchView(AuthMode login) {
+        CheckBox biometricsCheckbox = findViewById(R.id.biometric_checkbox);
+        if (login == AuthMode.LOGIN) {
+            loginModeButton.setChecked(true);
+            loginButton.setText(getString(R.string.login));
+            biometricsCheckbox.setVisibility(View.GONE);
+        } else {
+            signUpModeButton.setChecked(true);
+            loginButton.setText(getString(R.string.create_account));
+            biometricsCheckbox.setVisibility(View.VISIBLE);
+        }
     }
 }

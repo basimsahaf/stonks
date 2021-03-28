@@ -27,6 +27,7 @@
 
     <style name="AppTheme.TextAppearance.SmallLabel" parent="AppTheme.TextAppearance">
         <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/white</item>
     </style>
 
     <style name="AppTheme.TextAppearance.SmallLabelSecondary" parent="AppTheme.TextAppearance">
@@ -68,6 +69,10 @@
         <item name="textAllCaps">false</item>
     </style>
 
+    <style name="AppTheme.Button.ButtonGroupButton" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="colorPrimary">@color/colorPrimaryOutline</item>
+    </style>
+
     <style name="AppTheme.Button.FloatingActionButton" parent="Widget.MaterialComponents.ExtendedFloatingActionButton">
         <item name="android:textColor">@color/white</item>
         <item name="android:textSize">16sp</item>
@@ -94,9 +99,17 @@
         <item name="cornerFamily">rounded</item>
     </style>
 
-    <style name="AppTheme.Button.AddSubtractButton.ShapeOverlay" parent="Widget.MaterialComponents.Button.OutlinedButton">
-        <item name="cornerSize">50%</item>
+    <style name="AppTheme.Button.AddSubtractButton" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="android:textSize">32sp</item>
+        <item name="android:textColor">@color/colorPrimaryOutline</item>
+        <item name="strokeColor">@color/colorPrimaryOutline</item>
+        <item name="rippleColor">@color/colorPrimary</item>
+        <item name="shapeAppearanceOverlay">@style/roundShapeAppearanceOverlay</item>
+    </style>
+
+    <style name="roundShapeAppearanceOverlay" parent="">
         <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">100dp</item>
     </style>
 
     <style name="AppTheme.ChartStyle">

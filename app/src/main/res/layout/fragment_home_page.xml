@@ -7,57 +7,67 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingHorizontal="@dimen/page_padding_horizontal"
-        android:paddingVertical="@dimen/page_padding_vertical">
+        android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/current_value_label"
-            android:layout_width="wrap_content"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/current_info_header"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            style="@style/AppTheme.TextAppearance.SmallLabel"
-            app:layout_constraintStart_toStartOf="parent"
+            android:paddingTop="@dimen/page_padding_vertical"
+            android:paddingBottom="@dimen/label_margin"
+            android:paddingHorizontal="@dimen/page_padding_horizontal"
             app:layout_constraintTop_toTopOf="parent"
-            android:text="@string/current_value"/>
+            app:layout_constraintLeft_toLeftOf="parent">
 
-        <TextView
-            android:id="@+id/current_value_price"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            style="@style/AppTheme.TextAppearance.XXLLabel"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/current_value_label"
-            android:text="@string/current_value_price" />
+            <TextView
+                android:id="@+id/current_value_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/AppTheme.TextAppearance.SmallLabel"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:text="@string/current_value"/>
 
-        <TextView
-            android:id="@+id/price_update"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            style="@style/AppTheme.TextAppearance.MediumLabel"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/current_value_price"
-            android:layout_marginTop="8sp"
-            android:text="@string/price_update" />
+            <TextView
+                android:id="@+id/current_value_price"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/AppTheme.TextAppearance.XXLLabel"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/current_value_label"
+                android:text="@string/current_value_price" />
 
-        <TextView
-            android:id="@+id/money_left"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            style="@style/AppTheme.TextAppearance.MediumLabel"
-            app:layout_constraintTop_toTopOf="@id/current_value_price"
-            app:layout_constraintRight_toRightOf="parent"
-            android:text="@string/money_left" />
+            <TextView
+                android:id="@+id/price_update"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/AppTheme.TextAppearance.MediumLabel"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/current_value_price"
+                android:layout_marginTop="@dimen/label_margin"
+                android:text="@string/price_update" />
 
-        <TextView
-            android:id="@+id/money_left_desc"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            style="@style/AppTheme.TextAppearance.SmallLabel"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/money_left"
-            android:lines="2"
-            android:maxLines="2"
-            android:text="@string/money_left_desc"/>
+            <TextView
+                android:id="@+id/money_left"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/AppTheme.TextAppearance.MediumLabel"
+                app:layout_constraintTop_toTopOf="@id/current_value_price"
+                app:layout_constraintRight_toRightOf="parent"
+                android:text="@string/money_left" />
+
+            <TextView
+                android:id="@+id/money_left_desc"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/AppTheme.TextAppearance.SmallLabel"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/money_left"
+                android:lines="2"
+                android:maxLines="2"
+                android:text="@string/money_left_desc" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
@@ -65,23 +75,39 @@
             android:orientation="vertical"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/price_update">
+            app:layout_constraintTop_toBottomOf="@id/current_info_header">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:layout_marginBottom="@dimen/section_margin">
+
+                <RelativeLayout
+                    android:id="@+id/chart_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="300dp"
+                    android:paddingHorizontal="@dimen/page_padding_horizontal">
+
+                    <com.stonks.android.uicomponent.CustomSparkView
+                        android:id="@+id/stock_chart"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        style="@style/AppTheme.ChartStyle" />
+
+                </RelativeLayout>
 
                 <TextView
                     android:id="@+id/your_portfolio_label"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:paddingLeft="@dimen/page_padding_horizontal"
+                    android:paddingVertical="@dimen/label_margin"
                     android:text="@string/your_portfolio"
-                    style="@style/AppTheme.TextAppearance.XLLabel"
-                    android:layout_marginTop="10sp"/>
+                    style="@style/AppTheme.TextAppearance.XLLabel" />
 
                 <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/profolio_list"
+                    android:id="@+id/portfolio_list"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:clipToPadding="false"

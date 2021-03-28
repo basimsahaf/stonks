@@ -6,8 +6,12 @@ import android.graphics.DashPathEffect;
 import android.graphics.Paint;
 import android.util.AttributeSet;
 import com.robinhood.spark.SparkView;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class CustomSparkView extends SparkView {
+    private final AtomicBoolean scrubLineOnRelease = new AtomicBoolean(false);
+    private OnEndedCallback onEndedCallback = () -> {};
+
     public CustomSparkView(Context context) {
         super(context);
     }
@@ -39,5 +43,27 @@ public class CustomSparkView extends SparkView {
 
         setBaseLinePaint(strokedBaseLine);
         setScrubEnabled(true);
+    }
+
+    public void setOnEndedCallback(OnEndedCallback onEndedCallback) {
+        this.onEndedCallback = onEndedCallback;
+    }
+
+    @Override
+    public void onScrubEnded() {
+        this.onEndedCallback.callback();
+
+        if (!this.scrubLineOnRelease.get()) {
+            super.onScrubEnded();
+        }
+    }
+
+    public void keepScrubLineOnRelease() {
+        this.scrubLineOnRelease.set(true);
+    }
+
+    @FunctionalInterface
+    public interface OnEndedCallback {
+        void callback();
     }
 }

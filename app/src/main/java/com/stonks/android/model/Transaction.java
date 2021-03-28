@@ -4,18 +4,18 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class Transaction {
-    private LocalDateTime transactionDate;
-    private String symbol;
-    private float price;
-    private int shares;
-    private String transactionType; // buy or sell
+    private final LocalDateTime transactionDate;
+    private final String symbol;
+    private final float price;
+    private final int shares;
+    private final String transactionType; // buy or sell
 
     public Transaction(
-            String symbol,
-            int shares,
-            float price,
-            String transactionType,
-            LocalDateTime transactionDate) {
+            final String symbol,
+            final int shares,
+            final float price,
+            final String transactionType,
+            final LocalDateTime transactionDate) {
         this.transactionDate = transactionDate;
         this.symbol = symbol;
         this.price = price;

@@ -1,17 +1,22 @@
-package com.stonks.android;
+package com.stonks.android.uicomponent;
 
 import android.content.Context;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import androidx.annotation.Nullable;
+import com.google.android.material.button.MaterialButton;
+import com.stonks.android.R;
+import com.stonks.android.model.PickerLiveDataModel;
 
 public class HorizontalNumberPicker extends LinearLayout {
     private final EditText etNumber;
     private int max;
+    private PickerLiveDataModel model;
 
     public HorizontalNumberPicker(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -20,11 +25,12 @@ public class HorizontalNumberPicker extends LinearLayout {
 
         max = 10000; // init here for now
         etNumber = findViewById(R.id.et_number);
+        etNumber.addTextChangedListener(new TextChangeHandler());
 
-        final Button btnLess = findViewById(R.id.btn_less);
+        final MaterialButton btnLess = findViewById(R.id.btn_less);
         btnLess.setOnClickListener(new AddHandler(-1));
 
-        final Button btnMore = findViewById(R.id.btn_more);
+        final MaterialButton btnMore = findViewById(R.id.btn_more);
         btnMore.setOnClickListener(new AddHandler(1));
     }
 
@@ -45,6 +51,22 @@ public class HorizontalNumberPicker extends LinearLayout {
                 newValue = max;
             }
             etNumber.setText(String.valueOf(newValue));
+            model.getNumberOfStocks().setValue(newValue);
+        }
+    }
+
+    private class TextChangeHandler implements TextWatcher {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+        @Override
+        public void afterTextChanged(Editable s) {
+            if (!s.toString().isEmpty()) {
+                model.getNumberOfStocks().setValue(Integer.parseInt(s.toString()));
+            }
         }
     }
 
@@ -73,5 +95,9 @@ public class HorizontalNumberPicker extends LinearLayout {
 
     public void setMax(int max) {
         this.max = max;
+    }
+
+    public void setModel(PickerLiveDataModel hModel) {
+        this.model = hModel;
     }
 }

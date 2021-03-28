@@ -8,8 +8,11 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.stonks.android.adapter.PortfolioRecyclerViewAdapter;
+import com.stonks.android.adapter.StockChartAdapter;
 import com.stonks.android.model.PortfolioListItem;
+import com.stonks.android.uicomponent.CustomSparkView;
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 public class HomePageFragment extends Fragment {
     public HomePageFragment() {}
@@ -31,21 +34,34 @@ public class HomePageFragment extends Fragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         RecyclerView.LayoutManager portfolioListManager =
                 new LinearLayoutManager(this.getContext());
-        RecyclerView portfolioList = view.findViewById(R.id.profolio_list);
+        RecyclerView portfolioList = view.findViewById(R.id.portfolio_list);
         portfolioList.setLayoutManager(portfolioListManager);
         RecyclerView.Adapter portfolioListAdapter =
                 new PortfolioRecyclerViewAdapter(this.getMockItems());
         portfolioList.setAdapter(portfolioListAdapter);
+
+        CustomSparkView sparkView = view.findViewById(R.id.stock_chart);
+        StockChartAdapter dataAdapter =
+                new StockChartAdapter(
+                        StockFragment.getFakeStockPrices().stream()
+                                .map(p -> p.second)
+                                .collect(Collectors.toList()));
+        dataAdapter.setBaseline(121.08f);
+
+        sparkView.setAdapter(dataAdapter);
     }
 
     private ArrayList<PortfolioListItem> getMockItems() {
         ArrayList<PortfolioListItem> list = new ArrayList<>();
-        PortfolioListItem item =
-                new PortfolioListItem("SYM", "Company Name", 19.80f, 9, 2.29f, 4.85f);
 
-        for (int i = 0; i < 15; i++) {
-            list.add(item);
-        }
+        list.add(new PortfolioListItem("SHOP", "Shopify Inc.", 19.34f, 9, 2.15f, 1.0f));
+        list.add(new PortfolioListItem("UBER", "Uber Technologies Inc.", 9.22f, 3, 2.23f, 2.85f));
+        list.add(new PortfolioListItem("AMZN", "Amazon.com  Inc.", 20.99f, 1, 8.90f, 4.0f));
+        list.add(new PortfolioListItem("GOOG", "Google", 30.81f, 22, 1.11f, 3.33f));
+
+        // TODO: Fix fragment scroll issue
+        // Padding for bug
+        list.add(new PortfolioListItem("GOOG", "Google", 30.81f, 22, 1.11f, 3.33f));
 
         return list;
     }

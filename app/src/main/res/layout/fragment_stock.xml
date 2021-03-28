@@ -132,7 +132,7 @@
     <androidx.core.widget.NestedScrollView
             android:id="@+id/scroll_view"
             xmlns:tools="http://schemas.android.com/tools"
-            tools:context=".StockActivity"
+            tools:context=".StockFragment"
             android:layout_height="match_parent"
             android:layout_width="match_parent"
             android:elevation="1dp">
@@ -206,7 +206,7 @@
             <include
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/position"
+                    android:id="@+id/position_container"
                     layout="@layout/stock_position"
                     android:layout_marginTop="@dimen/section_margin"
                     app:layout_constraintTop_toBottomOf="@id/chart_container"
@@ -217,7 +217,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/section_margin"
-                    app:layout_constraintTop_toBottomOf="@id/position">
+                    app:layout_constraintTop_toBottomOf="@id/position_container">
 
                 <TextView
                         android:id="@+id/stats_title"

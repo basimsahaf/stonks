@@ -34,7 +34,7 @@ public class RecentTransactionsFragment extends Fragment {
                 new LinearLayoutManager(this.getContext());
         transactionList = view.findViewById(R.id.history_list);
         transactionList.setLayoutManager(transactionListManager);
-        transactionListAdapter = new TransactionViewAdapter(StockActivity.getFakeTransactions());
+        transactionListAdapter = new TransactionViewAdapter(StockFragment.getFakeTransactions());
         transactionList.setAdapter(transactionListAdapter);
     }
 }
