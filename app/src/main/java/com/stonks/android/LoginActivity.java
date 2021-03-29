@@ -160,7 +160,6 @@ public class LoginActivity extends BaseActivity {
                             }
                             loginButton.setEnabled(loginFormState.isDataValid());
                             if (usernameChanged && loginFormState.getUsernameError() != null) {
-                                Log.d(TAG, "Error username");
                                 usernameField.setError(
                                         getString(loginFormState.getUsernameError()));
                             } else {
