@@ -19,6 +19,12 @@
             android:title="@string/activity_menu"
     />
     <item
+            android:id="@+id/saved_nav"
+            android:enabled="true"
+            android:icon="@drawable/ic_baseline_favorite_border_24"
+            android:title="@string/saved_menu"
+    />
+    <item
             android:id="@+id/settings_nav"
             android:enabled="true"
             android:icon="@drawable/ic_baseline_settings_24"

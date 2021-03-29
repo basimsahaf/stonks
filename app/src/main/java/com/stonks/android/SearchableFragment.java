@@ -69,7 +69,7 @@ public class SearchableFragment extends BaseFragment implements SearchView.OnQue
         return false;
     }
 
-    private ArrayList<SearchResult> getFakeSearchResults() {
+    public static ArrayList<SearchResult> getFakeSearchResults() {
         ArrayList<SearchResult> list = new ArrayList<>();
 
         list.add(new SearchResult("Google", "GOOGL"));

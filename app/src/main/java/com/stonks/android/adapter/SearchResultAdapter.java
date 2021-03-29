@@ -24,6 +24,20 @@ public class SearchResultAdapter extends BaseAdapter {
         inflater = LayoutInflater.from(context);
     }
 
+    public SearchResultAdapter(Context context, ArrayList<SearchResult> queryResultList, boolean isSaved) {
+        if (isSaved) {
+            this.context = context;
+            this.queryResultList = queryResultList;
+            this.searchResultList = queryResultList;
+            inflater = LayoutInflater.from(context);
+        } else {
+            this.context = context;
+            this.queryResultList = queryResultList;
+            this.searchResultList = new ArrayList<>();
+            inflater = LayoutInflater.from(context);
+        }
+    }
+
     public class ViewHolder {
         public View view;
         public TextView companyName;
