@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.StringRes;
@@ -30,13 +31,17 @@ public class LoginActivity extends BaseActivity {
     private Button loginButton;
     private TextInputLayout usernameField;
     private TextInputLayout passwordField;
-    private TextView errorMessage;
+    private TextView usernameErrorMessage;
+    private TextView passwordErrorMessage;
     private LoginViewModel loginViewModel;
     private MaterialButton loginModeButton;
     private MaterialButton signUpModeButton;
     private boolean usernameChanged;
     private boolean passwordChanged;
     private AuthMode currentAuthMode;
+    private CheckBox biometricCheckbox;
+    private boolean biometricsEnabled;
+    private ProgressBar loadingProgressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,7 +58,9 @@ public class LoginActivity extends BaseActivity {
         usernameField = findViewById(R.id.username_field);
         passwordField = findViewById(R.id.password_field);
         loginButton = findViewById(R.id.login_button);
-        errorMessage = findViewById(R.id.error_message);
+        biometricCheckbox = findViewById(R.id.biometric_checkbox);
+        usernameErrorMessage = findViewById(R.id.username_error_message);
+        passwordErrorMessage = findViewById(R.id.password_error_message);
 
         loginModeButton.setOnClickListener(
                 myView -> {
@@ -73,6 +80,7 @@ public class LoginActivity extends BaseActivity {
                 .setOnEditorActionListener(
                         (v, actionId, event) -> {
                             if (actionId == EditorInfo.IME_ACTION_DONE) {
+                                loadingProgressBar.setVisibility(View.VISIBLE);
                                 switch (currentAuthMode) {
                                     case LOGIN:
                                         loginViewModel.login(
@@ -83,7 +91,8 @@ public class LoginActivity extends BaseActivity {
                                     case SIGNUP:
                                         loginViewModel.signup(
                                                 usernameField.getEditText().getText().toString(),
-                                                passwordField.getEditText().getText().toString());
+                                                passwordField.getEditText().getText().toString(),
+                                                biometricsEnabled);
                                         break;
                                 }
                             }
@@ -93,6 +102,7 @@ public class LoginActivity extends BaseActivity {
         loginButton.setText(getString(R.string.login));
         loginButton.setOnClickListener(
                 view -> {
+                    loadingProgressBar.setVisibility(View.VISIBLE);
                     String username = "";
                     String password = "";
 
@@ -106,21 +116,27 @@ public class LoginActivity extends BaseActivity {
 
                     Log.d(TAG, "Username/password pair: " + username + " -> " + password);
 
-                    usernameField.getEditText().setText("");
-                    passwordField.getEditText().setText("");
-                    errorMessage.setVisibility(View.VISIBLE);
+                    usernameChanged = false;
+                    passwordChanged = false;
+
                     switch (currentAuthMode) {
                         case LOGIN:
                             loginViewModel.login(username, password);
                             break;
 
                         case SIGNUP:
-                            loginViewModel.signup(username, password);
+                            loginViewModel.signup(username, password, biometricsEnabled);
                             break;
                     }
                 });
 
-        errorMessage.setVisibility(View.VISIBLE);
+        biometricCheckbox.setOnClickListener(v -> {
+            biometricsEnabled = biometricCheckbox.isChecked();
+        });
+
+        // set progress bar visibility to gone by default
+        usernameErrorMessage.setVisibility(View.GONE);
+        passwordErrorMessage.setVisibility(View.GONE);
 
         // disable the back button on the login page
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
@@ -181,17 +197,18 @@ public class LoginActivity extends BaseActivity {
                             }
                             loginButton.setEnabled(loginFormState.isDataValid());
                             if (usernameChanged && loginFormState.getUsernameError() != null) {
-                                usernameField.setError(
-                                        getString(loginFormState.getUsernameError()));
+                                usernameErrorMessage.setText(loginFormState.getUsernameError());
+                                usernameErrorMessage.setTextColor(getResources().getColor(R.color.red, getTheme()));
+                                usernameErrorMessage.setVisibility(View.VISIBLE);
                             } else {
-                                Log.d(TAG, "Valid username");
-                                usernameField.setError(null);
+                                usernameErrorMessage.setVisibility(View.GONE);
                             }
                             if (passwordChanged && loginFormState.getPasswordError() != null) {
-                                passwordField.setError(
-                                        getString(loginFormState.getPasswordError()));
+                                passwordErrorMessage.setText(loginFormState.getPasswordError());
+                                passwordErrorMessage.setTextColor(getResources().getColor(R.color.red, getTheme()));
+                                passwordErrorMessage.setVisibility(View.VISIBLE);
                             } else {
-                                passwordField.setError(null);
+                                passwordErrorMessage.setVisibility(View.GONE);
                             }
                         });
 
@@ -203,6 +220,7 @@ public class LoginActivity extends BaseActivity {
                             if (loginResult == null) {
                                 return;
                             }
+                            loadingProgressBar.setVisibility(View.GONE);
                             if (loginResult.getError() != null) {
                                 showLoginFailed(loginResult.getError());
                             }

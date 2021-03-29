@@ -10,12 +10,17 @@ import com.stonks.android.model.UserModel;
 
 public class UserTable extends SQLiteOpenHelper {
     private final String TAG = UserTable.class.getCanonicalName();
+    private final float INITIAL_AMOUNT = 100000f;
+
     public static final String USER_TABLE = "USER_TABLE";
     public static final String COLUMN_USERNAME = "username";
     public static final String COLUMN_PASSWORD = "password";
+    public static final String COLUMN_BIOMETRICS = "biometrics_enabled";
+    public static final String COLUMN_TOTAL_AMOUNT = "total_amount";
+
 
     public UserTable(@Nullable Context context) {
-        super(context, "stonks_db2", null, 1);
+        super(context, "stonks", null, 1);
     }
 
     @Override
@@ -27,7 +32,11 @@ public class UserTable extends SQLiteOpenHelper {
                         + COLUMN_USERNAME
                         + " TEXT PRIMARY KEY, "
                         + COLUMN_PASSWORD
-                        + " TEXT"
+                        + " TEXT,"
+                        + COLUMN_BIOMETRICS
+                        + " INT,"
+                        + COLUMN_TOTAL_AMOUNT
+                        + " REAL"
                         + ")";
 
         db.execSQL(createUserTable);
@@ -35,7 +44,7 @@ public class UserTable extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        String dropStatement = "DROP TABLE stonks_db.USER_TABLE";
+        String dropStatement = "DROP TABLE stonks.USER_TABLE";
         db.execSQL(dropStatement);
         onCreate(db);
     }
@@ -45,6 +54,8 @@ public class UserTable extends SQLiteOpenHelper {
         ContentValues cv = new ContentValues();
         cv.put(COLUMN_USERNAME, userModel.getUsername());
         cv.put(COLUMN_PASSWORD, userModel.getPassword());
+        cv.put(COLUMN_BIOMETRICS, userModel.getBiometricsEnabled());
+        cv.put(COLUMN_TOTAL_AMOUNT, INITIAL_AMOUNT);
 
         long insert = db.insert(USER_TABLE, null, cv);
         return insert >= 0;

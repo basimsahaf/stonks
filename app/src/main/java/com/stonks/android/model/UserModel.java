@@ -4,10 +4,12 @@ public class UserModel {
 
     String username;
     String password;
+    boolean biometricsEnabled;
 
-    public UserModel(String username, String password) {
+    public UserModel(String username, String password, boolean biometricsEnabled) {
         this.username = username;
         this.password = password;
+        this.biometricsEnabled = biometricsEnabled;
     }
 
     public String getUsername() {
@@ -16,5 +18,9 @@ public class UserModel {
 
     public String getPassword() {
         return password;
+    }
+
+    public boolean getBiometricsEnabled() {
+        return biometricsEnabled;
     }
 }

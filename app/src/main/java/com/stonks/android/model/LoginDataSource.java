@@ -33,7 +33,7 @@ public class LoginDataSource {
         }
     }
 
-    public Result<LoggedInUser> signup(String username, String password) {
+    public Result<LoggedInUser> signup(String username, String password, boolean isBiometricsEnabled) {
 
         try {
             boolean exists = userTable.checkIfUserExists(username);
@@ -41,7 +41,7 @@ public class LoginDataSource {
                 return new Result.Error(new IOException("Error, user already exists"));
             }
 
-            UserModel userModel = new UserModel(username, password);
+            UserModel userModel = new UserModel(username, password, isBiometricsEnabled);
             boolean userAdded = userTable.addUser(userModel);
 
             if (!userAdded) {
