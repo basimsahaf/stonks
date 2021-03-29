@@ -1,7 +1,7 @@
 package com.stonks.android.model;
 
+import com.stonks.android.R;
 import com.stonks.android.storage.UserTable;
-import java.io.IOException;
 
 /** Class that handles authentication w/ login credentials and retrieves user information. */
 public class LoginDataSource {
@@ -16,20 +16,20 @@ public class LoginDataSource {
         try {
             boolean exists = userTable.checkIfUserExists(username);
             if (!exists) {
-                return new Result.Error(new IOException("Error, user does not exist"));
+                return new Result.Error(R.string.user_does_not_exist);
             }
 
             boolean correctPassword = userTable.checkUsernamePassword(username, password);
 
             if (!correctPassword) {
-                return new Result.Error(new IOException("Error, wrong password"));
+                return new Result.Error(R.string.invalid_password);
             }
 
             LoggedInUser user = new LoggedInUser(username);
             return new Result.Success<>(user);
 
         } catch (Exception e) {
-            return new Result.Error(new IOException("Error logging in", e));
+            return new Result.Error(R.string.internal_server_error);
         }
     }
 
@@ -39,21 +39,21 @@ public class LoginDataSource {
         try {
             boolean exists = userTable.checkIfUserExists(username);
             if (exists) {
-                return new Result.Error(new IOException("Error, user already exists"));
+                return new Result.Error(R.string.user_exists);
             }
 
             UserModel userModel = new UserModel(username, password, isBiometricsEnabled);
             boolean userAdded = userTable.addUser(userModel);
 
             if (!userAdded) {
-                return new Result.Error(new IOException("Signup failed"));
+                return new Result.Error(R.string.internal_server_error);
             }
 
             LoggedInUser user = new LoggedInUser(username);
             return new Result.Success<>(user);
 
         } catch (Exception e) {
-            return new Result.Error(new IOException("Error logging in", e));
+            return new Result.Error(R.string.internal_server_error);
         }
     }
 

@@ -9,8 +9,6 @@ import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.StringRes;
@@ -36,12 +34,11 @@ public class LoginActivity extends BaseActivity {
     private LoginViewModel loginViewModel;
     private MaterialButton loginModeButton;
     private MaterialButton signUpModeButton;
+    private TextView authErrorMessage;
     private boolean usernameChanged;
     private boolean passwordChanged;
     private AuthMode currentAuthMode;
-    private CheckBox biometricCheckbox;
     private boolean biometricsEnabled;
-    private ProgressBar loadingProgressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,10 +52,10 @@ public class LoginActivity extends BaseActivity {
 
         loginModeButton = findViewById(R.id.login_mode_button);
         signUpModeButton = findViewById(R.id.signup_mode_button);
+        authErrorMessage = findViewById(R.id.auth_failed_error_message);
         usernameField = findViewById(R.id.username_field);
         passwordField = findViewById(R.id.password_field);
         loginButton = findViewById(R.id.login_button);
-        biometricCheckbox = findViewById(R.id.biometric_checkbox);
         usernameErrorMessage = findViewById(R.id.username_error_message);
         passwordErrorMessage = findViewById(R.id.password_error_message);
 
@@ -80,7 +77,6 @@ public class LoginActivity extends BaseActivity {
                 .setOnEditorActionListener(
                         (v, actionId, event) -> {
                             if (actionId == EditorInfo.IME_ACTION_DONE) {
-                                loadingProgressBar.setVisibility(View.VISIBLE);
                                 switch (currentAuthMode) {
                                     case LOGIN:
                                         loginViewModel.login(
@@ -102,7 +98,6 @@ public class LoginActivity extends BaseActivity {
         loginButton.setText(getString(R.string.login));
         loginButton.setOnClickListener(
                 view -> {
-                    loadingProgressBar.setVisibility(View.VISIBLE);
                     String username = "";
                     String password = "";
 
@@ -118,6 +113,7 @@ public class LoginActivity extends BaseActivity {
 
                     usernameChanged = false;
                     passwordChanged = false;
+                    authErrorMessage.setVisibility(View.GONE);
 
                     switch (currentAuthMode) {
                         case LOGIN:
@@ -130,17 +126,15 @@ public class LoginActivity extends BaseActivity {
                     }
                 });
 
-        biometricCheckbox.setOnClickListener(
-                v -> {
-                    biometricsEnabled = biometricCheckbox.isChecked();
-                });
-
-        // set progress bar visibility to gone by default
+        // set error messages visibility to gone by default
         usernameErrorMessage.setVisibility(View.GONE);
         passwordErrorMessage.setVisibility(View.GONE);
+        authErrorMessage.setVisibility(View.GONE);
 
         // disable the back button on the login page
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+
+        // TODO: do biometrics here
 
         // toggle login mode by default
         switchView(AuthMode.LOGIN);
@@ -184,7 +178,13 @@ public class LoginActivity extends BaseActivity {
     }
 
     private void showLoginFailed(@StringRes Integer errorString) {
-        Toast.makeText(getApplicationContext(), errorString, Toast.LENGTH_SHORT).show();
+        authErrorMessage.setText(errorString);
+        authErrorMessage.setVisibility(View.VISIBLE);
+        Toast.makeText(
+                        getApplicationContext(),
+                        getResources().getString(R.string.try_again),
+                        Toast.LENGTH_SHORT)
+                .show();
     }
 
     private void setLoginViewModelListeners() {
@@ -223,7 +223,6 @@ public class LoginActivity extends BaseActivity {
                             if (loginResult == null) {
                                 return;
                             }
-                            loadingProgressBar.setVisibility(View.GONE);
                             if (loginResult.getError() != null) {
                                 showLoginFailed(loginResult.getError());
                             }
@@ -237,17 +236,15 @@ public class LoginActivity extends BaseActivity {
     }
 
     private void switchView(AuthMode login) {
-        CheckBox biometricsCheckbox = findViewById(R.id.biometric_checkbox);
+        authErrorMessage.setVisibility(View.GONE);
         if (login == AuthMode.LOGIN) {
             currentAuthMode = AuthMode.LOGIN;
             loginModeButton.setChecked(true);
             loginButton.setText(getString(R.string.login));
-            biometricsCheckbox.setVisibility(View.GONE);
         } else {
             currentAuthMode = AuthMode.SIGNUP;
             signUpModeButton.setChecked(true);
             loginButton.setText(getString(R.string.create_account));
-            biometricsCheckbox.setVisibility(View.VISIBLE);
         }
     }
 }

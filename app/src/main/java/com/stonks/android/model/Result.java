@@ -31,13 +31,13 @@ public class Result<T> {
 
     // Error sub-class
     public static final class Error extends Result {
-        private Exception error;
+        private Integer error;
 
-        public Error(Exception error) {
+        public Error(Integer error) {
             this.error = error;
         }
 
-        public Exception getError() {
+        public Integer getError() {
             return this.error;
         }
     }
