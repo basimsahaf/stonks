@@ -11,32 +11,24 @@ import com.stonks.android.adapter.SearchResultAdapter;
 import com.stonks.android.model.SearchResult;
 import java.util.ArrayList;
 
-public class SearchableFragment extends Fragment implements SearchView.OnQueryTextListener {
+public class SearchableFragment extends BaseFragment implements SearchView.OnQueryTextListener {
     private ListView searchResultList;
     private SearchResultAdapter searchResultAdapter;
     private SearchView searchView;
 
-    public SearchableFragment() {
-        // Required empty public constructor
-    }
-
-    public static SearchableFragment newInstance() {
-        SearchableFragment fragment = new SearchableFragment();
-        Bundle args = new Bundle();
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     @Override
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_searchable, container, false);
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        getActionBar().setDisplayHomeAsUpEnabled(false);
+        getActionBar().setDisplayShowTitleEnabled(false);
+        getMainActivity().hideActionBarCustomViews();
 
         searchResultList = view.findViewById(R.id.list_view);
         searchResultAdapter = new SearchResultAdapter(getActivity(), getFakeSearchResults());

@@ -25,7 +25,7 @@ import com.stonks.android.storage.UserTable;
 
 public class LoginActivity extends BaseActivity {
 
-    final String TAG = this.getClass().getSimpleName();
+    private final String TAG = this.getClass().getSimpleName();
 
     private Button loginButton;
     private TextInputLayout usernameField;
@@ -100,6 +100,8 @@ public class LoginActivity extends BaseActivity {
                     errorMessage.setVisibility(View.VISIBLE);
                     loginViewModel.login(username, password);
                 });
+        
+        errorMessage.setVisibility(View.VISIBLE);
 
         // disable the back button on the login page
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
@@ -192,8 +194,6 @@ public class LoginActivity extends BaseActivity {
                             }
                             setResult(Activity.RESULT_OK);
                         });
-        // errorMessage.setVisibility(View.VISIBLE);
-
     }
 
     private void switchView(AuthMode login) {

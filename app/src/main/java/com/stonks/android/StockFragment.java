@@ -15,6 +15,7 @@ import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.stonks.android.adapter.StockChartAdapter;
 import com.stonks.android.adapter.TransactionViewAdapter;
 import com.stonks.android.external.MarketDataService;
@@ -31,7 +32,7 @@ import java.time.Month;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class StockFragment extends Fragment {
+public class StockFragment extends BaseFragment {
     private static String TAG = StockFragment.class.getCanonicalName();
 
     private String symbol;
@@ -44,6 +45,9 @@ public class StockFragment extends Fragment {
     private final StockChartAdapter dataAdapter = new StockChartAdapter(new ArrayList<>());
     private StockData stockData;
     private TextView companyName, open, dailyLow, dailyHigh, yearlyLow, yearlyHigh;
+    private FloatingActionButton tryButton;
+    private FloatingActionButton buyButton;
+    private FloatingActionButton sellButton;
 
     @Nullable
     @Override
@@ -83,11 +87,15 @@ public class StockFragment extends Fragment {
 
         RecyclerView.LayoutManager transactionListManager = new LinearLayoutManager(getContext());
         this.transactionList.setLayoutManager(transactionListManager);
-        this.transactionListAdapter = new TransactionViewAdapter(getFakeTransactions());
-        this.transactionList.setAdapter(this.transactionListAdapter);
 
         this.symbol = getArguments().getString(getString(R.string.intent_extra_symbol));
+
+        getActionBar().setDisplayHomeAsUpEnabled(true);
+        getMainActivity().setGlobalTitle(this.symbol);
         this.textViewSymbol.setText(this.symbol);
+        this.transactionListAdapter =
+                new TransactionViewAdapter(this.getFakeTransactionsForStock());
+        this.transactionList.setAdapter(this.transactionListAdapter);
 
         CustomSparkView sparkView = view.findViewById(R.id.stock_chart);
 
@@ -116,6 +124,56 @@ public class StockFragment extends Fragment {
         if (!this.doesUserPositionExist()) {
             positionContainer.setVisibility(View.GONE);
         }
+
+        this.tryButton = view.findViewById(R.id.try_button);
+        this.tryButton.setOnClickListener(
+                v -> {
+                    Fragment hypotheticalFragment = new HypotheticalFragment();
+                    Bundle bundle = new Bundle();
+                    bundle.putFloat(
+                            HypotheticalFragment.CURRENT_PRICE_ARG, stockData.getCurrentPrice());
+                    hypotheticalFragment.setArguments(bundle);
+                    getActivity()
+                            .getSupportFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.sliding_drawer, hypotheticalFragment, null)
+                            .addToBackStack(null)
+                            .commit();
+                });
+
+        this.buyButton = this.tryButton = view.findViewById(R.id.buy_button);
+        this.sellButton = this.tryButton = view.findViewById(R.id.sell_button);
+
+        this.buyButton.setOnClickListener(
+                v -> {
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable(BuySellFragment.STOCK_DATA_ARG, this.stockData);
+                    bundle.putSerializable(
+                            BuySellFragment.TRANSACTION_MODE_ARG, TransactionMode.BUY);
+                    Fragment buyFrag = new BuySellFragment();
+                    buyFrag.setArguments(bundle);
+                    getActivity()
+                            .getSupportFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.sliding_drawer, buyFrag, null)
+                            .addToBackStack(null)
+                            .commit();
+                });
+        this.sellButton.setOnClickListener(
+                v -> {
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable(BuySellFragment.STOCK_DATA_ARG, this.stockData);
+                    bundle.putSerializable(
+                            BuySellFragment.TRANSACTION_MODE_ARG, TransactionMode.BUY);
+                    Fragment sellFrag = new BuySellFragment();
+                    sellFrag.setArguments(bundle);
+                    getActivity()
+                            .getSupportFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.sliding_drawer, sellFrag, null)
+                            .addToBackStack(null)
+                            .commit();
+                });
 
         this.fetchInitialData();
     }
@@ -202,19 +260,40 @@ public class StockFragment extends Fragment {
         return false;
     }
 
-    public static ArrayList<Transaction> getFakeTransactions() {
+    public ArrayList<Transaction> getFakeTransactionsForStock() {
         ArrayList<Transaction> list = new ArrayList<>();
 
         list.add(
                 new Transaction(
-                        "UBER",
+                        this.symbol,
                         100,
                         56.92f,
                         "buy",
                         LocalDateTime.of(2020, Month.AUGUST, 19, 13, 14)));
         list.add(
                 new Transaction(
-                        "UBER",
+                        this.symbol,
+                        268,
+                        36.47f,
+                        "buy",
+                        LocalDateTime.of(2020, Month.AUGUST, 1, 9, 52)));
+
+        return list;
+    }
+
+    public static ArrayList<Transaction> getFakeTransactions() {
+        ArrayList<Transaction> list = new ArrayList<>();
+
+        list.add(
+                new Transaction(
+                        "SHOP",
+                        100,
+                        56.92f,
+                        "buy",
+                        LocalDateTime.of(2020, Month.AUGUST, 19, 13, 14)));
+        list.add(
+                new Transaction(
+                        "SHOP",
                         268,
                         36.47f,
                         "buy",

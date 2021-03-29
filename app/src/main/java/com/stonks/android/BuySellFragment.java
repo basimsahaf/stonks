@@ -12,7 +12,9 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import com.google.android.material.button.MaterialButton;
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.stonks.android.model.PickerLiveDataModel;
+import com.stonks.android.model.StockData;
 import com.stonks.android.model.TransactionMode;
 import com.stonks.android.uicomponent.HorizontalNumberPicker;
 import java.util.Locale;
@@ -22,7 +24,10 @@ import java.util.Locale;
 // - cancel button onclick (close drawer/back)
 
 public class BuySellFragment extends Fragment {
-
+    static final String TRANSACTION_MODE_ARG = "transactionMode";
+    static final String CURRENT_PRICE_ARG = "currentPrice";
+    static final String STOCK_DATA_ARG = "stockData";
+    private final String TAG = getClass().getCanonicalName();
     private HorizontalNumberPicker numberPicker;
     private MaterialButton buyBtn, sellBtn, tradeBtn;
     private TextView costValueLabel, availableLabel, costPrice, price, available;
@@ -30,6 +35,7 @@ public class BuySellFragment extends Fragment {
     private float currentPrice, availableToTrade;
     private PickerLiveDataModel viewModel;
     private int numSharesOwned;
+    private SlidingUpPanelLayout slidingUpPanel;
 
     @Nullable
     @Override
@@ -40,8 +46,12 @@ public class BuySellFragment extends Fragment {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES); // force dark mode
 
         // for now; we would get this info from the screen that triggers this
-        mode = TransactionMode.SELL;
-        currentPrice = (float) 232.0;
+        Bundle arg = getArguments();
+        mode = (TransactionMode) arg.getSerializable(TRANSACTION_MODE_ARG);
+        StockData stockData = (StockData) arg.getSerializable(STOCK_DATA_ARG);
+        currentPrice = stockData.getCurrentPrice();
+
+        // TODO: get these variables from Bundle
         numSharesOwned = 103;
         availableToTrade = (float) 19032.23;
 
@@ -51,9 +61,13 @@ public class BuySellFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
+        MainActivity mainActivity = (MainActivity) getActivity();
+        this.slidingUpPanel = mainActivity.getSlidingUpPanel();
+        // TODO: Set custom sliding drawer height
+        slidingUpPanel.setPanelState(SlidingUpPanelLayout.PanelState.ANCHORED);
         buyBtn = getView().findViewById(R.id.buy_mode_button);
         sellBtn = getView().findViewById(R.id.sell_mode_button);
+        MaterialButton cancelBtn = getView().findViewById(R.id.cancel_btn);
         buyBtn.setOnClickListener(
                 myView -> {
                     switchView(TransactionMode.BUY);
@@ -83,6 +97,16 @@ public class BuySellFragment extends Fragment {
 
         viewModel.getNumberOfStocks().observe(getViewLifecycleOwner(), observer);
         this.numberPicker.setModel(viewModel);
+
+        tradeBtn.setOnClickListener(
+                myView -> {
+                    this.slidingUpPanel.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+                });
+
+        cancelBtn.setOnClickListener(
+                myView -> {
+                    this.slidingUpPanel.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+                });
 
         switchView(mode);
     }
