@@ -17,5 +17,4 @@ public class UserModel {
     public String getPassword() {
         return password;
     }
-
 }
