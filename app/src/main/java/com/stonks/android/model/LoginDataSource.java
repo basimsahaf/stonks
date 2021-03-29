@@ -33,7 +33,8 @@ public class LoginDataSource {
         }
     }
 
-    public Result<LoggedInUser> signup(String username, String password, boolean isBiometricsEnabled) {
+    public Result<LoggedInUser> signup(
+            String username, String password, boolean isBiometricsEnabled) {
 
         try {
             boolean exists = userTable.checkIfUserExists(username);

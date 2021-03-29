@@ -130,9 +130,10 @@ public class LoginActivity extends BaseActivity {
                     }
                 });
 
-        biometricCheckbox.setOnClickListener(v -> {
-            biometricsEnabled = biometricCheckbox.isChecked();
-        });
+        biometricCheckbox.setOnClickListener(
+                v -> {
+                    biometricsEnabled = biometricCheckbox.isChecked();
+                });
 
         // set progress bar visibility to gone by default
         usernameErrorMessage.setVisibility(View.GONE);
@@ -198,14 +199,16 @@ public class LoginActivity extends BaseActivity {
                             loginButton.setEnabled(loginFormState.isDataValid());
                             if (usernameChanged && loginFormState.getUsernameError() != null) {
                                 usernameErrorMessage.setText(loginFormState.getUsernameError());
-                                usernameErrorMessage.setTextColor(getResources().getColor(R.color.red, getTheme()));
+                                usernameErrorMessage.setTextColor(
+                                        getResources().getColor(R.color.red, getTheme()));
                                 usernameErrorMessage.setVisibility(View.VISIBLE);
                             } else {
                                 usernameErrorMessage.setVisibility(View.GONE);
                             }
                             if (passwordChanged && loginFormState.getPasswordError() != null) {
                                 passwordErrorMessage.setText(loginFormState.getPasswordError());
-                                passwordErrorMessage.setTextColor(getResources().getColor(R.color.red, getTheme()));
+                                passwordErrorMessage.setTextColor(
+                                        getResources().getColor(R.color.red, getTheme()));
                                 passwordErrorMessage.setVisibility(View.VISIBLE);
                             } else {
                                 passwordErrorMessage.setVisibility(View.GONE);

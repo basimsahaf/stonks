@@ -43,7 +43,8 @@ public class LoginRepository {
         return result;
     }
 
-    public Result<LoggedInUser> signup(String username, String password, boolean isBiometricsEnabled) {
+    public Result<LoggedInUser> signup(
+            String username, String password, boolean isBiometricsEnabled) {
         Result<LoggedInUser> result = dataSource.signup(username, password, isBiometricsEnabled);
         if (result instanceof Result.Success) {
             setLoggedInUser(((Result.Success<LoggedInUser>) result).getData());

@@ -35,7 +35,8 @@ public class LoginViewModel extends ViewModel {
     }
 
     public void signup(String username, String password, boolean isBiometricsEnabled) {
-        Result<LoggedInUser> result = loginRepository.signup(username, password, isBiometricsEnabled);
+        Result<LoggedInUser> result =
+                loginRepository.signup(username, password, isBiometricsEnabled);
 
         if (result instanceof Result.Success) {
             loginResult.setValue(new LoginResult(new LoggedInUserView("Hello!")));

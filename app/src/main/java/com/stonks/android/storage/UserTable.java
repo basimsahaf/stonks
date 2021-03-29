@@ -18,7 +18,6 @@ public class UserTable extends SQLiteOpenHelper {
     public static final String COLUMN_BIOMETRICS = "biometrics_enabled";
     public static final String COLUMN_TOTAL_AMOUNT = "total_amount";
 
-
     public UserTable(@Nullable Context context) {
         super(context, "stonks", null, 1);
     }
