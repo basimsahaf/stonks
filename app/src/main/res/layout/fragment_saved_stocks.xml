@@ -54,7 +54,7 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             android:layout_marginTop="@dimen/row_margin"
-            android:src="@drawable/ic_baseline_favorite_24" />
+            android:src="@drawable/ic_baseline_favorite_48" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

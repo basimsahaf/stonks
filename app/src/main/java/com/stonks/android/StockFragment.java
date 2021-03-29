@@ -6,11 +6,13 @@ import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -48,6 +50,9 @@ public class StockFragment extends BaseFragment {
     private FloatingActionButton tryButton;
     private FloatingActionButton buyButton;
     private FloatingActionButton sellButton;
+    private ImageView favIcon;
+
+    private boolean favourited = false;
 
     @Nullable
     @Override
@@ -66,6 +71,8 @@ public class StockFragment extends BaseFragment {
         final ConstraintLayout sellButtonContainer = view.findViewById(R.id.sell_button_container);
         final ConstraintLayout tryButtonContainer = view.findViewById(R.id.try_button_container);
         final ConstraintLayout positionContainer = view.findViewById(R.id.position_container);
+
+        this.favIcon = view.findViewById(R.id.fav_icon);
 
         this.textViewSymbol = view.findViewById(R.id.stock_symbol);
         this.overlay = view.findViewById(R.id.screen_overlay);
@@ -173,6 +180,20 @@ public class StockFragment extends BaseFragment {
                             .replace(R.id.sliding_drawer, sellFrag, null)
                             .addToBackStack(null)
                             .commit();
+                });
+        this.favIcon.setOnClickListener(
+                v -> {
+                    favourited = !favourited;
+
+                    if (favourited) {
+                        favIcon.setImageDrawable(
+                                ContextCompat.getDrawable(
+                                        getContext(), R.drawable.ic_baseline_favorite_48));
+                    } else {
+                        favIcon.setImageDrawable(
+                                ContextCompat.getDrawable(
+                                        getContext(), R.drawable.ic_baseline_favorite_border_48));
+                    }
                 });
 
         this.fetchInitialData();

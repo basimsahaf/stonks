@@ -24,8 +24,9 @@ public class SearchResultAdapter extends BaseAdapter {
         inflater = LayoutInflater.from(context);
     }
 
-    public SearchResultAdapter(Context context, ArrayList<SearchResult> queryResultList, boolean isSaved) {
-        if (isSaved) {
+    public SearchResultAdapter(
+            Context context, ArrayList<SearchResult> queryResultList, boolean isSavedList) {
+        if (isSavedList) {
             this.context = context;
             this.queryResultList = queryResultList;
             this.searchResultList = queryResultList;
