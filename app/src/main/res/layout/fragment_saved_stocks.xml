@@ -58,7 +58,7 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <ListView
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/saved_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

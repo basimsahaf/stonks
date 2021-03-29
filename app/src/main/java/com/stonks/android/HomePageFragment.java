@@ -31,7 +31,7 @@ public class HomePageFragment extends BaseFragment {
         RecyclerView portfolioList = view.findViewById(R.id.portfolio_list);
         portfolioList.setLayoutManager(portfolioListManager);
         RecyclerView.Adapter portfolioListAdapter =
-                new PortfolioRecyclerViewAdapter(this.getMockItems());
+                new PortfolioRecyclerViewAdapter(this.getActivity(), getMockItems());
         portfolioList.setAdapter(portfolioListAdapter);
 
         NestedScrollView scrollView = view.findViewById(R.id.scroll_view);
@@ -66,7 +66,7 @@ public class HomePageFragment extends BaseFragment {
         sparkView.setAdapter(dataAdapter);
     }
 
-    private ArrayList<PortfolioListItem> getMockItems() {
+    public static ArrayList<PortfolioListItem> getMockItems() {
         ArrayList<PortfolioListItem> list = new ArrayList<>();
 
         list.add(new PortfolioListItem("SHOP", "Shopify Inc.", 19.34f, 103, 2.15f, 1.0f));

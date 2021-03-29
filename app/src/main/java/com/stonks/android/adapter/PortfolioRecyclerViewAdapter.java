@@ -1,5 +1,6 @@
 package com.stonks.android.adapter;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -7,7 +8,10 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.stonks.android.BaseActivity;
 import com.stonks.android.MainActivity;
 import com.stonks.android.R;
 import com.stonks.android.StockFragment;
@@ -16,9 +20,11 @@ import java.util.ArrayList;
 
 public class PortfolioRecyclerViewAdapter
         extends RecyclerView.Adapter<PortfolioRecyclerViewAdapter.ViewHolder> {
+    FragmentActivity parentActivity;
     ArrayList<PortfolioListItem> portfolioItems;
 
-    public PortfolioRecyclerViewAdapter(ArrayList<PortfolioListItem> portfolioItems) {
+    public PortfolioRecyclerViewAdapter(FragmentActivity parentActivity, ArrayList<PortfolioListItem> portfolioItems) {
+        this.parentActivity = parentActivity;
         this.portfolioItems = portfolioItems;
     }
 
@@ -39,8 +45,7 @@ public class PortfolioRecyclerViewAdapter
                             String.valueOf(stockSymbolTextView.getText()));
                     stockFragment.setArguments(bundle);
 
-                    // this feels dangerous
-                    ((MainActivity) v.getContext())
+                    this.parentActivity
                             .getSupportFragmentManager()
                             .beginTransaction()
                             .replace(R.id.fragment_container, stockFragment)
