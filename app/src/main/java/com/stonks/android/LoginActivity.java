@@ -44,8 +44,8 @@ public class LoginActivity extends BaseActivity {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
 
         UserTable userTable = new UserTable(this);
-        Log.d(TAG, userTable.getDatabaseName());
-        loginViewModel = new LoginViewModel(new LoginRepository(new LoginDataSource(userTable)));
+        LoginRepository repo = LoginRepository.getInstance(new LoginDataSource(userTable));
+        loginViewModel = new LoginViewModel(repo);
 
         loginModeButton = findViewById(R.id.login_mode_button);
         signUpModeButton = findViewById(R.id.signup_mode_button);
@@ -100,7 +100,7 @@ public class LoginActivity extends BaseActivity {
                     errorMessage.setVisibility(View.VISIBLE);
                     loginViewModel.login(username, password);
                 });
-        
+
         errorMessage.setVisibility(View.VISIBLE);
 
         // disable the back button on the login page
@@ -141,7 +141,7 @@ public class LoginActivity extends BaseActivity {
     }
 
     private void showLoginSucceeded(LoggedInUserView model) {
-        String welcome = getString(R.string.welcome) + model.getDisplayName();
+        String welcome = getString(R.string.welcome);
         Toast.makeText(getApplicationContext(), welcome, Toast.LENGTH_LONG).show();
         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
         startActivity(intent);

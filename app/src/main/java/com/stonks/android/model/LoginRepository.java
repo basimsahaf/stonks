@@ -7,13 +7,11 @@ package com.stonks.android.model;
 public class LoginRepository {
 
     private static volatile LoginRepository instance;
-
     private LoginDataSource dataSource;
-
     private LoggedInUser user = null;
 
     // private constructor : singleton access
-    public LoginRepository(LoginDataSource dataSource) {
+    private LoginRepository(LoginDataSource dataSource) {
         this.dataSource = dataSource;
     }
 

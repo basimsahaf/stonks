@@ -5,7 +5,6 @@ import java.io.IOException;
 
 /** Class that handles authentication w/ login credentials and retrieves user information. */
 public class LoginDataSource {
-
     private final UserTable userTable;
 
     public LoginDataSource(UserTable userTable) {
@@ -15,7 +14,6 @@ public class LoginDataSource {
     public Result<LoggedInUser> login(String username, String password) {
 
         try {
-
             boolean exists = userTable.checkIfUserExists(username);
             if (!exists) {
                 return new Result.Error(new IOException("Error, user does not exist"));

@@ -5,11 +5,11 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 import androidx.annotation.Nullable;
 import com.stonks.android.model.UserModel;
 
 public class UserTable extends SQLiteOpenHelper {
+    private final String TAG = UserTable.class.getCanonicalName();
     public static final String USER_TABLE = "USER_TABLE";
     public static final String COLUMN_USERNAME = "username";
     public static final String COLUMN_PASSWORD = "password";
@@ -57,7 +57,6 @@ public class UserTable extends SQLiteOpenHelper {
         Cursor cursor = db.rawQuery(queryString, null);
         boolean exists = cursor.moveToFirst();
         cursor.close();
-        Log.d("Debug", "User exist " + exists);
         return exists;
     }
 
@@ -74,8 +73,6 @@ public class UserTable extends SQLiteOpenHelper {
         Cursor cursor = db.rawQuery(queryString, null);
         boolean exists = cursor.moveToFirst();
         cursor.close();
-        Log.d("Debug", "Password exist " + exists);
-
         return exists;
     }
 }

@@ -1,6 +1,5 @@
 package com.stonks.android.model;
 
-import android.util.Log;
 import android.util.Patterns;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -30,30 +29,9 @@ public class LoginViewModel extends ViewModel {
 
         if (result instanceof Result.Success) {
             LoggedInUser data = ((Result.Success<LoggedInUser>) result).getData();
-            Log.d("Debug", "Returning success from model");
             loginResult.setValue(new LoginResult(new LoggedInUserView("Hello!")));
         } else {
             loginResult.setValue(new LoginResult(R.string.login_failed));
-        }
-    }
-
-    public void usernameChanged(String username) {
-        Log.d("Debug", "Changing");
-        if (!isUserNameValid(username)) {
-            Log.d("Debug", "InValid");
-            loginFormState.setValue(new LoginFormState(R.string.invalid_username, null));
-        } else {
-            Log.d("Debug", "Valid");
-            loginFormState.setValue(new LoginFormState(true));
-            Log.d("Debug", "" + loginFormState.getValue().getPasswordError());
-        }
-    }
-
-    public void passwordChanged(String password) {
-        if (!isPasswordValid(password)) {
-            loginFormState.setValue(new LoginFormState(null, R.string.invalid_password));
-        } else {
-            loginFormState.setValue(new LoginFormState(true));
         }
     }
 
