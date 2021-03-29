@@ -14,6 +14,7 @@ import com.stonks.android.MainActivity;
 import com.stonks.android.R;
 import com.stonks.android.StockFragment;
 import com.stonks.android.model.PortfolioListItem;
+import com.stonks.android.utility.Formatters;
 import java.util.ArrayList;
 
 public class PortfolioRecyclerViewAdapter
@@ -59,20 +60,18 @@ public class PortfolioRecyclerViewAdapter
 
         holder.stockSymbol.setText(item.getStockSymbol());
         holder.companyName.setText(item.getCompanyName());
-        holder.price.setText(String.format("$%.2f (x%d)", item.getPrice(), item.getMultiplier()));
+        holder.price.setText(Formatters.formatStockQuantity(item.getPrice(), item.getMultiplier()));
 
         if (item.getPriceChange() < 0) {
             holder.priceChange.setText(
-                    String.format(
-                            "$%.2f (%.2f%%)",
-                            item.getPriceChange() * -1.0, item.getChangePercent() * -1.0));
+                    Formatters.formatPriceChange(
+                            item.getPriceChange() * -1.0f, item.getChangePercent() * -1.0f));
             holder.priceChange.setTextColor(
                     ContextCompat.getColor(holder.priceChange.getContext(), R.color.red));
             holder.arrowIndicator.setImageResource(R.drawable.ic_baseline_arrow_drop_down_24);
         } else {
             holder.priceChange.setText(
-                    String.format(
-                            "$%.2f (%.2f%%)", item.getPriceChange(), item.getChangePercent()));
+                    Formatters.formatPriceChange(item.getPriceChange(), item.getChangePercent()));
         }
     }
 
