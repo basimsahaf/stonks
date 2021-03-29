@@ -33,6 +33,29 @@ public class LoginDataSource {
         }
     }
 
+    public Result<LoggedInUser> signup(String username, String password) {
+
+        try {
+            boolean exists = userTable.checkIfUserExists(username);
+            if (exists) {
+                return new Result.Error(new IOException("Error, user already exists"));
+            }
+
+            UserModel userModel = new UserModel(username, password);
+            boolean userAdded = userTable.addUser(userModel);
+
+            if (!userAdded) {
+                return new Result.Error(new IOException("Signup failed"));
+            }
+
+            LoggedInUser user = new LoggedInUser(username);
+            return new Result.Success<>(user);
+
+        } catch (Exception e) {
+            return new Result.Error(new IOException("Error logging in", e));
+        }
+    }
+
     public void logout() {
         // TODO: revoke authentication
     }

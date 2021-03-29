@@ -36,6 +36,7 @@ public class LoginActivity extends BaseActivity {
     private MaterialButton signUpModeButton;
     private boolean usernameChanged;
     private boolean passwordChanged;
+    private AuthMode currentAuthMode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,9 +73,19 @@ public class LoginActivity extends BaseActivity {
                 .setOnEditorActionListener(
                         (v, actionId, event) -> {
                             if (actionId == EditorInfo.IME_ACTION_DONE) {
-                                loginViewModel.login(
-                                        usernameField.getEditText().getText().toString(),
-                                        passwordField.getEditText().getText().toString());
+                                switch (currentAuthMode) {
+                                    case LOGIN:
+                                        loginViewModel.login(
+                                                usernameField.getEditText().getText().toString(),
+                                                passwordField.getEditText().getText().toString());
+                                        break;
+
+                                    case SIGNUP:
+                                        loginViewModel.signup(
+                                                usernameField.getEditText().getText().toString(),
+                                                passwordField.getEditText().getText().toString());
+                                        break;
+                                }
                             }
                             return false;
                         });
@@ -98,7 +109,15 @@ public class LoginActivity extends BaseActivity {
                     usernameField.getEditText().setText("");
                     passwordField.getEditText().setText("");
                     errorMessage.setVisibility(View.VISIBLE);
-                    loginViewModel.login(username, password);
+                    switch (currentAuthMode) {
+                        case LOGIN:
+                            loginViewModel.login(username, password);
+                            break;
+
+                        case SIGNUP:
+                            loginViewModel.signup(username, password);
+                            break;
+                    }
                 });
 
         errorMessage.setVisibility(View.VISIBLE);
@@ -199,10 +218,12 @@ public class LoginActivity extends BaseActivity {
     private void switchView(AuthMode login) {
         CheckBox biometricsCheckbox = findViewById(R.id.biometric_checkbox);
         if (login == AuthMode.LOGIN) {
+            currentAuthMode = AuthMode.LOGIN;
             loginModeButton.setChecked(true);
             loginButton.setText(getString(R.string.login));
             biometricsCheckbox.setVisibility(View.GONE);
         } else {
+            currentAuthMode = AuthMode.SIGNUP;
             signUpModeButton.setChecked(true);
             loginButton.setText(getString(R.string.create_account));
             biometricsCheckbox.setVisibility(View.VISIBLE);

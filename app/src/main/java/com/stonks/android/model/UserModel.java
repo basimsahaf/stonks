@@ -4,14 +4,10 @@ public class UserModel {
 
     String username;
     String password;
-    String firstName;
-    String lastName;
 
-    public UserModel(String username, String password, String firstName, String lastName) {
+    public UserModel(String username, String password) {
         this.username = username;
         this.password = password;
-        this.firstName = firstName;
-        this.lastName = lastName;
     }
 
     public String getUsername() {
@@ -22,11 +18,4 @@ public class UserModel {
         return password;
     }
 
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
 }
