@@ -10,8 +10,7 @@ import com.stonks.android.R;
 import com.stonks.android.model.Transaction;
 import java.util.ArrayList;
 
-public class TransactionViewAdapter
-        extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class TransactionViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     ArrayList<Transaction> transactions;
 
     public TransactionViewAdapter(ArrayList<Transaction> transactionList) {
@@ -29,10 +28,14 @@ public class TransactionViewAdapter
         View v;
 
         if (viewType == 0) {
-            v = LayoutInflater.from(parent.getContext()).inflate(R.layout.stock_transaction_list_item, parent, false);
+            v =
+                    LayoutInflater.from(parent.getContext())
+                            .inflate(R.layout.stock_transaction_list_item, parent, false);
             return new TransactionViewHolder(v);
         } else {
-            v = LayoutInflater.from(parent.getContext()).inflate(R.layout.stock_transaction_date_item, parent, false);
+            v =
+                    LayoutInflater.from(parent.getContext())
+                            .inflate(R.layout.stock_transaction_date_item, parent, false);
             return new DateViewHolder(v);
         }
     }
@@ -42,15 +45,16 @@ public class TransactionViewAdapter
         Transaction transaction = transactions.get(position);
 
         if (viewHolder.getItemViewType() == 0) {
-            TransactionViewHolder holder = (TransactionViewHolder)viewHolder;
+            TransactionViewHolder holder = (TransactionViewHolder) viewHolder;
 
-            holder.transactionType.setText("Market " + transaction.getTransactionType().toLowerCase());
+            holder.transactionType.setText(
+                    "Market " + transaction.getTransactionType().toLowerCase());
             holder.symbol.setText(transaction.getSymbol());
             holder.priceAndShares.setText(
                     "$" + transaction.getPrice() + " (x" + transaction.getShares() + ")");
             holder.time.setText(transaction.getTransactionTimeString());
         } else {
-            DateViewHolder holder = (DateViewHolder)viewHolder;
+            DateViewHolder holder = (DateViewHolder) viewHolder;
             holder.date.setText(transaction.getTransactionDateString());
         }
     }

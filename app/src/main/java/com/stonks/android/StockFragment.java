@@ -286,11 +286,7 @@ public class StockFragment extends BaseFragment {
 
         list.add(
                 new Transaction(
-                        "SYM",
-                        0,
-                        0.0f,
-                        "DATE",
-                        LocalDateTime.of(2020, Month.AUGUST, 19, 13, 14)));
+                        "SYM", 0, 0.0f, "DATE", LocalDateTime.of(2020, Month.AUGUST, 19, 13, 14)));
         list.add(
                 new Transaction(
                         "SHOP",
