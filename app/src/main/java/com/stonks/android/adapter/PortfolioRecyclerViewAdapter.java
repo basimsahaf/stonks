@@ -63,14 +63,17 @@ public class PortfolioRecyclerViewAdapter
 
         if (item.getPriceChange() < 0) {
             holder.priceChange.setText(
-                    String.format("$%.2f (%.2f%%)", item.getPriceChange() * -1.0, item.getChangePercent() * -1.0));
-            holder.priceChange.setTextColor(ContextCompat.getColor(holder.priceChange.getContext(), R.color.red));
+                    String.format(
+                            "$%.2f (%.2f%%)",
+                            item.getPriceChange() * -1.0, item.getChangePercent() * -1.0));
+            holder.priceChange.setTextColor(
+                    ContextCompat.getColor(holder.priceChange.getContext(), R.color.red));
             holder.arrowIndicator.setImageResource(R.drawable.ic_baseline_arrow_drop_down_24);
         } else {
             holder.priceChange.setText(
-                    String.format("$%.2f (%.2f%%)", item.getPriceChange(), item.getChangePercent()));
+                    String.format(
+                            "$%.2f (%.2f%%)", item.getPriceChange(), item.getChangePercent()));
         }
-
     }
 
     @Override
