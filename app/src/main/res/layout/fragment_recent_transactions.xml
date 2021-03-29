@@ -16,13 +16,22 @@
         app:layout_constraintLeft_toLeftOf="parent"
         android:layout_marginHorizontal="@dimen/page_padding_horizontal"/>
 
+    <TextView
+        android:id="@+id/your_activity_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/your_activity"
+        android:paddingVertical="@dimen/label_margin"
+        android:layout_marginLeft="@dimen/page_padding_horizontal"
+        app:layout_constraintTop_toBottomOf="@id/activity_label"
+        app:layout_constraintLeft_toLeftOf="parent" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/history_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10sp"
-        app:layout_constraintTop_toBottomOf="@id/activity_label"
+        app:layout_constraintTop_toBottomOf="@id/your_activity_label"
         app:layout_constraintLeft_toLeftOf="parent"/>
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -37,7 +37,7 @@ public class StockFragment extends BaseFragment {
 
     private String symbol;
     private RecyclerView transactionList;
-    private RecyclerView.Adapter<TransactionViewAdapter.ViewHolder> transactionListAdapter;
+    private RecyclerView.Adapter<RecyclerView.ViewHolder> transactionListAdapter;
     private TextView textViewSymbol, currentPrice, priceChange;
     private SpeedDialExtendedFab tradeButton;
     private LinearLayout overlay;
@@ -284,6 +284,13 @@ public class StockFragment extends BaseFragment {
     public static ArrayList<Transaction> getFakeTransactions() {
         ArrayList<Transaction> list = new ArrayList<>();
 
+        list.add(
+                new Transaction(
+                        "SYM",
+                        0,
+                        0.0f,
+                        "DATE",
+                        LocalDateTime.of(2020, Month.AUGUST, 19, 13, 14)));
         list.add(
                 new Transaction(
                         "SHOP",
