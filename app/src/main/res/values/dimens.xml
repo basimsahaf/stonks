@@ -17,6 +17,8 @@
     <dimen name="checkbox_horizontal_padding">12dp</dimen>
     <dimen name="checkbox_vertical_padding">7dp</dimen>
 
+    <!-- Component padding -->
     <dimen name="button_horizontal_padding">32dp</dimen>
+    <dimen name="text_button_horizontal_padding">24dp</dimen>
     <dimen name="button_vertical_padding">16dp</dimen>
 </resources>
