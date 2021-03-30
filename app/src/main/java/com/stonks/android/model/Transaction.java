@@ -49,6 +49,10 @@ public class Transaction {
         return shares;
     }
 
+    public float getTotalPrice() {
+        return price * shares;
+    }
+
     public String getTransactionType() {
         return transactionType;
     }

@@ -11,6 +11,14 @@ public class Formatters {
         return String.format(Locale.CANADA, "$%.2f", price);
     }
 
+    public static String formatPricePerShare(int numShares, Float pricePerShare) {
+        return String.format(Locale.CANADA, "%d shares @ $%.2f", numShares, pricePerShare);
+    }
+
+    public static String formatPricePerShare(int numShares, Double pricePerShare) {
+        return String.format(Locale.CANADA, "%d shares @ $%.2f", numShares, pricePerShare);
+    }
+
     public static String formatPriceChange(Float priceChange, Float changePercent) {
         return String.format(Locale.CANADA, "$%.2f (%.2f%%)", priceChange, changePercent);
     }

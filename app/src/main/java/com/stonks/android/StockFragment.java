@@ -37,7 +37,7 @@ public class StockFragment extends BaseFragment {
 
     private String symbol;
     private RecyclerView transactionList;
-    private RecyclerView.Adapter<TransactionViewAdapter.ViewHolder> transactionListAdapter;
+    private RecyclerView.Adapter<RecyclerView.ViewHolder> transactionListAdapter;
     private TextView textViewSymbol, currentPrice, priceChange;
     private SpeedDialExtendedFab tradeButton;
     private LinearLayout overlay;
@@ -260,44 +260,50 @@ public class StockFragment extends BaseFragment {
         return false;
     }
 
-    public ArrayList<Transaction> getFakeTransactionsForStock() {
-        ArrayList<Transaction> list = new ArrayList<>();
+    public ArrayList<TransactionsListRow> getFakeTransactionsForStock() {
+        ArrayList<TransactionsListRow> list = new ArrayList<>();
 
+        list.add(new TransactionsListRow(LocalDateTime.of(2020, Month.AUGUST, 19, 13, 14)));
         list.add(
-                new Transaction(
-                        this.symbol,
-                        100,
-                        56.92f,
-                        "buy",
-                        LocalDateTime.of(2020, Month.AUGUST, 19, 13, 14)));
+                new TransactionsListRow(
+                        new Transaction(
+                                this.symbol,
+                                100,
+                                56.92f,
+                                "buy",
+                                LocalDateTime.of(2020, Month.AUGUST, 19, 13, 14))));
         list.add(
-                new Transaction(
-                        this.symbol,
-                        268,
-                        36.47f,
-                        "buy",
-                        LocalDateTime.of(2020, Month.AUGUST, 1, 9, 52)));
+                new TransactionsListRow(
+                        new Transaction(
+                                this.symbol,
+                                268,
+                                36.47f,
+                                "buy",
+                                LocalDateTime.of(2020, Month.AUGUST, 1, 9, 52))));
 
         return list;
     }
 
-    public static ArrayList<Transaction> getFakeTransactions() {
-        ArrayList<Transaction> list = new ArrayList<>();
+    public static ArrayList<TransactionsListRow> getFakeTransactions() {
+        ArrayList<TransactionsListRow> list = new ArrayList<>();
 
+        list.add(new TransactionsListRow(LocalDateTime.of(2020, Month.AUGUST, 19, 13, 14)));
         list.add(
-                new Transaction(
-                        "SHOP",
-                        100,
-                        56.92f,
-                        "buy",
-                        LocalDateTime.of(2020, Month.AUGUST, 19, 13, 14)));
+                new TransactionsListRow(
+                        new Transaction(
+                                "SHOP",
+                                100,
+                                56.92f,
+                                "buy",
+                                LocalDateTime.of(2020, Month.AUGUST, 19, 13, 14))));
         list.add(
-                new Transaction(
-                        "SHOP",
-                        268,
-                        36.47f,
-                        "buy",
-                        LocalDateTime.of(2020, Month.AUGUST, 1, 9, 52)));
+                new TransactionsListRow(
+                        new Transaction(
+                                "SHOP",
+                                268,
+                                36.47f,
+                                "buy",
+                                LocalDateTime.of(2020, Month.AUGUST, 1, 9, 52))));
 
         return list;
     }
