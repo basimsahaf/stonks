@@ -69,13 +69,9 @@ public class HomePageFragment extends BaseFragment {
     public static ArrayList<PortfolioListItem> getMockItems() {
         ArrayList<PortfolioListItem> list = new ArrayList<>();
 
-        list.add(new PortfolioListItem("SHOP", "Shopify Inc.", 19.34f, 103, 2.15f, 1.0f));
+        list.add(new PortfolioListItem("SHOP", "Shopify Inc.", 19.34f, 103, -2.15f, -1.0f));
         list.add(new PortfolioListItem("UBER", "Uber Technologies Inc.", 9.22f, 3, 2.23f, 2.85f));
-        list.add(new PortfolioListItem("AMZN", "Amazon.com  Inc.", 20.99f, 1, 8.90f, 4.0f));
-        list.add(new PortfolioListItem("GOOG", "Google", 30.81f, 22, 1.11f, 3.33f));
-
-        // TODO: Fix fragment scroll issue
-        // Padding for bug
+        list.add(new PortfolioListItem("AMZN", "Amazon.com  Inc.", 20.99f, 1, -8.90f, -4.0f));
         list.add(new PortfolioListItem("GOOG", "Google", 30.81f, 22, 1.11f, 3.33f));
 
         return list;
