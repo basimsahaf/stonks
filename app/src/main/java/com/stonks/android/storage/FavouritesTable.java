@@ -16,7 +16,7 @@ public class FavouritesTable extends SQLiteOpenHelper {
     public static final String COLUMN_CREATED_AT = "created_at";
 
     public FavouritesTable(@Nullable Context context) {
-        super(context, "stonks", null, 1);
+        super(context, "stonks_db", null, 1);
     }
 
     @Override
@@ -30,7 +30,15 @@ public class FavouritesTable extends SQLiteOpenHelper {
                         + COLUMN_SYMBOL
                         + " TEXT, "
                         + COLUMN_CREATED_AT
-                        + " TEXT"
+                        + " TEXT, "
+                        + " FOREIGN KEY ( "
+                        + COLUMN_USERNAME
+                        + " ) "
+                        + " REFERENCES"
+                        + " USER_TABLE"
+                        + " ( "
+                        + COLUMN_USERNAME
+                        + " )"
                         + ")";
 
         db.execSQL(createFavouritesTable);

@@ -19,8 +19,8 @@ import java.util.ArrayList;
 
 public class PortfolioRecyclerViewAdapter
         extends RecyclerView.Adapter<PortfolioRecyclerViewAdapter.ViewHolder> {
-    FragmentActivity parentActivity;
-    ArrayList<PortfolioListItem> portfolioItems;
+    private final FragmentActivity parentActivity;
+    private final ArrayList<PortfolioListItem> portfolioItems;
 
     public PortfolioRecyclerViewAdapter(
             FragmentActivity parentActivity, ArrayList<PortfolioListItem> portfolioItems) {
