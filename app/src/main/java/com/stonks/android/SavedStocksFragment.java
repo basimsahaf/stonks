@@ -4,21 +4,13 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.stonks.android.adapter.PortfolioRecyclerViewAdapter;
-import com.stonks.android.adapter.SearchResultAdapter;
 import com.stonks.android.model.PortfolioListItem;
-import com.stonks.android.model.SearchResult;
-
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.List;
 
 public class SavedStocksFragment extends BaseFragment {
     @Override
@@ -30,7 +22,8 @@ public class SavedStocksFragment extends BaseFragment {
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         RecyclerView savedStocksListView;
-        RecyclerView.LayoutManager savedStocksListManager = new LinearLayoutManager(this.getContext());
+        RecyclerView.LayoutManager savedStocksListManager =
+                new LinearLayoutManager(this.getContext());
         ArrayList<PortfolioListItem> savedStocks = HomePageFragment.getMockItems();
 
         getActionBar().setDisplayHomeAsUpEnabled(false);
@@ -41,7 +34,8 @@ public class SavedStocksFragment extends BaseFragment {
             savedStocksListView = view.findViewById(R.id.saved_list);
             savedStocksListView.setVisibility(View.VISIBLE);
             savedStocksListView.setLayoutManager(savedStocksListManager);
-            PortfolioRecyclerViewAdapter savedStocksAdapter = new PortfolioRecyclerViewAdapter(this.getActivity(), savedStocks);
+            PortfolioRecyclerViewAdapter savedStocksAdapter =
+                    new PortfolioRecyclerViewAdapter(this.getActivity(), savedStocks);
             savedStocksListView.setAdapter(savedStocksAdapter);
 
             ConstraintLayout noSavedMsgGroup = view.findViewById(R.id.no_saved_msg_group);

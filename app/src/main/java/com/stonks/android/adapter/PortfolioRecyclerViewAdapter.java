@@ -1,6 +1,5 @@
 package com.stonks.android.adapter;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,9 +9,6 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.stonks.android.BaseActivity;
-import com.stonks.android.MainActivity;
 import com.stonks.android.R;
 import com.stonks.android.StockFragment;
 import com.stonks.android.model.PortfolioListItem;
@@ -23,7 +19,8 @@ public class PortfolioRecyclerViewAdapter
     FragmentActivity parentActivity;
     ArrayList<PortfolioListItem> portfolioItems;
 
-    public PortfolioRecyclerViewAdapter(FragmentActivity parentActivity, ArrayList<PortfolioListItem> portfolioItems) {
+    public PortfolioRecyclerViewAdapter(
+            FragmentActivity parentActivity, ArrayList<PortfolioListItem> portfolioItems) {
         this.parentActivity = parentActivity;
         this.portfolioItems = portfolioItems;
     }
