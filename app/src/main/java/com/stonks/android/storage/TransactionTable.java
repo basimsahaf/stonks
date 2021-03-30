@@ -6,7 +6,10 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import androidx.annotation.Nullable;
+import com.stonks.android.BuildConfig;
+import com.stonks.android.model.TransactionMode;
 import com.stonks.android.model.TransactionRow;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class TransactionTable extends SQLiteOpenHelper {
@@ -16,9 +19,10 @@ public class TransactionTable extends SQLiteOpenHelper {
     public static final String COLUMN_QUANTITY = "quantity";
     public static final String COLUMN_PRICE = "price";
     public static final String COLUMN_TRANSACTION_TYPE = "transaction_type";
+    public static final String COLUMN_CREATED_AT = "created_at";
 
     public TransactionTable(@Nullable Context context) {
-        super(context, "stonks_db2", null, 1);
+        super(context, BuildConfig.DATABASE_NAME, null, 1);
     }
 
     @Override
@@ -36,7 +40,9 @@ public class TransactionTable extends SQLiteOpenHelper {
                         + COLUMN_TRANSACTION_TYPE
                         + " TEXT, "
                         + COLUMN_PRICE
-                        + " REAL"
+                        + " REAL, "
+                        + COLUMN_CREATED_AT
+                        + " TEXT"
                         + ")";
 
         db.execSQL(createPortfolioTable);
@@ -58,7 +64,8 @@ public class TransactionTable extends SQLiteOpenHelper {
         cv.put(COLUMN_QUANTITY, transactionRow.getQuantity());
         cv.put(COLUMN_SYMBOL, transactionRow.getSymbol());
         cv.put(COLUMN_PRICE, transactionRow.getPrice());
-        cv.put(COLUMN_TRANSACTION_TYPE, transactionRow.getTransactionType());
+        cv.put(COLUMN_TRANSACTION_TYPE, transactionRow.getTransactionTypeString());
+        cv.put(COLUMN_CREATED_AT, transactionRow.getCreatedAtString());
 
         long insert = db.insert(TRANSACTION_TABLE, null, cv);
         return insert >= 0;
@@ -90,10 +97,15 @@ public class TransactionTable extends SQLiteOpenHelper {
                 String symbol = cursor.getString(cursor.getColumnIndex(COLUMN_SYMBOL));
                 int quantity = cursor.getInt(cursor.getColumnIndex(COLUMN_QUANTITY));
                 float price = cursor.getFloat(cursor.getColumnIndex(COLUMN_PRICE));
-                String transactionType =
-                        cursor.getString(cursor.getColumnIndex(COLUMN_TRANSACTION_TYPE));
+                TransactionMode transactionType =
+                        TransactionMode.fromString(
+                                cursor.getString(cursor.getColumnIndex(COLUMN_TRANSACTION_TYPE)));
+                LocalDateTime createdAt =
+                        TransactionRow.getCreatedAtFromString(
+                                cursor.getString(cursor.getColumnIndex(COLUMN_CREATED_AT)));
                 transactionRows.add(
-                        new TransactionRow(username, symbol, quantity, price, transactionType));
+                        new TransactionRow(
+                                username, symbol, quantity, price, transactionType, createdAt));
 
             } while (cursor.moveToNext());
         }
