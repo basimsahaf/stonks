@@ -2,6 +2,7 @@ package com.stonks.android;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -12,12 +13,15 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
+import com.stonks.android.external.AlpacaWebSocket;
+import com.stonks.android.model.WebSocketObserver;
 import com.stonks.android.utility.Formatters;
 
 public class MainActivity extends AppCompatActivity {
     private SlidingUpPanelLayout slidingUpPanel;
     private LinearLayout portfolioTitle;
     private TextView globalTitle;
+    private AlpacaWebSocket socket;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +76,13 @@ public class MainActivity extends AppCompatActivity {
         slidingUpPanel = findViewById(R.id.sliding_layout);
         slidingUpPanel.setPanelHeight(0);
         slidingUpPanel.setAnchorPoint(1.0f);
+
+        this.socket = new AlpacaWebSocket();
+    }
+
+    public void subscribe(String symbol, WebSocketObserver observer) {
+        Log.d("MainActivity", "sending subscribe request for " + symbol);
+        this.socket.subscribe(symbol, observer);
     }
 
     public void setPortfolioValue(float value) {

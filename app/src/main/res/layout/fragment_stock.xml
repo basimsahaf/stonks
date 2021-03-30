@@ -1,509 +1,512 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        xmlns:app="http://schemas.android.com/apk/res-auto">
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+    <data>
+        <variable name="stock" type="com.stonks.android.model.StockData" />
+    </data>
 
-    <LinearLayout
-            android:id="@+id/screen_overlay"
+    <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:background="@color/black"
-            android:elevation="@dimen/overlay_elevation"
-            android:alpha="0"
-            android:visibility="gone"
-    />
+            xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <com.stonks.android.uicomponent.SpeedDialExtendedFab
-            android:id="@+id/trade_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            android:elevation="@dimen/dialog_elevation"
-            android:layout_marginBottom="@dimen/section_margin"
-            android:layout_marginEnd="@dimen/page_padding_vertical"
-            android:text="@string/trade_button_label"
-            style="@style/AppTheme.Button.FloatingActionButton"
-            app:shapeAppearanceOverlay="@style/AppTheme.Button.FloatingActionButton.ShapeOverlay"
-    />
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/buy_button_container"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/trade_button"
-            android:elevation="@dimen/dialog_elevation"
-            android:layout_marginBottom="8dp">
-
-        <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintEnd_toStartOf="@id/buy_button"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                android:layout_marginEnd="16dp"
-                android:text="@string/buy_label"
-                style="@style/AppTheme.TextAppearance.MediumLabel"
+        <LinearLayout
+                android:id="@+id/screen_overlay"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:background="@color/black"
+                android:elevation="@dimen/overlay_elevation"
+                android:alpha="0"
+                android:visibility="gone"
         />
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:fabSize="normal"
-                android:src="@drawable/ic_baseline_buy_24"
-                android:id="@+id/buy_button"
-                style="@style/AppTheme.Button.SpeedDialButton"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-        />
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/sell_button_container"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/buy_button_container"
-            android:elevation="@dimen/dialog_elevation"
-            android:layout_marginBottom="8dp">
-
-        <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintEnd_toStartOf="@id/sell_button"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                android:layout_marginEnd="16dp"
-                android:text="@string/sell_label"
-                style="@style/AppTheme.TextAppearance.MediumLabel"
-        />
-
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
+        <com.stonks.android.uicomponent.SpeedDialExtendedFab
+                android:id="@+id/trade_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                android:layout_marginBottom="8dp"
-                app:fabSize="normal"
-                android:src="@drawable/ic_baseline_sell_24"
-                android:id="@+id/sell_button"
-                style="@style/AppTheme.Button.SpeedDialButton"
-        />
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/try_button_container"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/sell_button_container"
-            android:elevation="@dimen/dialog_elevation"
-            android:layout_marginBottom="8dp">
-
-        <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintEnd_toStartOf="@id/try_button"
-                app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
-                android:layout_marginEnd="16dp"
-                android:text="@string/try_it_out_label"
-                style="@style/AppTheme.TextAppearance.MediumLabel"
+                android:elevation="@dimen/dialog_elevation"
+                android:layout_marginBottom="@dimen/section_margin"
+                android:layout_marginEnd="@dimen/page_padding_vertical"
+                android:text="@string/trade_button_label"
+                style="@style/AppTheme.Button.FloatingActionButton"
+                app:shapeAppearanceOverlay="@style/AppTheme.Button.FloatingActionButton.ShapeOverlay"
         />
-
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                android:layout_marginBottom="8dp"
-                app:fabSize="normal"
-                android:src="@drawable/ic_baseline_try_24"
-                android:id="@+id/try_button"
-                style="@style/AppTheme.Button.SpeedDialButton"
-        />
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-    <androidx.core.widget.NestedScrollView
-            android:id="@+id/scroll_view"
-            xmlns:tools="http://schemas.android.com/tools"
-            tools:context=".StockFragment"
-            android:layout_height="match_parent"
-            android:layout_width="match_parent"
-            android:overScrollMode="never"
-            android:elevation="1dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
+                android:id="@+id/buy_button_container"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingHorizontal="@dimen/page_padding_horizontal">
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/trade_button"
+                android:elevation="@dimen/dialog_elevation"
+                android:layout_marginBottom="8dp">
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/header"
-                    android:layout_width="match_parent"
+            <TextView
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    app:layout_constraintTop_toTopOf="parent">
-
-                <TextView
-                        android:id="@+id/stock_symbol"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        style="@style/AppTheme.TextAppearance.SmallLabelSecondary"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintBottom_toBottomOf="@id/fav_icon"
-                        android:text="@string/sym_placeholder"/>
-
-                <TextView
-                        android:id="@+id/stock_name"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/company_name_placeholder"
-                        style="@style/AppTheme.TextAppearance.XXLLabel"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/fav_icon"
-                        android:layout_marginTop="@dimen/label_margin"
-                />
-
-                <ImageView
-                    android:id="@+id/fav_icon"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:src="@drawable/ic_baseline_favorite_border_48"
-                    app:tint="@color/red"
+                    app:layout_constraintEnd_toStartOf="@id/buy_button"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintRight_toRightOf="parent"
-                />
-
-                <TextView
-                        android:id="@+id/current_price"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="$100"
-                        style="@style/AppTheme.TextAppearance.XXLLabel"
-                        app:layout_constraintTop_toTopOf="@id/stock_name"
-                        app:layout_constraintEnd_toEndOf="parent"
-                />
-                <TextView
-                        android:id="@+id/change"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="⬆ $20.19 (34%)"
-                        style="@style/AppTheme.TextAppearance.SmallLabelSecondary"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/current_price"
-                />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <RelativeLayout
-                    android:id="@+id/chart_container"
-                    android:layout_width="match_parent"
-                    android:layout_height="300dp"
-                    android:layout_marginTop="@dimen/section_margin"
-                    app:layout_constraintTop_toBottomOf="@id/header">
-                <com.stonks.android.uicomponent.CustomSparkView
-                        android:id="@+id/stock_chart"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        style="@style/AppTheme.ChartStyle"
-                />
-
-            </RelativeLayout>
-
-            <include
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/position_container"
-                    layout="@layout/stock_position"
-                    android:layout_marginTop="@dimen/section_margin"
-                    app:layout_constraintTop_toBottomOf="@id/chart_container"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:layout_marginEnd="16dp"
+                    android:text="@string/buy_label"
+                    style="@style/AppTheme.TextAppearance.MediumLabel"
             />
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/stats_section"
-                    android:layout_width="match_parent"
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/section_margin"
-                    app:layout_constraintTop_toBottomOf="@id/position_container">
-
-                <TextView
-                        android:id="@+id/stats_title"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_marginBottom="@dimen/title_margin"
-                        android:text="@string/stats_title"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintBottom_toTopOf="@id/row_1"
-                        style="@style/AppTheme.TextAppearance.XLLabel"
-                />
-
-                <LinearLayout
-                        android:id="@+id/row_1"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintEnd_toStartOf="@id/row_1_col_2"
-                        app:layout_constraintBottom_toTopOf="@+id/row_2"
-                        app:layout_constraintHorizontal_bias="0.5"
-                        android:layout_marginBottom="@dimen/title_margin">
-
-                    <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/open_label"
-                            android:layout_marginBottom="@dimen/label_margin"
-                            style="@style/AppTheme.TextAppearance.XSLabel"
-                    />
-                    <TextView
-                            android:id="@+id/open"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="$39.26"
-                            style="@style/AppTheme.TextAppearance.LargeLabel"
-                    />
-
-                </LinearLayout>
-                <LinearLayout
-                        android:id="@+id/row_1_col_2"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        app:layout_constraintStart_toEndOf="@id/row_1"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintBottom_toTopOf="@+id/row_2"
-                        app:layout_constraintHorizontal_bias="0.5"
-                        android:layout_marginBottom="@dimen/title_margin">
-
-                    <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/volume_label"
-                            android:layout_marginBottom="@dimen/label_margin"
-                            style="@style/AppTheme.TextAppearance.XSLabel"
-                    />
-                    <TextView
-                            android:id="@+id/volume"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="45,067"
-                            style="@style/AppTheme.TextAppearance.LargeLabel"
-                    />
-
-                </LinearLayout>
-
-                <LinearLayout
-                        android:id="@+id/row_2"
-                        android:layout_width="0dp"
-                        app:layout_constraintHorizontal_bias="0.5"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintBottom_toTopOf="@+id/row_3"
-                        android:layout_marginBottom="@dimen/title_margin"
-                        app:layout_constraintEnd_toStartOf="@+id/row_2_col_2">
-
-                    <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/high_today_label"
-                            android:layout_marginBottom="@dimen/label_margin"
-                            style="@style/AppTheme.TextAppearance.XSLabel"
-                    />
-                    <TextView
-                            android:id="@+id/daily_high"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="$42.78"
-                            style="@style/AppTheme.TextAppearance.LargeLabel"
-                    />
-
-                </LinearLayout>
-                <LinearLayout
-                        android:id="@+id/row_2_col_2"
-                        android:layout_width="0dp"
-                        app:layout_constraintHorizontal_bias="0.5"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        app:layout_constraintStart_toEndOf="@id/row_2"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        android:layout_marginBottom="@dimen/title_margin"
-                        app:layout_constraintBottom_toTopOf="@+id/row_3">
-
-                    <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="0dp"
-                            android:text="@string/low_today_label"
-                            android:layout_marginBottom="@dimen/label_margin"
-                            style="@style/AppTheme.TextAppearance.XSLabel"
-                            android:layout_weight="1"
-                    />
-                    <TextView
-                            android:id="@+id/daily_low"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="$39.15"
-                            style="@style/AppTheme.TextAppearance.LargeLabel"
-                    />
-
-                </LinearLayout>
-
-                <LinearLayout
-                        android:id="@+id/row_3"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        app:layout_constraintHorizontal_bias="0.5"
-                        android:orientation="vertical"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintEnd_toStartOf="@id/row_3_col_2"
-                        app:layout_constraintBottom_toTopOf="@+id/row_4"
-                        android:layout_marginBottom="@dimen/title_margin">
-
-                    <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/yearly_high_label"
-                            android:layout_marginBottom="@dimen/label_margin"
-                            style="@style/AppTheme.TextAppearance.XSLabel"
-                    />
-                    <TextView
-                            android:id="@+id/yearly_high"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="$58.75"
-                            style="@style/AppTheme.TextAppearance.LargeLabel"
-                    />
-
-                </LinearLayout>
-                <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        app:layout_constraintHorizontal_bias="0.5"
-                        android:orientation="vertical"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        android:id="@+id/row_3_col_2"
-                        app:layout_constraintStart_toEndOf="@id/row_3"
-                        android:layout_marginBottom="@dimen/title_margin"
-                        app:layout_constraintBottom_toTopOf="@+id/row_4">
-
-                    <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/pe_ratio_label"
-                            android:layout_marginBottom="@dimen/label_margin"
-                            style="@style/AppTheme.TextAppearance.XSLabel"
-                    />
-                    <TextView
-                            android:id="@+id/pe_ratio"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/na_value"
-                            style="@style/AppTheme.TextAppearance.LargeLabel"
-                    />
-
-                </LinearLayout>
-
-                <LinearLayout
-                        android:id="@+id/row_4"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        app:layout_constraintHorizontal_bias="0.5"
-                        android:orientation="vertical"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toStartOf="@id/row_4_col_2"
-                        android:layout_marginBottom="@dimen/title_margin">
-
-                    <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/yearly_low_label"
-                            android:layout_marginBottom="@dimen/label_margin"
-                            style="@style/AppTheme.TextAppearance.XSLabel"
-                    />
-
-                    <TextView
-                            android:id="@+id/yearly_low"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="$37.23"
-                            style="@style/AppTheme.TextAppearance.LargeLabel"
-                    />
-
-                </LinearLayout>
-                <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        app:layout_constraintHorizontal_bias="0.5"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toEndOf="@id/row_4"
-                        android:layout_marginBottom="@dimen/title_margin"
-                        android:id="@+id/row_4_col_2">
-
-                    <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/div_yield_label"
-                            android:layout_marginBottom="@dimen/label_margin"
-                            style="@style/AppTheme.TextAppearance.XSLabel"
-                    />
-                    <TextView
-                            android:id="@+id/div_yield"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/na_value"
-                            style="@style/AppTheme.TextAppearance.LargeLabel"
-                    />
-
-                </LinearLayout>
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <include
-                    android:id="@+id/history_section"
-                    layout="@layout/stock_history"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/section_margin"
-                    app:layout_constraintTop_toBottomOf="@id/stats_section"
+                    app:fabSize="normal"
+                    android:src="@drawable/ic_baseline_buy_24"
+                    android:id="@+id/buy_button"
+                    style="@style/AppTheme.Button.SpeedDialButton"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
             />
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/section_margin"
-                    app:layout_constraintTop_toBottomOf="@id/history_section"
-                    android:paddingBottom="@dimen/section_margin">
-
-                <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintBottom_toTopOf="@id/about_company"
-                        android:text="@string/about_title"
-                        style="@style/AppTheme.TextAppearance.XLLabel"
-                        android:layout_marginBottom="@dimen/title_margin"
-                />
-                <TextView
-                        android:id="@+id/about_company"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        android:text="Lorem ipsum"
-                        style="@style/AppTheme.TextAppearance.Content"
-                />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.core.widget.NestedScrollView>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/sell_button_container"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/buy_button_container"
+                android:elevation="@dimen/dialog_elevation"
+                android:layout_marginBottom="8dp">
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toStartOf="@id/sell_button"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:layout_marginEnd="16dp"
+                    android:text="@string/sell_label"
+                    style="@style/AppTheme.TextAppearance.MediumLabel"
+            />
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:layout_marginBottom="8dp"
+                    app:fabSize="normal"
+                    android:src="@drawable/ic_baseline_sell_24"
+                    android:id="@+id/sell_button"
+                    style="@style/AppTheme.Button.SpeedDialButton"
+            />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/try_button_container"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/sell_button_container"
+                android:elevation="@dimen/dialog_elevation"
+                android:layout_marginBottom="8dp">
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toStartOf="@id/try_button"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:layout_marginEnd="16dp"
+                    android:text="@string/try_it_out_label"
+                    style="@style/AppTheme.TextAppearance.MediumLabel"
+            />
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:layout_marginBottom="8dp"
+                    app:fabSize="normal"
+                    android:src="@drawable/ic_baseline_try_24"
+                    android:id="@+id/try_button"
+                    style="@style/AppTheme.Button.SpeedDialButton"
+            />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        <androidx.core.widget.NestedScrollView
+                android:id="@+id/scroll_view"
+                xmlns:tools="http://schemas.android.com/tools"
+                tools:context=".StockFragment"
+                android:layout_height="match_parent"
+                android:layout_width="match_parent"
+                android:overScrollMode="never"
+                android:elevation="1dp">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingHorizontal="@dimen/page_padding_horizontal">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/header"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                    <TextView
+                            android:id="@+id/stock_symbol"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            style="@style/AppTheme.TextAppearance.SmallLabelSecondary"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            android:text="@{stock.symbol}"/>
+                    <TextView
+                            android:id="@+id/stock_name"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@{stock.companyName}"
+                            style="@style/AppTheme.TextAppearance.XXLLabel"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/stock_symbol"
+                    />
+
+                    <ImageView
+                            android:id="@+id/fav_icon"
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:src="@drawable/ic_baseline_favorite_border_48"
+                            app:tint="@color/red"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintRight_toRightOf="parent"
+                    />
+
+                    <TextView
+                            android:id="@+id/current_price"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@{stock.currentPrice}"
+                            style="@style/AppTheme.TextAppearance.XXLLabel"
+                            app:layout_constraintTop_toTopOf="@id/stock_name"
+                            app:layout_constraintEnd_toEndOf="parent"
+                    />
+                    <TextView
+                            android:id="@+id/change"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="⬆ $20.19 (34%)"
+                            style="@style/AppTheme.TextAppearance.SmallLabelSecondary"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/current_price"
+                    />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <RelativeLayout
+                        android:id="@+id/chart_container"
+                        android:layout_width="match_parent"
+                        android:layout_height="300dp"
+                        android:layout_marginTop="@dimen/section_margin"
+                        app:layout_constraintTop_toBottomOf="@id/header">
+                    <com.stonks.android.uicomponent.CustomSparkView
+                            android:id="@+id/stock_chart"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            style="@style/AppTheme.ChartStyle"
+                    />
+
+                </RelativeLayout>
+
+                <include
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/position_container"
+                        layout="@layout/stock_position"
+                        android:layout_marginTop="@dimen/section_margin"
+                        app:layout_constraintTop_toBottomOf="@id/chart_container"
+                />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/stats_section"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/section_margin"
+                        app:layout_constraintTop_toBottomOf="@id/position_container">
+
+                    <TextView
+                            android:id="@+id/stats_title"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:layout_marginBottom="@dimen/title_margin"
+                            android:text="@string/stats_title"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintBottom_toTopOf="@id/row_1"
+                            style="@style/AppTheme.TextAppearance.XLLabel"
+                    />
+
+                    <LinearLayout
+                            android:id="@+id/row_1"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toStartOf="@id/row_1_col_2"
+                            app:layout_constraintBottom_toTopOf="@+id/row_2"
+                            app:layout_constraintHorizontal_bias="0.5"
+                            android:layout_marginBottom="@dimen/title_margin">
+
+                        <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/open_label"
+                                android:layout_marginBottom="@dimen/label_margin"
+                                style="@style/AppTheme.TextAppearance.XSLabel"
+                        />
+                        <TextView
+                                android:id="@+id/open"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@{stock.open}"
+                                style="@style/AppTheme.TextAppearance.LargeLabel"
+                        />
+
+                    </LinearLayout>
+                    <LinearLayout
+                            android:id="@+id/row_1_col_2"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            app:layout_constraintStart_toEndOf="@id/row_1"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintBottom_toTopOf="@+id/row_2"
+                            app:layout_constraintHorizontal_bias="0.5"
+                            android:layout_marginBottom="@dimen/title_margin">
+
+                        <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/volume_label"
+                                android:layout_marginBottom="@dimen/label_margin"
+                                style="@style/AppTheme.TextAppearance.XSLabel"
+                        />
+                        <TextView
+                                android:id="@+id/volume"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@{String.valueOf(stock.volume)}"
+                                style="@style/AppTheme.TextAppearance.LargeLabel"
+                        />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                            android:id="@+id/row_2"
+                            android:layout_width="0dp"
+                            app:layout_constraintHorizontal_bias="0.5"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintBottom_toTopOf="@+id/row_3"
+                            android:layout_marginBottom="@dimen/title_margin"
+                            app:layout_constraintEnd_toStartOf="@+id/row_2_col_2">
+
+                        <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/high_today_label"
+                                android:layout_marginBottom="@dimen/label_margin"
+                                style="@style/AppTheme.TextAppearance.XSLabel"
+                        />
+                        <TextView
+                                android:id="@+id/daily_high"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@{stock.high}"
+                                style="@style/AppTheme.TextAppearance.LargeLabel"
+                        />
+
+                    </LinearLayout>
+                    <LinearLayout
+                            android:id="@+id/row_2_col_2"
+                            android:layout_width="0dp"
+                            app:layout_constraintHorizontal_bias="0.5"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            app:layout_constraintStart_toEndOf="@id/row_2"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            android:layout_marginBottom="@dimen/title_margin"
+                            app:layout_constraintBottom_toTopOf="@+id/row_3">
+
+                        <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="0dp"
+                                android:text="@string/low_today_label"
+                                android:layout_marginBottom="@dimen/label_margin"
+                                style="@style/AppTheme.TextAppearance.XSLabel"
+                                android:layout_weight="1"
+                        />
+                        <TextView
+                                android:id="@+id/daily_low"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@{stock.low}"
+                                style="@style/AppTheme.TextAppearance.LargeLabel"
+                        />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                            android:id="@+id/row_3"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            app:layout_constraintHorizontal_bias="0.5"
+                            android:orientation="vertical"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toStartOf="@id/row_3_col_2"
+                            app:layout_constraintBottom_toTopOf="@+id/row_4"
+                            android:layout_marginBottom="@dimen/title_margin">
+
+                        <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/yearly_high_label"
+                                android:layout_marginBottom="@dimen/label_margin"
+                                style="@style/AppTheme.TextAppearance.XSLabel"
+                        />
+                        <TextView
+                                android:id="@+id/yearly_high"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@{stock.yearlyHigh}"
+                                style="@style/AppTheme.TextAppearance.LargeLabel"
+                        />
+
+                    </LinearLayout>
+                    <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            app:layout_constraintHorizontal_bias="0.5"
+                            android:orientation="vertical"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            android:id="@+id/row_3_col_2"
+                            app:layout_constraintStart_toEndOf="@id/row_3"
+                            android:layout_marginBottom="@dimen/title_margin"
+                            app:layout_constraintBottom_toTopOf="@+id/row_4">
+
+                        <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/pe_ratio_label"
+                                android:layout_marginBottom="@dimen/label_margin"
+                                style="@style/AppTheme.TextAppearance.XSLabel"
+                        />
+                        <TextView
+                                android:id="@+id/pe_ratio"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/na_value"
+                                style="@style/AppTheme.TextAppearance.LargeLabel"
+                        />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                            android:id="@+id/row_4"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            app:layout_constraintHorizontal_bias="0.5"
+                            android:orientation="vertical"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toStartOf="@id/row_4_col_2"
+                            android:layout_marginBottom="@dimen/title_margin">
+
+                        <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/yearly_low_label"
+                                android:layout_marginBottom="@dimen/label_margin"
+                                style="@style/AppTheme.TextAppearance.XSLabel"
+                        />
+
+                        <TextView
+                                android:id="@+id/yearly_low"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@{stock.yearlyLow}"
+                                style="@style/AppTheme.TextAppearance.LargeLabel"
+                        />
+
+                    </LinearLayout>
+                    <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            app:layout_constraintHorizontal_bias="0.5"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintStart_toEndOf="@id/row_4"
+                            android:layout_marginBottom="@dimen/title_margin"
+                            android:id="@+id/row_4_col_2">
+
+                        <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/div_yield_label"
+                                android:layout_marginBottom="@dimen/label_margin"
+                                style="@style/AppTheme.TextAppearance.XSLabel"
+                        />
+                        <TextView
+                                android:id="@+id/div_yield"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/na_value"
+                                style="@style/AppTheme.TextAppearance.LargeLabel"
+                        />
+
+                    </LinearLayout>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <include
+                        android:id="@+id/history_section"
+                        layout="@layout/stock_history"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/section_margin"
+                        app:layout_constraintTop_toBottomOf="@id/stats_section"
+                />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/section_margin"
+                        app:layout_constraintTop_toBottomOf="@id/history_section"
+                        android:paddingBottom="@dimen/section_margin">
+
+                    <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toTopOf="@id/about_company"
+                            android:text="@string/about_title"
+                            style="@style/AppTheme.TextAppearance.XLLabel"
+                            android:layout_marginBottom="@dimen/title_margin"
+                    />
+                    <TextView
+                            android:id="@+id/about_company"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            android:text="@{stock.description}"
+                            style="@style/AppTheme.TextAppearance.Content"
+                    />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.core.widget.NestedScrollView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

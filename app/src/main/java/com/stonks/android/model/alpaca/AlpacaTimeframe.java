@@ -1,4 +1,4 @@
-package com.stonks.android.model;
+package com.stonks.android.model.alpaca;
 
 public enum AlpacaTimeframe {
     MINUTE("minute"),
