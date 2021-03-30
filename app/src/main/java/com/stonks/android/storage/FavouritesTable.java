@@ -39,7 +39,7 @@ public class FavouritesTable extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         if (oldVersion != newVersion) {
-            String dropStatement = "DROP TABLE IF EXISTS " + FAVOURITES_TABLE;
+            String dropStatement = "DROP TABLE IF EXISTS stonks." + FAVOURITES_TABLE;
             db.execSQL(dropStatement);
             onCreate(db);
         }
