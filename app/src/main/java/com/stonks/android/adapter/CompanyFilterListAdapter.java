@@ -6,14 +6,17 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.checkbox.MaterialCheckBox;
+import com.stonks.android.FilterFragment;
 import com.stonks.android.R;
 import java.util.ArrayList;
 
 public class CompanyFilterListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     ArrayList<String> companies;
+    FilterFragment parentFragment;
 
-    public CompanyFilterListAdapter(ArrayList<String> transactionList) {
+    public CompanyFilterListAdapter(ArrayList<String> transactionList, FilterFragment fragment) {
         this.companies = transactionList;
+        this.parentFragment = fragment;
     }
 
     @NonNull
@@ -32,6 +35,8 @@ public class CompanyFilterListAdapter extends RecyclerView.Adapter<RecyclerView.
                 (CompanyFilterListAdapter.CompanyFilterListViewHolder) viewHolder;
 
         holder.checkBox.setText(company);
+        holder.checkBox.setChecked(false);
+        holder.checkBox.setOnCheckedChangeListener(parentFragment);
     }
 
     @Override

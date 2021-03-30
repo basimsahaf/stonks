@@ -13,7 +13,6 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:text="@string/companies"
-        style="@style/AppTheme.TextAppearance.MediumLabel"
-        android:onClick="onCompanyCheckboxClicked" />
+        style="@style/AppTheme.TextAppearance.MediumLabel" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
