@@ -140,6 +140,10 @@ public class LoginActivity extends BaseActivity {
         switchView(AuthMode.LOGIN);
     }
 
+    private void setListeners() {
+
+    }
+
     private void setTextWatcher(TextInputLayout field) {
 
         TextWatcher textWatcher =
