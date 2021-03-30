@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".FilterFragment"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#121212">
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/header"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                android:layout_marginTop="@dimen/page_padding_vertical"
+                android:paddingHorizontal="@dimen/page_padding_horizontal">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:src="@drawable/ic_baseline_chevron_left_24" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    android:text="@string/filters"
+                    style="@style/AppTheme.TextAppearance.LargeLabel"/>
+
+                <TextView
+                    android:id="@+id/reset_all_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:text="@string/reset_all"
+                    android:textColor="@color/colorPrimaryOutline"
+                    style="@style/AppTheme.TextAppearance.MediumLabel"/>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <TextView
+                android:id="@+id/type_header"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/header"
+                app:layout_constraintLeft_toLeftOf="parent"
+                android:layout_marginTop="@dimen/section_margin"
+                android:layout_marginBottom="@dimen/section_margin"
+                android:paddingLeft="@dimen/page_padding_horizontal"
+                android:text="@string/transaction_type"
+                style="@style/AppTheme.TextAppearance.MediumLabel"/>
+
+            <RadioGroup xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/radio_buttons"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintTop_toBottomOf="@id/type_header"
+                android:paddingHorizontal="@dimen/page_padding_horizontal">
+
+                <RadioButton android:id="@+id/radio_all"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/all"
+                    style="@style/AppTheme.TextAppearance.MediumLabel"
+                    android:onClick="onRadioButtonClicked"/>
+
+                <RadioButton android:id="@+id/radio_buy"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/market_buy"
+                    style="@style/AppTheme.TextAppearance.MediumLabel"
+                    android:onClick="onRadioButtonClicked"/>
+
+                <RadioButton android:id="@+id/radio_sell"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/market_sell"
+                    style="@style/AppTheme.TextAppearance.MediumLabel"
+                    android:onClick="onRadioButtonClicked"/>
+
+            </RadioGroup>
+
+            <TextView
+                android:id="@+id/amount_header"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/radio_buttons"
+                app:layout_constraintLeft_toLeftOf="parent"
+                android:paddingHorizontal="@dimen/page_padding_horizontal"
+                android:layout_marginTop="@dimen/section_margin"
+                android:text="@string/transaction_amount"
+                style="@style/AppTheme.TextAppearance.MediumLabel"/>
+
+            <TextView
+                android:id="@+id/reset_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="@id/amount_header"
+                android:paddingRight="@dimen/page_padding_horizontal"
+                android:text="@string/reset"
+                android:textColor="@color/colorPrimaryOutline"
+                style="@style/AppTheme.TextAppearance.MediumLabel"/>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/min_field"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/min"
+                android:layout_marginHorizontal="@dimen/page_padding_horizontal"
+                android:layout_marginTop="@dimen/section_margin_small"
+                app:layout_constraintTop_toBottomOf="@id/amount_header">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/max_field"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/max"
+                android:layout_marginHorizontal="@dimen/page_padding_horizontal"
+                android:layout_marginTop="@dimen/row_margin"
+                app:layout_constraintTop_toBottomOf="@id/min_field">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <TextView
+                android:id="@+id/companies_header"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/max_field"
+                app:layout_constraintLeft_toLeftOf="parent"
+                android:paddingHorizontal="@dimen/page_padding_horizontal"
+                android:layout_marginTop="@dimen/section_margin"
+                android:paddingBottom="@dimen/row_margin"
+                android:text="@string/companies"
+                style="@style/AppTheme.TextAppearance.MediumLabel"/>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/companies_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/companies_header"
+                app:layout_constraintLeft_toLeftOf="parent"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/apply_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:elevation="@dimen/dialog_elevation"
+        android:layout_marginBottom="@dimen/section_margin"
+        android:layout_marginEnd="@dimen/page_padding_vertical"
+        android:text="@string/apply_filters"
+        style="@style/AppTheme.Button.FloatingActionButton"
+        app:shapeAppearanceOverlay="@style/AppTheme.Button.FloatingActionButton.ShapeOverlay" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
