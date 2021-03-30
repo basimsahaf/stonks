@@ -2,9 +2,9 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingHorizontal="@dimen/page_padding_horizontal"
-    android:paddingVertical="@dimen/row_margin"
-    android:background="@color/gray"
+    android:layout_marginHorizontal="@dimen/page_padding_horizontal"
+    android:paddingVertical="@dimen/overlay_elevation"
+    android:background="@color/grey"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <TextView
@@ -14,6 +14,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         style="@style/AppTheme.TextAppearance.XSLabel"
+        android:textColor="@color/lightGrey"
         android:text="@string/sample_date" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

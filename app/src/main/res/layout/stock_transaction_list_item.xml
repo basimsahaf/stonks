@@ -13,6 +13,7 @@
         android:layout_height="wrap_content"
         android:text="09:35"
         style="@style/AppTheme.TextAppearance.XSLabel"
+        android:textColor="@color/secondaryTextColor"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -23,6 +24,7 @@
         android:layout_marginLeft="@dimen/title_margin"
         android:text="Market buy"
         style="@style/AppTheme.TextAppearance.XSLabel"
+        android:textColor="@color/secondaryTextColor"
         app:layout_constraintLeft_toRightOf="@id/transaction_time"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -53,6 +55,7 @@
         android:textAlignment="textEnd"
         android:text="777 shares @ $10.98"
         style="@style/AppTheme.TextAppearance.XSLabel"
+        android:textColor="@color/secondaryTextColor"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintBottom_toBottomOf="@id/symbol" />
 
