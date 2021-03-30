@@ -13,10 +13,10 @@ public class FavouritesTable extends SQLiteOpenHelper {
     public static final String FAVOURITES_TABLE = "FAVOURITES_TABLE";
     public static final String COLUMN_USERNAME = "username";
     public static final String COLUMN_SYMBOL = "symbol";
-    public static final String COLUMN_CREATED_AT = "created at";
+    public static final String COLUMN_CREATED_AT = "created_at";
 
     public FavouritesTable(@Nullable Context context) {
-        super(context, "stonks_db", null, 1);
+        super(context, "stonks", null, 1);
     }
 
     @Override
@@ -80,6 +80,7 @@ public class FavouritesTable extends SQLiteOpenHelper {
             } while (cursor.moveToNext());
         }
 
+        cursor.close();
         return favouriteStocksList;
     }
 }
