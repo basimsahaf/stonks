@@ -4,8 +4,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class TransactionsListRow {
-    private LocalDateTime date;
-    private Transaction transaction;
+    private final LocalDateTime date;
+    private final Transaction transaction;
 
     public TransactionsListRow(LocalDateTime date) {
         this.date = date;
