@@ -64,7 +64,7 @@
                 app:layout_constraintTop_toBottomOf="@id/header"
                 app:layout_constraintLeft_toLeftOf="parent"
                 android:layout_marginTop="@dimen/section_margin"
-                android:layout_marginBottom="@dimen/section_margin"
+                android:paddingBottom="@dimen/row_margin"
                 android:paddingLeft="@dimen/page_padding_horizontal"
                 android:text="@string/transaction_type"
                 style="@style/AppTheme.TextAppearance.MediumLabel"/>

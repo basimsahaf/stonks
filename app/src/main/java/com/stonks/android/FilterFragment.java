@@ -10,6 +10,8 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.checkbox.MaterialCheckBox;
 import com.google.android.material.textfield.TextInputLayout;
 import com.stonks.android.adapter.CompanyFilterListAdapter;
@@ -47,6 +49,11 @@ public class FilterFragment extends BaseFragment implements View.OnClickListener
         setupRadioListeners(view);
         setupResetButton(view);
         setupResetAllButton(view);
+
+        MaterialButton button = view.findViewById(R.id.apply_button);
+        button.setOnClickListener(v -> {
+            super.getActivity().onBackPressed();
+        });
     }
 
     private void setupRadioListeners(View view) {
