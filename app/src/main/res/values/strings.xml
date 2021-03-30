@@ -55,7 +55,8 @@
     <string name="action_settings">Settings</string>
     <string name="account_value">Account Value</string>
     <string name="current_value_price">$7,644.86</string>
-    <string name="price_update">Up $646.30 (14.31\% from yesterday)</string>
+    <string name="price_update">$646.30 (14.31\% from yesterday)</string>
+    <string name="total_return">$1337.64 since Mar 29 2021</string>
     <string name="money_left_desc">left to trade</string>
     <string name="money_left">$19,032.23</string>
     <string name="your_portfolio">Your Portfolio</string>
