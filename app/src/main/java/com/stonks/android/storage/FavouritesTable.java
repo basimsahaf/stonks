@@ -57,6 +57,13 @@ public class FavouritesTable extends SQLiteOpenHelper {
         return insert >= 0;
     }
 
+    public boolean deleteFavouritesRow(String username, String symbol) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String whereArgs = String.format("%s = ? AND %s = ?", COLUMN_USERNAME, COLUMN_SYMBOL);
+
+        return db.delete(FAVOURITES_TABLE, whereArgs, new String[] {username, symbol}) > 0;
+    }
+
     public ArrayList<FavouriteStock> getUserFavourites(String username) {
         String query =
                 String.format("SELECT * FROM %s WHERE %s = ?", FAVOURITES_TABLE, COLUMN_USERNAME);
