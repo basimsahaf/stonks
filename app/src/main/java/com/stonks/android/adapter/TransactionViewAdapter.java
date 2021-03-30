@@ -8,18 +8,20 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.stonks.android.R;
 import com.stonks.android.model.Transaction;
+import com.stonks.android.model.TransactionsListRow;
+import com.stonks.android.utility.Formatters;
 import java.util.ArrayList;
 
 public class TransactionViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    ArrayList<Transaction> transactions;
+    ArrayList<TransactionsListRow> transactions;
 
-    public TransactionViewAdapter(ArrayList<Transaction> transactionList) {
+    public TransactionViewAdapter(ArrayList<TransactionsListRow> transactionList) {
         this.transactions = transactionList;
     }
 
     @Override
     public int getItemViewType(int position) {
-        return transactions.get(position).getTransactionType().equalsIgnoreCase("DATE") ? 1 : 0;
+        return transactions.get(position).getDate() != null ? 1 : 0;
     }
 
     @NonNull
@@ -42,20 +44,24 @@ public class TransactionViewAdapter extends RecyclerView.Adapter<RecyclerView.Vi
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int position) {
-        Transaction transaction = transactions.get(position);
+        TransactionsListRow rowItem = transactions.get(position);
 
         if (viewHolder.getItemViewType() == 0) {
+            Transaction transaction = rowItem.getTransaction();
             TransactionViewHolder holder = (TransactionViewHolder) viewHolder;
 
             holder.transactionType.setText(
                     "Market " + transaction.getTransactionType().toLowerCase());
             holder.symbol.setText(transaction.getSymbol());
-            holder.priceAndShares.setText(
-                    "$" + transaction.getPrice() + " (x" + transaction.getShares() + ")");
+            holder.price.setText(
+                    Formatters.formatPrice(transaction.getTotalPrice()));
             holder.time.setText(transaction.getTransactionTimeString());
+            holder.pricePerShare.setText(
+                    Formatters.formatPricePerShare(
+                            transaction.getShares(), transaction.getPrice()));
         } else {
             DateViewHolder holder = (DateViewHolder) viewHolder;
-            holder.date.setText(transaction.getTransactionDateString());
+            holder.date.setText(rowItem.getDateString());
         }
     }
 
@@ -73,7 +79,8 @@ public class TransactionViewAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         public final TextView time;
         public final TextView transactionType;
         public final TextView symbol;
-        public final TextView priceAndShares;
+        public final TextView price;
+        public final TextView pricePerShare;
 
         public TransactionViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -82,7 +89,8 @@ public class TransactionViewAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             time = this.view.findViewById(R.id.transaction_time);
             transactionType = this.view.findViewById(R.id.transaction_type);
             symbol = this.view.findViewById(R.id.symbol);
-            priceAndShares = this.view.findViewById(R.id.cost_shares);
+            price = this.view.findViewById(R.id.cost_shares);
+            pricePerShare = this.view.findViewById(R.id.price_per_share);
         }
     }
 
