@@ -53,8 +53,7 @@ public class TransactionViewAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             holder.transactionType.setText(
                     "Market " + transaction.getTransactionType().toLowerCase());
             holder.symbol.setText(transaction.getSymbol());
-            holder.price.setText(
-                    Formatters.formatPrice(transaction.getTotalPrice()));
+            holder.price.setText(Formatters.formatPrice(transaction.getTotalPrice()));
             holder.time.setText(transaction.getTransactionTimeString());
             holder.pricePerShare.setText(
                     Formatters.formatPricePerShare(
