@@ -93,6 +93,17 @@
     <string name="saved_menu">Saved</string>
     <string name="settings_menu">Settings</string>
 
+    <!-- Login Activity strings -->
+    <string name="welcome">Welcome</string>
+    <string name="login_failed">Login Failed</string>
+    <string name="signup_failed">Sign Up Failed</string>
+    <string name="invalid_username">Invalid Username</string>
+    <string name="invalid_password">Invalid Password</string>
+    <string name="user_does_not_exist">User does not exist</string>
+    <string name="internal_server_error">Internal Server Error</string>
+    <string name="user_exists">User already exists</string>
+    <string name="try_again">Please try again!</string>
+
     <!-- Hypothetical Page Strings -->
     <string name="price_on_label">Price on</string>
     <string name="sample_date">03-15-2021, 5:00PM EST</string>
