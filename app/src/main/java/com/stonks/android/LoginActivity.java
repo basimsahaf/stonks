@@ -94,7 +94,7 @@ public class LoginActivity extends BaseActivity {
 
         // TODO: do biometrics here
 
-        // toggle login mode by default
+        // toggle signup mode by default
         switchView(AuthMode.SIGNUP);
     }
 
