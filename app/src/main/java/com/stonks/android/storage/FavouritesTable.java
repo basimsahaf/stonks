@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import androidx.annotation.Nullable;
+import com.stonks.android.BuildConfig;
 import com.stonks.android.model.FavouriteStock;
 import java.util.ArrayList;
 
@@ -17,7 +18,7 @@ public class FavouritesTable extends SQLiteOpenHelper {
     public static final String COLUMN_CREATED_AT = "created_at";
 
     public FavouritesTable(@Nullable Context context) {
-        super(context, "stonks_db", null, 1);
+        super(context, BuildConfig.DATABASE_NAME, null, 1);
     }
 
     @Override
