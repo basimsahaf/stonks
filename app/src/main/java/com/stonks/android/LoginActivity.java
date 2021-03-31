@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
@@ -18,7 +17,6 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.stonks.android.model.AuthMode;
 import com.stonks.android.model.LoggedInUserView;
 import com.stonks.android.model.LoginDataSource;
-import com.stonks.android.model.LoginFormState;
 import com.stonks.android.model.LoginRepository;
 import com.stonks.android.model.LoginViewModel;
 import com.stonks.android.storage.UserTable;
@@ -74,12 +72,15 @@ public class LoginActivity extends BaseActivity {
         setLoginViewModelListeners();
 
         // auth triggers
-        passwordField.getEditText().setOnEditorActionListener((v, actionId, event) -> {
-            if (actionId == EditorInfo.IME_ACTION_DONE) {
-                authorize();
-            }
-            return false;
-        });
+        passwordField
+                .getEditText()
+                .setOnEditorActionListener(
+                        (v, actionId, event) -> {
+                            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                                authorize();
+                            }
+                            return false;
+                        });
 
         loginButton.setOnClickListener(view -> authorize());
 
@@ -168,35 +169,47 @@ public class LoginActivity extends BaseActivity {
     }
 
     private void setLoginViewModelListeners() {
-        loginViewModel.getLoginFormState().observe(
-                this,
-                loginFormState -> {
-                    if (loginFormState == null) {
-                        return;
-                    }
-                    loginButton.setEnabled(loginFormState.isDataValid());
+        loginViewModel
+                .getLoginFormState()
+                .observe(
+                        this,
+                        loginFormState -> {
+                            if (loginFormState == null) {
+                                return;
+                            }
+                            loginButton.setEnabled(loginFormState.isDataValid());
 
-                    // display error if invalid username or password
-                    boolean usernameError = usernameChanged && loginFormState.getUsernameError() != null;
-                    boolean passwordError = passwordChanged && loginFormState.getPasswordError() != null;
-                    setFieldState(usernameError, usernameErrorMessage, loginFormState.getUsernameError());
-                    setFieldState(passwordError, passwordErrorMessage, loginFormState.getPasswordError());
-                });
+                            // display error if invalid username or password
+                            boolean usernameError =
+                                    usernameChanged && loginFormState.getUsernameError() != null;
+                            boolean passwordError =
+                                    passwordChanged && loginFormState.getPasswordError() != null;
+                            setFieldState(
+                                    usernameError,
+                                    usernameErrorMessage,
+                                    loginFormState.getUsernameError());
+                            setFieldState(
+                                    passwordError,
+                                    passwordErrorMessage,
+                                    loginFormState.getPasswordError());
+                        });
 
-        loginViewModel.getLoginResult().observe(
-                this,
-                loginResult -> {
-                    if (loginResult == null) {
-                        return;
-                    }
-                    if (loginResult.getError() != null) {
-                        showLoginFailed(loginResult.getError());
-                    }
-                    if (loginResult.getSuccess() != null) {
-                        showLoginSucceeded(loginResult.getSuccess());
-                    }
-                    setResult(Activity.RESULT_OK);
-                });
+        loginViewModel
+                .getLoginResult()
+                .observe(
+                        this,
+                        loginResult -> {
+                            if (loginResult == null) {
+                                return;
+                            }
+                            if (loginResult.getError() != null) {
+                                showLoginFailed(loginResult.getError());
+                            }
+                            if (loginResult.getSuccess() != null) {
+                                showLoginSucceeded(loginResult.getSuccess());
+                            }
+                            setResult(Activity.RESULT_OK);
+                        });
     }
 
     private void setFieldState(boolean fieldChanged, TextView errorView, Integer error) {
