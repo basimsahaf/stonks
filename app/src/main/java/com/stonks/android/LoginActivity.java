@@ -137,11 +137,7 @@ public class LoginActivity extends BaseActivity {
         // TODO: do biometrics here
 
         // toggle login mode by default
-        switchView(AuthMode.LOGIN);
-    }
-
-    private void setListeners() {
-
+        switchView(AuthMode.SIGNUP);
     }
 
     private void setTextWatcher(TextInputLayout field) {
@@ -178,6 +174,7 @@ public class LoginActivity extends BaseActivity {
         String welcome = getString(R.string.welcome);
         Toast.makeText(getApplicationContext(), welcome, Toast.LENGTH_LONG).show();
         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
     }
 
@@ -232,8 +229,6 @@ public class LoginActivity extends BaseActivity {
                             }
                             if (loginResult.getSuccess() != null) {
                                 showLoginSucceeded(loginResult.getSuccess());
-                                Intent intent = new Intent(this, MainActivity.class);
-                                startActivity(intent);
                             }
                             setResult(Activity.RESULT_OK);
                         });
