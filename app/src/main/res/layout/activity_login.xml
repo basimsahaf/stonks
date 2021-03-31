@@ -95,7 +95,7 @@
 
     <Button
         android:id="@+id/login_button"
-        android:layout_width="150dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         style="@style/AppTheme.Button.PrimaryButton"
         android:text="@string/login"
