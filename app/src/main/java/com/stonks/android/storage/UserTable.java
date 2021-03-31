@@ -44,7 +44,7 @@ public class UserTable extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        String dropStatement = "DROP TABLE IF EXISTS " + BuildConfig.DATABASE_NAME;
+        String dropStatement = "DROP TABLE IF EXISTS " + USER_TABLE;
         db.execSQL(dropStatement);
         onCreate(db);
     }
