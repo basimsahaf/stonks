@@ -99,11 +99,6 @@
     <string name="sample_time">3:21PM</string>
     <string name="as_of_label">as of today at</string>
 
-    <!-- Favourites Page strings -->
-    <string name="saved">Saved</string>
-    <string name="your_saved">Your saved stocks</string>
-    <string name="no_saved_message">No saved stock pages yet.\nTry hitting the heart icon in a stocks page.</string>
-
     <!-- Filters page strings -->
     <string name="filters">Filters</string>
     <string name="reset_all">Reset all</string>
