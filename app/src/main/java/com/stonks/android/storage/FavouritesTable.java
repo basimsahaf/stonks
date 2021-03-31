@@ -35,10 +35,10 @@ public class FavouritesTable extends SQLiteOpenHelper {
                         + " FOREIGN KEY ( "
                         + COLUMN_USERNAME
                         + " ) "
-                        + " REFERENCES"
-                        + " USER_TABLE"
+                        + " REFERENCES "
+                        + UserTable.USER_TABLE
                         + " ( "
-                        + COLUMN_USERNAME
+                        + UserTable.COLUMN_USERNAME
                         + " )"
                         + ")";
 
