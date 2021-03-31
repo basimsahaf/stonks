@@ -64,7 +64,7 @@ public class UserTable extends SQLiteOpenHelper {
     public boolean checkIfUserExists(String username) {
         SQLiteDatabase db = this.getReadableDatabase();
         String queryString =
-                "SELECT * FROM " + USER_TABLE + " WHERE USER_TABLE.username = '" + username + "'";
+                "SELECT * FROM " + USER_TABLE + " WHERE username = '" + username + "'";
         Cursor cursor = db.rawQuery(queryString, null);
         boolean exists = cursor.moveToFirst();
         cursor.close();
@@ -76,11 +76,10 @@ public class UserTable extends SQLiteOpenHelper {
         String queryString =
                 "SELECT * FROM "
                         + USER_TABLE
-                        + " WHERE USER_TABLE.username = '"
+                        + " WHERE username = "
                         + username
-                        + "' AND USER_TABLE.password = '"
-                        + password
-                        + "'";
+                        + " AND password = "
+                        + password;
         Cursor cursor = db.rawQuery(queryString, null);
         boolean exists = cursor.moveToFirst();
         cursor.close();
