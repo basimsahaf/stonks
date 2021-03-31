@@ -18,6 +18,7 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.stonks.android.model.AuthMode;
 import com.stonks.android.model.LoggedInUserView;
 import com.stonks.android.model.LoginDataSource;
+import com.stonks.android.model.LoginFormState;
 import com.stonks.android.model.LoginRepository;
 import com.stonks.android.model.LoginViewModel;
 import com.stonks.android.storage.UserTable;
@@ -72,59 +73,15 @@ public class LoginActivity extends BaseActivity {
         setTextWatcher(passwordField);
         setLoginViewModelListeners();
 
-        passwordField
-                .getEditText()
-                .setOnEditorActionListener(
-                        (v, actionId, event) -> {
-                            if (actionId == EditorInfo.IME_ACTION_DONE) {
-                                switch (currentAuthMode) {
-                                    case LOGIN:
-                                        loginViewModel.login(
-                                                usernameField.getEditText().getText().toString(),
-                                                passwordField.getEditText().getText().toString());
-                                        break;
+        // auth triggers
+        passwordField.getEditText().setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                authorize();
+            }
+            return false;
+        });
 
-                                    case SIGNUP:
-                                        loginViewModel.signup(
-                                                usernameField.getEditText().getText().toString(),
-                                                passwordField.getEditText().getText().toString(),
-                                                biometricsEnabled);
-                                        break;
-                                }
-                            }
-                            return false;
-                        });
-
-        loginButton.setText(getString(R.string.login));
-        loginButton.setOnClickListener(
-                view -> {
-                    String username = "";
-                    String password = "";
-
-                    if (usernameField.getEditText().getText() != null) {
-                        username = usernameField.getEditText().getText().toString();
-                    }
-
-                    if (passwordField.getEditText().getText() != null) {
-                        password = passwordField.getEditText().getText().toString();
-                    }
-
-                    Log.d(TAG, "Username/password pair: " + username + " -> " + password);
-
-                    usernameChanged = false;
-                    passwordChanged = false;
-                    authErrorMessage.setVisibility(View.GONE);
-
-                    switch (currentAuthMode) {
-                        case LOGIN:
-                            loginViewModel.login(username, password);
-                            break;
-
-                        case SIGNUP:
-                            loginViewModel.signup(username, password, biometricsEnabled);
-                            break;
-                    }
-                });
+        loginButton.setOnClickListener(view -> authorize());
 
         // set error messages visibility to gone by default
         usernameErrorMessage.setVisibility(View.GONE);
@@ -140,8 +97,30 @@ public class LoginActivity extends BaseActivity {
         switchView(AuthMode.SIGNUP);
     }
 
-    private void setTextWatcher(TextInputLayout field) {
+    private String getFieldText(TextInputLayout field) {
+        if (field.getEditText().getText() != null) {
+            return field.getEditText().getText().toString();
+        }
+        return "";
+    }
 
+    private void authorize() {
+        String username = getFieldText(usernameField);
+        String password = getFieldText(passwordField);
+        authErrorMessage.setVisibility(View.GONE);
+
+        switch (currentAuthMode) {
+            case LOGIN:
+                loginViewModel.login(username, password);
+                break;
+
+            case SIGNUP:
+                loginViewModel.signup(username, password, biometricsEnabled);
+                break;
+        }
+    }
+
+    private void setTextWatcher(TextInputLayout field) {
         TextWatcher textWatcher =
                 new TextWatcher() {
                     @Override
@@ -189,49 +168,45 @@ public class LoginActivity extends BaseActivity {
     }
 
     private void setLoginViewModelListeners() {
-        loginViewModel
-                .getLoginFormState()
-                .observe(
-                        this,
-                        loginFormState -> {
-                            if (loginFormState == null) {
-                                return;
-                            }
-                            loginButton.setEnabled(loginFormState.isDataValid());
-                            if (usernameChanged && loginFormState.getUsernameError() != null) {
-                                usernameErrorMessage.setText(loginFormState.getUsernameError());
-                                usernameErrorMessage.setTextColor(
-                                        getResources().getColor(R.color.red, getTheme()));
-                                usernameErrorMessage.setVisibility(View.VISIBLE);
-                            } else {
-                                usernameErrorMessage.setVisibility(View.GONE);
-                            }
-                            if (passwordChanged && loginFormState.getPasswordError() != null) {
-                                passwordErrorMessage.setText(loginFormState.getPasswordError());
-                                passwordErrorMessage.setTextColor(
-                                        getResources().getColor(R.color.red, getTheme()));
-                                passwordErrorMessage.setVisibility(View.VISIBLE);
-                            } else {
-                                passwordErrorMessage.setVisibility(View.GONE);
-                            }
-                        });
+        loginViewModel.getLoginFormState().observe(
+                this,
+                loginFormState -> {
+                    if (loginFormState == null) {
+                        return;
+                    }
+                    loginButton.setEnabled(loginFormState.isDataValid());
 
-        loginViewModel
-                .getLoginResult()
-                .observe(
-                        this,
-                        loginResult -> {
-                            if (loginResult == null) {
-                                return;
-                            }
-                            if (loginResult.getError() != null) {
-                                showLoginFailed(loginResult.getError());
-                            }
-                            if (loginResult.getSuccess() != null) {
-                                showLoginSucceeded(loginResult.getSuccess());
-                            }
-                            setResult(Activity.RESULT_OK);
-                        });
+                    // display error if invalid username or password
+                    boolean usernameError = usernameChanged && loginFormState.getUsernameError() != null;
+                    boolean passwordError = passwordChanged && loginFormState.getPasswordError() != null;
+                    setFieldState(usernameError, usernameErrorMessage, loginFormState.getUsernameError());
+                    setFieldState(passwordError, passwordErrorMessage, loginFormState.getPasswordError());
+                });
+
+        loginViewModel.getLoginResult().observe(
+                this,
+                loginResult -> {
+                    if (loginResult == null) {
+                        return;
+                    }
+                    if (loginResult.getError() != null) {
+                        showLoginFailed(loginResult.getError());
+                    }
+                    if (loginResult.getSuccess() != null) {
+                        showLoginSucceeded(loginResult.getSuccess());
+                    }
+                    setResult(Activity.RESULT_OK);
+                });
+    }
+
+    private void setFieldState(boolean fieldChanged, TextView errorView, Integer error) {
+        if (fieldChanged) {
+            errorView.setText(error);
+            errorView.setTextColor(getResources().getColor(R.color.red, getTheme()));
+            errorView.setVisibility(View.VISIBLE);
+        } else {
+            errorView.setVisibility(View.GONE);
+        }
     }
 
     private void switchView(AuthMode login) {
