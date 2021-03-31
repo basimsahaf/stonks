@@ -180,16 +180,13 @@ public class LoginActivity extends BaseActivity {
                             loginButton.setEnabled(loginFormState.isDataValid());
 
                             // display error if invalid username or password
-                            boolean usernameError =
-                                    usernameChanged && loginFormState.getUsernameError() != null;
-                            boolean passwordError =
-                                    passwordChanged && loginFormState.getPasswordError() != null;
                             setFieldState(
-                                    usernameError,
+                                    usernameChanged,
                                     usernameErrorMessage,
                                     loginFormState.getUsernameError());
+
                             setFieldState(
-                                    passwordError,
+                                    passwordChanged,
                                     passwordErrorMessage,
                                     loginFormState.getPasswordError());
                         });
@@ -213,7 +210,7 @@ public class LoginActivity extends BaseActivity {
     }
 
     private void setFieldState(boolean fieldChanged, TextView errorView, Integer error) {
-        if (fieldChanged) {
+        if (fieldChanged && error != null) {
             errorView.setText(error);
             errorView.setTextColor(getResources().getColor(R.color.red, getTheme()));
             errorView.setVisibility(View.VISIBLE);
