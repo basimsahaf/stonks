@@ -11,6 +11,7 @@ import java.util.ArrayList;
 
 public class FavouritesTable extends SQLiteOpenHelper {
     public static final String FAVOURITES_TABLE = "FAVOURITES_TABLE";
+    public static final String COLUMN_ID = "id";
     public static final String COLUMN_USERNAME = "username";
     public static final String COLUMN_SYMBOL = "symbol";
     public static final String COLUMN_CREATED_AT = "created_at";
@@ -25,6 +26,8 @@ public class FavouritesTable extends SQLiteOpenHelper {
                 "CREATE TABLE "
                         + FAVOURITES_TABLE
                         + " ("
+                        + COLUMN_ID
+                        + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
                         + COLUMN_USERNAME
                         + " TEXT, "
                         + COLUMN_SYMBOL
