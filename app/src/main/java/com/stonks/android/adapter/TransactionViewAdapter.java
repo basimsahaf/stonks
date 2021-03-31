@@ -50,11 +50,10 @@ public class TransactionViewAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             Transaction transaction = rowItem.getTransaction();
             TransactionViewHolder holder = (TransactionViewHolder) viewHolder;
 
-            holder.transactionType.setText(
-                    "Market " + transaction.getTransactionType().toLowerCase());
+            holder.transactionType.setText("Market " + transaction.getTransactionTypeString());
             holder.symbol.setText(transaction.getSymbol());
             holder.price.setText(Formatters.formatPrice(transaction.getTotalPrice()));
-            holder.time.setText(transaction.getTransactionTimeString());
+            holder.time.setText(transaction.getTimeStringFromCreatedAt());
             holder.pricePerShare.setText(
                     Formatters.formatPricePerShare(
                             transaction.getShares(), transaction.getPrice()));

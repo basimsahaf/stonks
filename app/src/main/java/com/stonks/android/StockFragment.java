@@ -267,18 +267,20 @@ public class StockFragment extends BaseFragment {
         list.add(
                 new TransactionsListRow(
                         new Transaction(
+                                "username",
                                 this.symbol,
                                 100,
                                 56.92f,
-                                "buy",
+                                TransactionMode.BUY,
                                 LocalDateTime.of(2020, Month.AUGUST, 19, 13, 14))));
         list.add(
                 new TransactionsListRow(
                         new Transaction(
+                                "username",
                                 this.symbol,
                                 268,
                                 36.47f,
-                                "buy",
+                                TransactionMode.BUY,
                                 LocalDateTime.of(2020, Month.AUGUST, 1, 9, 52))));
 
         return list;
@@ -291,18 +293,20 @@ public class StockFragment extends BaseFragment {
         list.add(
                 new TransactionsListRow(
                         new Transaction(
+                                "username",
                                 "SHOP",
                                 100,
                                 56.92f,
-                                "buy",
+                                TransactionMode.BUY,
                                 LocalDateTime.of(2020, Month.AUGUST, 19, 13, 14))));
         list.add(
                 new TransactionsListRow(
                         new Transaction(
+                                "username",
                                 "SHOP",
                                 268,
                                 36.47f,
-                                "buy",
+                                TransactionMode.BUY,
                                 LocalDateTime.of(2020, Month.AUGUST, 1, 9, 52))));
 
         return list;

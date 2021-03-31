@@ -4,37 +4,68 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class Transaction {
-    private final LocalDateTime transactionDate;
+    private final String username;
+    private final LocalDateTime createdAt;
     private final String symbol;
     private final float price;
     private final int shares;
-    private final String transactionType; // buy or sell
+    private final TransactionMode transactionType;
 
     public Transaction(
+            final String username,
             final String symbol,
             final int shares,
             final float price,
-            final String transactionType,
-            final LocalDateTime transactionDate) {
-        this.transactionDate = transactionDate;
+            final TransactionMode transactionType,
+            final LocalDateTime createdAt) {
+        this.username = username;
+        this.createdAt = createdAt;
         this.symbol = symbol;
         this.price = price;
         this.shares = shares;
         this.transactionType = transactionType;
     }
 
-    public LocalDateTime getTransactionDate() {
-        return transactionDate;
+    public Transaction(
+            final String username,
+            final String symbol,
+            final int shares,
+            final float price,
+            final TransactionMode transactionType) {
+        this.username = username;
+        this.createdAt = null;
+        this.symbol = symbol;
+        this.price = price;
+        this.shares = shares;
+        this.transactionType = transactionType;
     }
 
-    public String getTransactionDateString() {
+    public String getUsername() {
+        return username;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public String getCreatedAtString() {
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        return createdAt.format(format);
+    }
+
+    public String getDateStringFromCreatedAt() {
         DateTimeFormatter format = DateTimeFormatter.ofPattern("dd MMM yy");
-        return transactionDate.format(format);
+        return createdAt.format(format);
     }
 
-    public String getTransactionTimeString() {
+    public String getTimeStringFromCreatedAt() {
         DateTimeFormatter format = DateTimeFormatter.ofPattern("HH:mm");
-        return transactionDate.format(format);
+        return createdAt.format(format);
+    }
+
+    public static LocalDateTime getCreatedAtFromString(String transactionDate) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        return LocalDateTime.parse(transactionDate, formatter);
     }
 
     public String getSymbol() {
@@ -53,7 +84,11 @@ public class Transaction {
         return price * shares;
     }
 
-    public String getTransactionType() {
+    public TransactionMode getTransactionType() {
         return transactionType;
+    }
+
+    public String getTransactionTypeString() {
+        return transactionType.toString();
     }
 }

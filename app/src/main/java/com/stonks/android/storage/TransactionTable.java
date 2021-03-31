@@ -7,8 +7,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import androidx.annotation.Nullable;
 import com.stonks.android.BuildConfig;
+import com.stonks.android.model.Transaction;
 import com.stonks.android.model.TransactionMode;
-import com.stonks.android.model.TransactionRow;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
@@ -16,13 +16,13 @@ public class TransactionTable extends SQLiteOpenHelper {
     public static final String TRANSACTION_TABLE = "TRANSACTION_TABLE";
     public static final String COLUMN_USERNAME = "username";
     public static final String COLUMN_SYMBOL = "symbol";
-    public static final String COLUMN_QUANTITY = "quantity";
+    public static final String COLUMN_SHARES = "shares";
     public static final String COLUMN_PRICE = "price";
     public static final String COLUMN_TRANSACTION_TYPE = "transaction_type";
-    public static final String COLUMN_CREATED_AT = "created_at";
+    public static final String COLUMN_CREATED_AT = "transaction_date";
 
     public TransactionTable(@Nullable Context context) {
-        super(context, BuildConfig.DATABASE_NAME, null, 1);
+        super(context, BuildConfig.DATABASE_NAME, null, 3);
     }
 
     @Override
@@ -33,7 +33,7 @@ public class TransactionTable extends SQLiteOpenHelper {
                         + " ("
                         + COLUMN_USERNAME
                         + " TEXT, "
-                        + COLUMN_QUANTITY
+                        + COLUMN_SHARES
                         + " INTEGER, "
                         + COLUMN_SYMBOL
                         + " TEXT, "
@@ -42,8 +42,14 @@ public class TransactionTable extends SQLiteOpenHelper {
                         + COLUMN_PRICE
                         + " REAL, "
                         + COLUMN_CREATED_AT
-                        + " TEXT"
-                        + ")";
+                        + " TEXT DEFAULT CURRENT_TIMESTAMP NOT NULL, "
+                        + "FOREIGN KEY("
+                        + COLUMN_USERNAME
+                        + ") REFERENCES "
+                        + UserTable.USER_TABLE
+                        + "("
+                        + UserTable.COLUMN_USERNAME
+                        + "))";
 
         db.execSQL(createPortfolioTable);
     }
@@ -57,58 +63,57 @@ public class TransactionTable extends SQLiteOpenHelper {
         }
     }
 
-    public boolean addTransactionRow(TransactionRow transactionRow) {
+    public boolean addTransaction(Transaction transaction) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
-        cv.put(COLUMN_USERNAME, transactionRow.getUsername());
-        cv.put(COLUMN_QUANTITY, transactionRow.getQuantity());
-        cv.put(COLUMN_SYMBOL, transactionRow.getSymbol());
-        cv.put(COLUMN_PRICE, transactionRow.getPrice());
-        cv.put(COLUMN_TRANSACTION_TYPE, transactionRow.getTransactionTypeString());
-        cv.put(COLUMN_CREATED_AT, transactionRow.getCreatedAtString());
+        cv.put(COLUMN_USERNAME, transaction.getUsername());
+        cv.put(COLUMN_SHARES, transaction.getShares());
+        cv.put(COLUMN_SYMBOL, transaction.getSymbol());
+        cv.put(COLUMN_PRICE, transaction.getPrice());
+        cv.put(COLUMN_TRANSACTION_TYPE, transaction.getTransactionTypeString());
 
         long insert = db.insert(TRANSACTION_TABLE, null, cv);
         return insert >= 0;
     }
 
-    public ArrayList<TransactionRow> getTransactionRows(String username) {
+    public ArrayList<Transaction> getTransactions(String username) {
         String query =
                 String.format("SELECT * FROM %s WHERE %s = ?", TRANSACTION_TABLE, COLUMN_USERNAME);
 
-        return queryTransactionRows(query, new String[] {username});
+        return queryTransactions(query, new String[] {username});
     }
 
-    public ArrayList<TransactionRow> getTransactionRowsBySymbol(String username, String symbol) {
+    public ArrayList<Transaction> getTransactionsBySymbol(String username, String symbol) {
         String query =
                 String.format(
                         "SELECT * FROM %s WHERE %s = ? AND %s = ?",
                         TRANSACTION_TABLE, COLUMN_USERNAME, COLUMN_SYMBOL);
-        return queryTransactionRows(query, new String[] {username, symbol});
+        return queryTransactions(query, new String[] {username, symbol});
     }
 
-    private ArrayList<TransactionRow> queryTransactionRows(String query, String[] selectionArgs) {
+    private ArrayList<Transaction> queryTransactions(String query, String[] selectionArgs) {
         SQLiteDatabase db = this.getReadableDatabase();
-        ArrayList<TransactionRow> transactionRows = new ArrayList<>();
+        ArrayList<Transaction> transactions = new ArrayList<>();
         Cursor cursor = db.rawQuery(query, selectionArgs);
 
         if (cursor.moveToFirst()) {
             do {
                 String username = cursor.getString(cursor.getColumnIndex(COLUMN_USERNAME));
                 String symbol = cursor.getString(cursor.getColumnIndex(COLUMN_SYMBOL));
-                int quantity = cursor.getInt(cursor.getColumnIndex(COLUMN_QUANTITY));
+                int shares = cursor.getInt(cursor.getColumnIndex(COLUMN_SHARES));
                 float price = cursor.getFloat(cursor.getColumnIndex(COLUMN_PRICE));
                 TransactionMode transactionType =
                         TransactionMode.fromString(
                                 cursor.getString(cursor.getColumnIndex(COLUMN_TRANSACTION_TYPE)));
-                LocalDateTime createdAt =
-                        TransactionRow.getCreatedAtFromString(
+                LocalDateTime transactionDate =
+                        Transaction.getCreatedAtFromString(
                                 cursor.getString(cursor.getColumnIndex(COLUMN_CREATED_AT)));
-                transactionRows.add(
-                        new TransactionRow(
-                                username, symbol, quantity, price, transactionType, createdAt));
+                transactions.add(
+                        new Transaction(
+                                username, symbol, shares, price, transactionType, transactionDate));
 
             } while (cursor.moveToNext());
         }
-        return transactionRows;
+        return transactions;
     }
 }
