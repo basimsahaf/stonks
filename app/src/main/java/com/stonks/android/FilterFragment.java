@@ -7,17 +7,16 @@ import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.RadioButton;
 import android.widget.TextView;
-
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.checkbox.MaterialCheckBox;
 import com.google.android.material.textfield.TextInputLayout;
 import com.stonks.android.adapter.CompanyFilterListAdapter;
 import java.util.ArrayList;
 
-public class FilterFragment extends BaseFragment implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
+public class FilterFragment extends BaseFragment
+        implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
     private RecyclerView.Adapter companiesFilterListAdapter;
 
     @Override
@@ -51,9 +50,10 @@ public class FilterFragment extends BaseFragment implements View.OnClickListener
         setupResetAllButton(view);
 
         MaterialButton button = view.findViewById(R.id.apply_button);
-        button.setOnClickListener(v -> {
-            super.getActivity().onBackPressed();
-        });
+        button.setOnClickListener(
+                v -> {
+                    super.getActivity().onBackPressed();
+                });
     }
 
     private void setupRadioListeners(View view) {
@@ -69,27 +69,29 @@ public class FilterFragment extends BaseFragment implements View.OnClickListener
     private void setupResetButton(View view) {
         TextView reset = view.findViewById(R.id.reset_button);
 
-        reset.setOnClickListener(v -> {
-            TextInputLayout min = view.findViewById(R.id.min_field);
-            min.getEditText().getText().clear();
+        reset.setOnClickListener(
+                v -> {
+                    TextInputLayout min = view.findViewById(R.id.min_field);
+                    min.getEditText().getText().clear();
 
-            TextInputLayout max = view.findViewById(R.id.max_field);
-            max.getEditText().getText().clear();
-        });
+                    TextInputLayout max = view.findViewById(R.id.max_field);
+                    max.getEditText().getText().clear();
+                });
     }
 
     private void setupResetAllButton(View view) {
         TextView resetAll = view.findViewById(R.id.reset_all_button);
 
-        resetAll.setOnClickListener(v -> {
-            RadioButton allRadio = view.findViewById(R.id.radio_all);
-            allRadio.setChecked(true);
+        resetAll.setOnClickListener(
+                v -> {
+                    RadioButton allRadio = view.findViewById(R.id.radio_all);
+                    allRadio.setChecked(true);
 
-            TextView reset = view.findViewById(R.id.reset_button);
-            reset.performClick();
+                    TextView reset = view.findViewById(R.id.reset_button);
+                    reset.performClick();
 
-            companiesFilterListAdapter.notifyDataSetChanged();
-        });
+                    companiesFilterListAdapter.notifyDataSetChanged();
+                });
     }
 
     @Override
