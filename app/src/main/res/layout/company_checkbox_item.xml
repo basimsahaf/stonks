@@ -2,7 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingHorizontal="@dimen/button_horizontal_padding"
+    android:paddingHorizontal="@dimen/page_padding_horizontal"
     android:paddingBottom="@dimen/row_margin"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
