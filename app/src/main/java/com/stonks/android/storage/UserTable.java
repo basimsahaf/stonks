@@ -6,6 +6,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import androidx.annotation.Nullable;
+
+import com.stonks.android.BuildConfig;
 import com.stonks.android.model.UserModel;
 
 public class UserTable extends SQLiteOpenHelper {
@@ -19,7 +21,7 @@ public class UserTable extends SQLiteOpenHelper {
     public static final String COLUMN_TOTAL_AMOUNT = "total_amount";
 
     public UserTable(@Nullable Context context) {
-        super(context, "stonks", null, 1);
+        super(context, BuildConfig.DATABASE_NAME, null, 1);
     }
 
     @Override
@@ -43,7 +45,7 @@ public class UserTable extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        String dropStatement = "DROP TABLE stonks.USER_TABLE";
+        String dropStatement = "DROP TABLE IF EXISTS " + BuildConfig.DATABASE_NAME;
         db.execSQL(dropStatement);
         onCreate(db);
     }
