@@ -16,6 +16,7 @@ android {
         buildConfigField("String", "ALPACA_KEY_ID", ALPACA_KEY_ID)
         buildConfigField("String", "TD_API_KEY", TD_API_KEY)
         buildConfigField("String", "FINNHUB_TOKEN", FINNHUB_TOKEN)
+        buildConfigField("String", "DATABASE_NAME", DATABASE_NAME)
     }
 
     buildTypes {
