@@ -6,7 +6,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import androidx.annotation.Nullable;
-import com.stonks.android.model.PortfolioRow;
+import com.stonks.android.BuildConfig;
+import com.stonks.android.model.PortfolioItem;
 import java.util.ArrayList;
 
 public class PortfolioTable extends SQLiteOpenHelper {
@@ -16,7 +17,7 @@ public class PortfolioTable extends SQLiteOpenHelper {
     public static final String COLUMN_SYMBOL = "symbol";
 
     public PortfolioTable(@Nullable Context context) {
-        super(context, "stonks_db", null, 1);
+        super(context, BuildConfig.DATABASE_NAME, null, 1);
     }
 
     @Override
@@ -49,32 +50,32 @@ public class PortfolioTable extends SQLiteOpenHelper {
         }
     }
 
-    public boolean addPortfolioRow(PortfolioRow portfolioRow) {
+    public boolean addPortfolioItem(PortfolioItem portfolioItem) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
-        cv.put(COLUMN_USERNAME, portfolioRow.getUsername());
-        cv.put(COLUMN_QUANTITY, portfolioRow.getQuantity());
-        cv.put(COLUMN_SYMBOL, portfolioRow.getSymbol());
+        cv.put(COLUMN_USERNAME, portfolioItem.getUsername());
+        cv.put(COLUMN_QUANTITY, portfolioItem.getQuantity());
+        cv.put(COLUMN_SYMBOL, portfolioItem.getSymbol());
 
         long insert = db.insert(PORTFOLIO_TABLE, null, cv);
         return insert >= 0;
     }
 
-    public boolean updatePortfolioRow(PortfolioRow portfolioRow) {
+    public boolean updatePortfolioItem(PortfolioItem portfolioItem) {
         SQLiteDatabase db = this.getWritableDatabase();
         String whereClause = String.format(COLUMN_USERNAME + " = ? AND " + COLUMN_SYMBOL + " = ?");
         ContentValues cv = new ContentValues();
-        String username = portfolioRow.getUsername();
-        String symbol = portfolioRow.getSymbol();
+        String username = portfolioItem.getUsername();
+        String symbol = portfolioItem.getSymbol();
         cv.put(COLUMN_USERNAME, username);
-        cv.put(COLUMN_QUANTITY, portfolioRow.getQuantity());
+        cv.put(COLUMN_QUANTITY, portfolioItem.getQuantity());
         cv.put(COLUMN_SYMBOL, symbol);
 
         long update = db.update(PORTFOLIO_TABLE, cv, whereClause, new String[] {username, symbol});
         return update >= 0;
     }
 
-    public boolean deletePortfolioRow(String username, String symbol) {
+    public boolean deletePortfolioItem(String username, String symbol) {
         SQLiteDatabase db = this.getWritableDatabase();
         String whereClause = String.format(COLUMN_USERNAME + " = ? AND " + COLUMN_SYMBOL + " = ?");
 
@@ -82,7 +83,7 @@ public class PortfolioTable extends SQLiteOpenHelper {
         return delete >= 0;
     }
 
-    public boolean checkIfPortfolioRowExists(String username, String symbol) {
+    public boolean checkIfPortfolioItemExists(String username, String symbol) {
         SQLiteDatabase db = this.getReadableDatabase();
         String queryString =
                 String.format(
@@ -94,24 +95,24 @@ public class PortfolioTable extends SQLiteOpenHelper {
         return exists;
     }
 
-    public ArrayList<PortfolioRow> getPortfolioRows(String username) {
+    public ArrayList<PortfolioItem> getPortfolioItems(String username) {
         String query =
                 String.format("SELECT * FROM %s WHERE %s = ?", PORTFOLIO_TABLE, COLUMN_USERNAME);
 
-        return queryPortfolioRows(query, new String[] {username});
+        return queryPortfolioItems(query, new String[] {username});
     }
 
-    public ArrayList<PortfolioRow> getPortfolioRowsBySymbol(String username, String symbol) {
+    public ArrayList<PortfolioItem> getPortfolioItemsBySymbol(String username, String symbol) {
         String query =
                 String.format(
                         "SELECT * FROM %s WHERE %s = ? AND %s = ?",
                         PORTFOLIO_TABLE, COLUMN_USERNAME, COLUMN_SYMBOL);
-        return queryPortfolioRows(query, new String[] {username, symbol});
+        return queryPortfolioItems(query, new String[] {username, symbol});
     }
 
-    private ArrayList<PortfolioRow> queryPortfolioRows(String query, String[] selectionArgs) {
+    private ArrayList<PortfolioItem> queryPortfolioItems(String query, String[] selectionArgs) {
         SQLiteDatabase db = this.getReadableDatabase();
-        ArrayList<PortfolioRow> portfolioRows = new ArrayList<>();
+        ArrayList<PortfolioItem> portfolioItems = new ArrayList<>();
         Cursor cursor = db.rawQuery(query, selectionArgs);
 
         if (cursor.moveToFirst()) {
@@ -119,11 +120,11 @@ public class PortfolioTable extends SQLiteOpenHelper {
                 String username = cursor.getString(cursor.getColumnIndex(COLUMN_USERNAME));
                 String symbol = cursor.getString(cursor.getColumnIndex(COLUMN_SYMBOL));
                 int quantity = cursor.getInt(cursor.getColumnIndex(COLUMN_QUANTITY));
-                portfolioRows.add(new PortfolioRow(username, symbol, quantity));
+                portfolioItems.add(new PortfolioItem(username, symbol, quantity));
 
             } while (cursor.moveToNext());
         }
 
-        return portfolioRows;
+        return portfolioItems;
     }
 }
