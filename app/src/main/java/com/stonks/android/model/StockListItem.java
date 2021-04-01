@@ -1,6 +1,6 @@
 package com.stonks.android.model;
 
-public class PortfolioListItem {
+public class StockListItem {
     private String stockSymbol;
     private String companyName;
     private float price;
@@ -8,7 +8,7 @@ public class PortfolioListItem {
     private float priceChange;
     private float changePercent;
 
-    public PortfolioListItem(
+    public StockListItem(
             String stockSymbol,
             String companyName,
             float price,

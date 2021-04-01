@@ -8,8 +8,8 @@ import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import com.stonks.android.adapter.PortfolioRecyclerViewAdapter;
-import com.stonks.android.model.PortfolioListItem;
+import com.stonks.android.adapter.StockListRecyclerViewAdapter;
+import com.stonks.android.model.StockListItem;
 import java.util.ArrayList;
 
 public class SavedStocksFragment extends BaseFragment {
@@ -24,7 +24,7 @@ public class SavedStocksFragment extends BaseFragment {
         RecyclerView savedStocksListView;
         RecyclerView.LayoutManager savedStocksListManager =
                 new LinearLayoutManager(this.getContext());
-        ArrayList<PortfolioListItem> savedStocks = HomePageFragment.getMockItems();
+        ArrayList<StockListItem> savedStocks = HomePageFragment.getMockItems();
 
         getActionBar().setDisplayHomeAsUpEnabled(false);
         getActionBar().setDisplayShowTitleEnabled(false);
@@ -34,8 +34,8 @@ public class SavedStocksFragment extends BaseFragment {
             savedStocksListView = view.findViewById(R.id.saved_list);
             savedStocksListView.setVisibility(View.VISIBLE);
             savedStocksListView.setLayoutManager(savedStocksListManager);
-            PortfolioRecyclerViewAdapter savedStocksAdapter =
-                    new PortfolioRecyclerViewAdapter(this.getActivity(), savedStocks, true);
+            StockListRecyclerViewAdapter savedStocksAdapter =
+                    new StockListRecyclerViewAdapter(this.getActivity(), savedStocks, true);
             savedStocksListView.setAdapter(savedStocksAdapter);
 
             ConstraintLayout noSavedMsgGroup = view.findViewById(R.id.no_saved_msg_group);

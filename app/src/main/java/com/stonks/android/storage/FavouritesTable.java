@@ -26,8 +26,6 @@ public class FavouritesTable extends SQLiteOpenHelper {
                 "CREATE TABLE "
                         + FAVOURITES_TABLE
                         + " ("
-                        + COLUMN_ID
-                        + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                         + COLUMN_USERNAME
                         + " TEXT, "
                         + COLUMN_SYMBOL

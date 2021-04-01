@@ -13,19 +13,19 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 import com.stonks.android.R;
 import com.stonks.android.StockFragment;
-import com.stonks.android.model.PortfolioListItem;
+import com.stonks.android.model.StockListItem;
 import com.stonks.android.utility.Formatters;
 import java.util.ArrayList;
 
-public class PortfolioRecyclerViewAdapter
-        extends RecyclerView.Adapter<PortfolioRecyclerViewAdapter.ViewHolder> {
+public class StockListRecyclerViewAdapter
+        extends RecyclerView.Adapter<StockListRecyclerViewAdapter.ViewHolder> {
     private final FragmentActivity parentActivity;
-    private final ArrayList<PortfolioListItem> portfolioItems;
+    private final ArrayList<StockListItem> portfolioItems;
     private final boolean isSavedStocksList;
 
-    public PortfolioRecyclerViewAdapter(
+    public StockListRecyclerViewAdapter(
             FragmentActivity parentActivity,
-            ArrayList<PortfolioListItem> portfolioItems,
+            ArrayList<StockListItem> portfolioItems,
             boolean isSavedStocksList) {
         this.parentActivity = parentActivity;
         this.portfolioItems = portfolioItems;
@@ -57,12 +57,12 @@ public class PortfolioRecyclerViewAdapter
                             .commit();
                 });
 
-        return new PortfolioRecyclerViewAdapter.ViewHolder(view);
+        return new StockListRecyclerViewAdapter.ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        PortfolioListItem item = this.portfolioItems.get(position);
+        StockListItem item = this.portfolioItems.get(position);
 
         holder.stockSymbol.setText(item.getStockSymbol());
         holder.companyName.setText(item.getCompanyName());
