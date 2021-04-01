@@ -155,8 +155,9 @@
                         android:layout_height="wrap_content"
                         style="@style/AppTheme.TextAppearance.SmallLabelSecondary"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="@id/fav_icon"
                         android:text="@string/sym_placeholder"/>
+
                 <TextView
                         android:id="@+id/stock_name"
                         android:layout_width="wrap_content"
@@ -164,7 +165,18 @@
                         android:text="@string/company_name_placeholder"
                         style="@style/AppTheme.TextAppearance.XXLLabel"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/stock_symbol"
+                        app:layout_constraintTop_toBottomOf="@id/fav_icon"
+                        android:layout_marginTop="@dimen/label_margin"
+                />
+
+                <ImageView
+                    android:id="@+id/fav_icon"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:src="@drawable/ic_baseline_favorite_border_48"
+                    app:tint="@color/red"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
                 />
 
                 <TextView

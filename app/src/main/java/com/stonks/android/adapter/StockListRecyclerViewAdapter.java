@@ -9,20 +9,27 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
-import com.stonks.android.MainActivity;
 import com.stonks.android.R;
 import com.stonks.android.StockFragment;
-import com.stonks.android.model.PortfolioListItem;
+import com.stonks.android.model.StockListItem;
 import com.stonks.android.utility.Formatters;
 import java.util.ArrayList;
 
-public class PortfolioRecyclerViewAdapter
-        extends RecyclerView.Adapter<PortfolioRecyclerViewAdapter.ViewHolder> {
-    ArrayList<PortfolioListItem> portfolioItems;
+public class StockListRecyclerViewAdapter
+        extends RecyclerView.Adapter<StockListRecyclerViewAdapter.ViewHolder> {
+    private final FragmentActivity parentActivity;
+    private final ArrayList<StockListItem> portfolioItems;
+    private final boolean isSavedStocksList;
 
-    public PortfolioRecyclerViewAdapter(ArrayList<PortfolioListItem> portfolioItems) {
+    public StockListRecyclerViewAdapter(
+            FragmentActivity parentActivity,
+            ArrayList<StockListItem> portfolioItems,
+            boolean isSavedStocksList) {
+        this.parentActivity = parentActivity;
         this.portfolioItems = portfolioItems;
+        this.isSavedStocksList = isSavedStocksList;
     }
 
     @NonNull
@@ -42,8 +49,7 @@ public class PortfolioRecyclerViewAdapter
                             String.valueOf(stockSymbolTextView.getText()));
                     stockFragment.setArguments(bundle);
 
-                    // this feels dangerous
-                    ((MainActivity) v.getContext())
+                    this.parentActivity
                             .getSupportFragmentManager()
                             .beginTransaction()
                             .replace(R.id.fragment_container, stockFragment)
@@ -51,16 +57,22 @@ public class PortfolioRecyclerViewAdapter
                             .commit();
                 });
 
-        return new PortfolioRecyclerViewAdapter.ViewHolder(view);
+        return new StockListRecyclerViewAdapter.ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        PortfolioListItem item = this.portfolioItems.get(position);
+        StockListItem item = this.portfolioItems.get(position);
 
         holder.stockSymbol.setText(item.getStockSymbol());
         holder.companyName.setText(item.getCompanyName());
-        holder.price.setText(Formatters.formatStockQuantity(item.getPrice(), item.getMultiplier()));
+
+        if (this.isSavedStocksList) {
+            holder.price.setText(Formatters.formatPrice(item.getPrice()));
+        } else {
+            holder.price.setText(
+                    Formatters.formatStockQuantity(item.getPrice(), item.getQuantity()));
+        }
 
         if (item.getPriceChange() < 0) {
             holder.priceChange.setText(

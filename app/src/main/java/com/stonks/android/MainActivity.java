@@ -41,6 +41,9 @@ public class MainActivity extends AppCompatActivity {
                         case R.id.activity_nav:
                             switchFragment(new RecentTransactionsFragment());
                             break;
+                        case R.id.saved_nav:
+                            switchFragment(new SavedStocksFragment());
+                            break;
                         case R.id.settings_nav:
                             switchFragment(new SettingsFragment());
                             break;
