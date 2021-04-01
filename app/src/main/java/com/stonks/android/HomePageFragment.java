@@ -31,7 +31,7 @@ public class HomePageFragment extends BaseFragment {
         RecyclerView portfolioList = view.findViewById(R.id.portfolio_list);
         portfolioList.setLayoutManager(portfolioListManager);
         RecyclerView.Adapter portfolioListAdapter =
-                new PortfolioRecyclerViewAdapter(this.getActivity(), getMockItems());
+                new PortfolioRecyclerViewAdapter(this.getActivity(), getMockItems(), false);
         portfolioList.setAdapter(portfolioListAdapter);
 
         NestedScrollView scrollView = view.findViewById(R.id.scroll_view);

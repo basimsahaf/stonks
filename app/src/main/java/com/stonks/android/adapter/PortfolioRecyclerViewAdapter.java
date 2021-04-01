@@ -21,11 +21,15 @@ public class PortfolioRecyclerViewAdapter
         extends RecyclerView.Adapter<PortfolioRecyclerViewAdapter.ViewHolder> {
     private final FragmentActivity parentActivity;
     private final ArrayList<PortfolioListItem> portfolioItems;
+    private final boolean isSavedStocksList;
 
     public PortfolioRecyclerViewAdapter(
-            FragmentActivity parentActivity, ArrayList<PortfolioListItem> portfolioItems) {
+            FragmentActivity parentActivity,
+            ArrayList<PortfolioListItem> portfolioItems,
+            boolean isSavedStocksList) {
         this.parentActivity = parentActivity;
         this.portfolioItems = portfolioItems;
+        this.isSavedStocksList = isSavedStocksList;
     }
 
     @NonNull
@@ -62,7 +66,13 @@ public class PortfolioRecyclerViewAdapter
 
         holder.stockSymbol.setText(item.getStockSymbol());
         holder.companyName.setText(item.getCompanyName());
-        holder.price.setText(Formatters.formatStockQuantity(item.getPrice(), item.getMultiplier()));
+
+        if (this.isSavedStocksList) {
+            holder.price.setText(Formatters.formatPrice(item.getPrice()));
+        } else {
+            holder.price.setText(
+                    Formatters.formatStockQuantity(item.getPrice(), item.getQuantity()));
+        }
 
         if (item.getPriceChange() < 0) {
             holder.priceChange.setText(

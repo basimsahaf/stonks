@@ -12,9 +12,9 @@ import java.util.ArrayList;
 
 public class FavouritesTable extends SQLiteOpenHelper {
     public static final String FAVOURITES_TABLE = "FAVOURITES_TABLE";
+    public static final String COLUMN_ID = "id";
     public static final String COLUMN_USERNAME = "username";
     public static final String COLUMN_SYMBOL = "symbol";
-    public static final String COLUMN_CREATED_AT = "created_at";
 
     public FavouritesTable(@Nullable Context context) {
         super(context, BuildConfig.DATABASE_NAME, null, 1);
@@ -26,11 +26,11 @@ public class FavouritesTable extends SQLiteOpenHelper {
                 "CREATE TABLE "
                         + FAVOURITES_TABLE
                         + " ("
+                        + COLUMN_ID
+                        + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                         + COLUMN_USERNAME
                         + " TEXT, "
                         + COLUMN_SYMBOL
-                        + " TEXT, "
-                        + COLUMN_CREATED_AT
                         + " TEXT, "
                         + " FOREIGN KEY ( "
                         + COLUMN_USERNAME
@@ -48,7 +48,8 @@ public class FavouritesTable extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         if (oldVersion != newVersion) {
-            String dropStatement = "DROP TABLE IF EXISTS stonks." + FAVOURITES_TABLE;
+            String dropStatement =
+                    "DROP TABLE IF EXISTS " + BuildConfig.DATABASE_NAME + "." + FAVOURITES_TABLE;
             db.execSQL(dropStatement);
             onCreate(db);
         }
@@ -60,7 +61,6 @@ public class FavouritesTable extends SQLiteOpenHelper {
         ContentValues cv = new ContentValues();
         cv.put(COLUMN_USERNAME, favourite.getUsername());
         cv.put(COLUMN_SYMBOL, favourite.getSymbol());
-        cv.put(COLUMN_CREATED_AT, favourite.getCreatedAt());
 
         long insert = db.insert(FAVOURITES_TABLE, null, cv);
         return insert >= 0;
@@ -87,11 +87,11 @@ public class FavouritesTable extends SQLiteOpenHelper {
 
         if (cursor.moveToFirst()) {
             do {
+                int id = cursor.getInt(cursor.getColumnIndex(COLUMN_ID));
                 String username = cursor.getString(cursor.getColumnIndex(COLUMN_USERNAME));
                 String symbol = cursor.getString(cursor.getColumnIndex(COLUMN_SYMBOL));
-                String createdAt = cursor.getString(cursor.getColumnIndex(COLUMN_CREATED_AT));
 
-                favouriteStocksList.add(new FavouriteStock(username, symbol, createdAt));
+                favouriteStocksList.add(new FavouriteStock(id, username, symbol));
 
             } while (cursor.moveToNext());
         }

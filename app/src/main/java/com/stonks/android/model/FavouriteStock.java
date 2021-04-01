@@ -1,14 +1,18 @@
 package com.stonks.android.model;
 
 public class FavouriteStock {
+    private final int id;
     private final String username;
     private final String symbol;
-    private final String createdAt;
 
-    public FavouriteStock(String username, String symbol, String createdAt) {
+    public FavouriteStock(int id, String username, String symbol) {
+        this.id = id;
         this.username = username;
         this.symbol = symbol;
-        this.createdAt = createdAt;
+    }
+
+    public int getId() {
+        return id;
     }
 
     public String getUsername() {
@@ -17,9 +21,5 @@ public class FavouriteStock {
 
     public String getSymbol() {
         return symbol;
-    }
-
-    public String getCreatedAt() {
-        return createdAt;
     }
 }

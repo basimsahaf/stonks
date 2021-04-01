@@ -35,7 +35,7 @@ public class SavedStocksFragment extends BaseFragment {
             savedStocksListView.setVisibility(View.VISIBLE);
             savedStocksListView.setLayoutManager(savedStocksListManager);
             PortfolioRecyclerViewAdapter savedStocksAdapter =
-                    new PortfolioRecyclerViewAdapter(this.getActivity(), savedStocks);
+                    new PortfolioRecyclerViewAdapter(this.getActivity(), savedStocks, true);
             savedStocksListView.setAdapter(savedStocksAdapter);
 
             ConstraintLayout noSavedMsgGroup = view.findViewById(R.id.no_saved_msg_group);
