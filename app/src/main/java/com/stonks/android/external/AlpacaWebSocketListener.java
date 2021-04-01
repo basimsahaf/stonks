@@ -9,52 +9,51 @@ import com.stonks.android.model.alpaca.WebSocketResponse;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 import okhttp3.Response;
 import okhttp3.WebSocket;
 import okhttp3.WebSocketListener;
 
 public class AlpacaWebSocketListener extends WebSocketListener {
+    // using an AtomicBoolean instead of Boolean for thread safety
     private final AtomicBoolean authenticated;
     private final Gson gson;
-    private final BiConsumer<String, Float> updateCurrentPrice;
-    private final Consumer<String> confirmSubscription;
-    private static final String TAG = AlpacaWebSocketListener.class.getCanonicalName();
+    private final AlpacaWebSocket alpacaWebSocket;
     private final ExecutorService executorService;
 
-    public AlpacaWebSocketListener(
-            BiConsumer<String, Float> updateCurrentPrice, Consumer<String> confirmSubscription) {
+    private static final String TAG = AlpacaWebSocketListener.class.getCanonicalName();
+    private static final String THREAD_NAME = "AlpacaWebSocketListenerThread";
+
+    public AlpacaWebSocketListener(AlpacaWebSocket alpacaWebSocket) {
         this.authenticated = new AtomicBoolean(false);
         this.gson = new Gson();
-        this.updateCurrentPrice = updateCurrentPrice;
-        this.confirmSubscription = confirmSubscription;
+        this.alpacaWebSocket = alpacaWebSocket;
         this.executorService =
                 Executors.newSingleThreadExecutor(
-                        runnable -> new Thread(runnable, "AlpacaWebSocketListenerThread"));
+                        runnable -> new Thread(runnable, THREAD_NAME));
     }
 
     @Override
     public void onOpen(@NonNull WebSocket webSocket, @NonNull Response response) {
-        Log.d(TAG, "websocket open");
+        Log.d(TAG, "WebSocket open");
+
         if (!authenticated.get()) {
             webSocket.send(WebSocketRequest.getHandshakeAuthMessage());
         }
     }
 
     @Override
-    public void onFailure(WebSocket webSocket, Throwable t, @Nullable Response response) {
+    public void onFailure(@NonNull WebSocket webSocket, @NonNull Throwable t, @Nullable Response response) {
         Log.d(TAG, "WebSocket failure");
     }
 
     @Override
-    public void onClosing(WebSocket webSocket, int code, String reason) {
-        Log.d(TAG, "WebSocket Closing");
+    public void onClosing(@NonNull WebSocket webSocket, int code, @NonNull String reason) {
+        Log.d(TAG, "WebSocket Closing: " + reason);
     }
 
     @Override
-    public void onClosed(WebSocket webSocket, int code, String reason) {
-        Log.d(TAG, "WebSocket Closed");
+    public void onClosed(@NonNull WebSocket webSocket, int code, @NonNull String reason) {
+        Log.d(TAG, "WebSocket Closed: " + reason);
     }
 
     @Override
@@ -69,35 +68,33 @@ public class AlpacaWebSocketListener extends WebSocketListener {
         Log.d(TAG, message.toString());
 
         if (!authenticated.get()) {
-            Log.d(TAG, "unauthenticated");
+            Log.d(TAG, "WebSocket stream is unauthenticated");
             if (message.getStream().equals("authorization")) {
-                Log.d(TAG, message.getData().toString());
-                Log.d(TAG, message.getData().getStatus());
                 if (message.getData().getStatus().equals("authorized")) {
-                    Log.i(TAG, "Socket stream authenticated");
+                    Log.i(TAG, "WebSocket stream is authenticated");
                     this.authenticated.set(true);
                 } else {
-                    Log.i(TAG, "websocket authorization failed");
+                    Log.i(TAG, "WebSocket authorization failed");
                     // TODO: re-authenticate
                 }
             }
         } else {
-            final String stream = message.getStream();
-
-            Log.d(TAG, "Stream: " + stream);
-
-            if ("listening".equals(stream)) {
+            if ("listening".equals(message.getStream())) {
+                // received a subscription confirmation
+                // move observers from pending map to confirmed map
                 message.getData()
                         .getStreams()
-                        .forEach(
-                                rawSymbol ->
-                                        this.confirmSubscription.accept(
-                                                rawSymbol.replace("AM.", "")));
+                        .stream()
+                        .map(this::removeAlpacaPrefix)
+                        .forEach(alpacaWebSocket::confirmSubscription);
             } else {
-                Log.d(TAG, "new price: " + message.getData().getClose());
-                this.updateCurrentPrice.accept(
-                        message.getStream().replace("AM.", ""), message.getData().getClose());
+                // received a new price update
+                this.alpacaWebSocket.updateCurrentPrice(removeAlpacaPrefix(message.getStream()), message.getData().getClose());
             }
         }
+    }
+
+    private String removeAlpacaPrefix(String streamName) {
+        return streamName.replace("AM.", "");
     }
 }
