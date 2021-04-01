@@ -87,7 +87,7 @@ public class LoginActivity extends BaseActivity {
                     authorize();
                     usernameChanged = false;
                     passwordChanged = false;
-        });
+                });
 
         // disable login button initially as no data is entered
         loginButton.setEnabled(false);
