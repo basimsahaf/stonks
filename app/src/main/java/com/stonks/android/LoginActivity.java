@@ -102,8 +102,8 @@ public class LoginActivity extends BaseActivity {
 
         // TODO: do biometrics here
 
-        // toggle signup mode by default
-        switchView(AuthMode.SIGNUP);
+        // toggle login mode by default
+        switchView(AuthMode.LOGIN);
     }
 
     private String getFieldText(TextInputLayout field) {
