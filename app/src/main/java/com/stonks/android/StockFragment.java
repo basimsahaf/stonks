@@ -73,7 +73,6 @@ public class StockFragment extends BaseFragment {
         final ConstraintLayout positionContainer = view.findViewById(R.id.position_container);
 
         this.favIcon = view.findViewById(R.id.fav_icon);
-
         this.textViewSymbol = view.findViewById(R.id.stock_symbol);
         this.overlay = view.findViewById(R.id.screen_overlay);
         this.tradeButton = view.findViewById(R.id.trade_button);
