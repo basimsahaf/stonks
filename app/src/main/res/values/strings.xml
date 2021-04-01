@@ -123,7 +123,7 @@
     <string name="max">Maximum value</string>
     <string name="companies">Company name</string>
     <string name="apply_filters">Apply filters</string>
-  
+
     <!-- Favourites Page strings -->
     <string name="saved">Saved</string>
     <string name="your_saved">Your saved stocks</string>
