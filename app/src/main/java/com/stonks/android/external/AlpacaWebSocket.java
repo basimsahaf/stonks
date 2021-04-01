@@ -4,8 +4,6 @@ import com.stonks.android.model.WebSocketObserver;
 import com.stonks.android.model.alpaca.WebSocketRequest;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.WebSocket;

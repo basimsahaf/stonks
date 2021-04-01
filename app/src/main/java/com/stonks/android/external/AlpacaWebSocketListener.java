@@ -28,8 +28,7 @@ public class AlpacaWebSocketListener extends WebSocketListener {
         this.gson = new Gson();
         this.alpacaWebSocket = alpacaWebSocket;
         this.executorService =
-                Executors.newSingleThreadExecutor(
-                        runnable -> new Thread(runnable, THREAD_NAME));
+                Executors.newSingleThreadExecutor(runnable -> new Thread(runnable, THREAD_NAME));
     }
 
     @Override
@@ -42,7 +41,8 @@ public class AlpacaWebSocketListener extends WebSocketListener {
     }
 
     @Override
-    public void onFailure(@NonNull WebSocket webSocket, @NonNull Throwable t, @Nullable Response response) {
+    public void onFailure(
+            @NonNull WebSocket webSocket, @NonNull Throwable t, @Nullable Response response) {
         Log.d(TAG, "WebSocket failure");
     }
 
@@ -82,14 +82,13 @@ public class AlpacaWebSocketListener extends WebSocketListener {
             if ("listening".equals(message.getStream())) {
                 // received a subscription confirmation
                 // move observers from pending map to confirmed map
-                message.getData()
-                        .getStreams()
-                        .stream()
+                message.getData().getStreams().stream()
                         .map(this::removeAlpacaPrefix)
                         .forEach(alpacaWebSocket::confirmSubscription);
             } else {
                 // received a new price update
-                this.alpacaWebSocket.updateCurrentPrice(removeAlpacaPrefix(message.getStream()), message.getData().getClose());
+                this.alpacaWebSocket.updateCurrentPrice(
+                        removeAlpacaPrefix(message.getStream()), message.getData().getClose());
             }
         }
     }
