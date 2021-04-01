@@ -90,6 +90,7 @@
     <string name="home_menu">Home</string>
     <string name="search_menu">Search</string>
     <string name="activity_menu">Activity</string>
+    <string name="saved_menu">Saved</string>
     <string name="settings_menu">Settings</string>
 
     <!-- Login Activity strings -->
@@ -108,4 +109,18 @@
     <string name="sample_date">03-15-2021, 5:00PM EST</string>
     <string name="sample_time">3:21PM</string>
     <string name="as_of_label">as of today at</string>
+
+    <!-- Filters page strings -->
+    <string name="filters">Filters</string>
+    <string name="reset_all">Reset all</string>
+    <string name="transaction_type">Transaction type</string>
+    <string name="all">All</string>
+    <string name="market_buy">Market Buy</string>
+    <string name="market_sell">Market Sell</string>
+    <string name="transaction_amount">Total transaction amount</string>
+    <string name="reset">Reset</string>
+    <string name="min">Minimum value</string>
+    <string name="max">Maximum value</string>
+    <string name="companies">Company name</string>
+    <string name="apply_filters">Apply filters</string>
 </resources>
