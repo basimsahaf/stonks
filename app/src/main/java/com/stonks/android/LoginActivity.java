@@ -82,7 +82,15 @@ public class LoginActivity extends BaseActivity {
                             return false;
                         });
 
-        loginButton.setOnClickListener(view -> authorize());
+        loginButton.setOnClickListener(
+                view -> {
+                    authorize();
+                    usernameChanged = false;
+                    passwordChanged = false;
+        });
+
+        // disable login button initially as no data is entered
+        loginButton.setEnabled(false);
 
         // set error messages visibility to gone by default
         usernameErrorMessage.setVisibility(View.GONE);
@@ -211,11 +219,13 @@ public class LoginActivity extends BaseActivity {
 
     private void setFieldState(boolean fieldChanged, TextView errorView, Integer error) {
         if (fieldChanged && error != null) {
+            loginButton.setEnabled(false);
             errorView.setText(error);
             errorView.setTextColor(getResources().getColor(R.color.red, getTheme()));
             errorView.setVisibility(View.VISIBLE);
         } else {
             errorView.setVisibility(View.GONE);
+            loginButton.setEnabled(true);
         }
     }
 
