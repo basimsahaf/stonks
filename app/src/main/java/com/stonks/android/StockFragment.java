@@ -1,6 +1,10 @@
 package com.stonks.android;
 
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
@@ -47,6 +51,7 @@ public class StockFragment extends BaseFragment {
     private SpeedDialExtendedFab tradeButton;
     private LinearLayout overlay;
     private NestedScrollView scrollView;
+    private ImageView changeIndicator;
     private final StockChartAdapter dataAdapter = new StockChartAdapter(new ArrayList<>());
     private ImageView favIcon;
 
@@ -61,7 +66,20 @@ public class StockFragment extends BaseFragment {
             @Nullable Bundle savedInstanceState) {
         FragmentStockBinding binding =
                 DataBindingUtil.inflate(inflater, R.layout.fragment_stock, container, false);
-        binding.setStock(this.stockData);
+
+        // update properties like change string and change indicator
+        stockData.addOnPropertyChangedCallback(
+                new androidx.databinding.Observable.OnPropertyChangedCallback() {
+                    @Override
+                    public void onPropertyChanged(
+                            androidx.databinding.Observable observable, int i) {
+                        priceChange.setText(generateChangeString(stockData.getCurrentPrice()));
+                        changeIndicator.setImageDrawable(getIndicatorDrawable());
+                    }
+                });
+
+        binding.setStock(stockData);
+
         return binding.getRoot();
     }
 
@@ -90,6 +108,7 @@ public class StockFragment extends BaseFragment {
         this.scrollView = view.findViewById(R.id.scroll_view);
         this.currentPrice = view.findViewById(R.id.current_price);
         this.priceChange = view.findViewById(R.id.change);
+        this.changeIndicator = view.findViewById(R.id.change_indicator);
 
         this.tradeButton.addToSpeedDial(buyButtonContainer);
         this.tradeButton.addToSpeedDial(sellButtonContainer);
@@ -233,26 +252,36 @@ public class StockFragment extends BaseFragment {
         return list;
     }
 
-    String generateChangeString() {
-        float change = this.stockData.getCurrentPrice() - this.stockData.getOpen();
-        float changePercentage = change * 100 / this.stockData.getOpen();
-        String sign = change >= 0 ? "+" : "-";
-
-        String formattedPrice = Formatters.formatPrice(Math.abs(change));
-
-        return String.format(
-                Locale.CANADA, "%s%s (%.2f)", sign, formattedPrice, Math.abs(changePercentage));
+    SpannableString generateChangeString() {
+        return this.generateChangeString(this.stockData.getCurrentPrice());
     }
 
-    String generateChangeString(Float price) {
+    SpannableString generateChangeString(Float price) {
         float change = price - this.stockData.getOpen();
         float changePercentage = change * 100 / this.stockData.getOpen();
-        String sign = change >= 0 ? "+" : "-";
 
         String formattedPrice = Formatters.formatPrice(Math.abs(change));
+        String changeString =
+                String.format(
+                        Locale.CANADA, "%s (%.2f%%)", formattedPrice, Math.abs(changePercentage));
+        SpannableString text = new SpannableString(changeString);
+        text.setSpan(
+                new ForegroundColorSpan(ContextCompat.getColor(getContext(), R.color.green)),
+                0,
+                changeString.length(),
+                Spanned.SPAN_EXCLUSIVE_INCLUSIVE);
 
-        return String.format(
-                Locale.CANADA, "%s%s (%.2f)", sign, formattedPrice, Math.abs(changePercentage));
+        return text;
+    }
+
+    Drawable getIndicatorDrawable() {
+        if ((stockData.getCurrentPrice() - stockData.getOpen()) >= 0) {
+            return ContextCompat.getDrawable(
+                    getMainActivity(), R.drawable.ic_baseline_arrow_drop_up_24);
+        } else {
+            return ContextCompat.getDrawable(
+                    getMainActivity(), R.drawable.ic_baseline_arrow_drop_down_24);
+        }
     }
 
     // Determines whether the user owns shares of the stock

@@ -29,6 +29,7 @@
     <string name="buy_label">Buy</string>
     <string name="sell_label">Sell</string>
     <string name="try_it_out_label">Try it out</string>
+    <string name="change_indicator">Change Indicator</string>
 
     <!-- Buy/Sell fragment strings -->
     <string name="buy_button_label">Buy</string>

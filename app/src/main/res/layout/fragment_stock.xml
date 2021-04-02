@@ -190,11 +190,17 @@
                             app:layout_constraintTop_toTopOf="@id/stock_name"
                             app:layout_constraintEnd_toEndOf="parent"
                     />
+                    <ImageView
+                            android:id="@+id/change_indicator"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            app:layout_constraintBottom_toBottomOf="@id/change"
+                            app:layout_constraintRight_toLeftOf="@id/change"
+                            android:contentDescription="@string/change_indicator"/>
                     <TextView
                             android:id="@+id/change"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="⬆ $20.19 (34%)"
                             style="@style/AppTheme.TextAppearance.SmallLabelSecondary"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintTop_toBottomOf="@id/current_price"
