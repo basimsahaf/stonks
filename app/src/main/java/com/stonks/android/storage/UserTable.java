@@ -75,10 +75,12 @@ public class UserTable extends SQLiteOpenHelper {
         String queryString =
                 "SELECT * FROM "
                         + USER_TABLE
-                        + " WHERE username = "
+                        + " WHERE username = '"
                         + username
-                        + " AND password = "
-                        + password;
+                        + "' AND password = '"
+                        + password
+                        + "'";
+
         Cursor cursor = db.rawQuery(queryString, null);
         boolean exists = cursor.moveToFirst();
         cursor.close();
