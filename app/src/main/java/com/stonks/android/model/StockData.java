@@ -9,7 +9,6 @@ import com.stonks.android.utility.Formatters;
 import java.io.Serializable;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Locale;
 
 public class StockData extends BaseObservable implements Serializable, WebSocketObserver {
     private String symbol;
