@@ -17,7 +17,7 @@ public class PortfolioTable extends SQLiteOpenHelper {
     public static final String COLUMN_SYMBOL = "symbol";
 
     public PortfolioTable(@Nullable Context context) {
-        super(context, BuildConfig.DATABASE_NAME, null, 1);
+        super(context, BuildConfig.DATABASE_NAME, null, 2);
     }
 
     @Override
@@ -36,7 +36,15 @@ public class PortfolioTable extends SQLiteOpenHelper {
                         + COLUMN_USERNAME
                         + ", "
                         + COLUMN_SYMBOL
+                        + "), "
+                        + "FOREIGN KEY("
+                        + COLUMN_USERNAME
+                        + ") REFERENCES "
+                        + UserTable.USER_TABLE
+                        + "("
+                        + UserTable.COLUMN_USERNAME
                         + "))";
+        ;
 
         db.execSQL(createPortfolioTable);
     }
