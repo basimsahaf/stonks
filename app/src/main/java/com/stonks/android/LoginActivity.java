@@ -69,7 +69,8 @@ public class LoginActivity extends BaseActivity {
 
         setTextWatcher(usernameField);
         setTextWatcher(passwordField);
-        setLoginViewModelListeners();
+        // TODO: enable this later
+//        setLoginViewModelListeners();
 
         // auth triggers
         passwordField
@@ -263,7 +264,7 @@ public class LoginActivity extends BaseActivity {
         }
     }
 
-    // TODO: remove test function
+    // TODOtest function
     private void authorizeTestLogin() {
         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
