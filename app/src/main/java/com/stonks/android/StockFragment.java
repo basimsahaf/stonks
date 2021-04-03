@@ -127,6 +127,7 @@ public class StockFragment extends BaseFragment {
                 () -> {
                     this.currentPrice.setText(Formatters.formatPrice(stockData.getCurrentPrice()));
                     this.priceChange.setText(this.generateChangeString());
+                    this.changeIndicator.setImageDrawable(getIndicatorDrawable());
                 });
         sparkView.setScrubListener(
                 value -> {
@@ -138,6 +139,7 @@ public class StockFragment extends BaseFragment {
 
                         currentPrice.setText(Formatters.formatPrice(price));
                         this.priceChange.setText(this.generateChangeString(price));
+                        this.changeIndicator.setImageDrawable(getIndicatorDrawable(price));
                     }
                 });
 
@@ -265,8 +267,11 @@ public class StockFragment extends BaseFragment {
                 String.format(
                         Locale.CANADA, "%s (%.2f%%)", formattedPrice, Math.abs(changePercentage));
         SpannableString text = new SpannableString(changeString);
+
+        int color = change >= 0 ? R.color.green : R.color.red;
+
         text.setSpan(
-                new ForegroundColorSpan(ContextCompat.getColor(getContext(), R.color.green)),
+                new ForegroundColorSpan(ContextCompat.getColor(getContext(), color)),
                 0,
                 changeString.length(),
                 Spanned.SPAN_EXCLUSIVE_INCLUSIVE);
@@ -275,7 +280,13 @@ public class StockFragment extends BaseFragment {
     }
 
     Drawable getIndicatorDrawable() {
-        if ((stockData.getCurrentPrice() - stockData.getOpen()) >= 0) {
+        return getIndicatorDrawable(stockData.getCurrentPrice());
+    }
+
+    Drawable getIndicatorDrawable(float value) {
+        float change = value - stockData.getOpen();
+        Log.d(TAG, "change: " + (change));
+        if (change >= 0) {
             return ContextCompat.getDrawable(
                     getMainActivity(), R.drawable.ic_baseline_arrow_drop_up_24);
         } else {
