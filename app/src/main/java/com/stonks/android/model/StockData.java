@@ -1,6 +1,5 @@
 package com.stonks.android.model;
 
-import android.util.Log;
 import androidx.databinding.BaseObservable;
 import androidx.databinding.Bindable;
 import androidx.databinding.BindingConversion;
@@ -47,7 +46,6 @@ public class StockData extends BaseObservable implements Serializable, WebSocket
         this.currentPrice = barData.get(barData.size() - 1).getClose();
         this.open = barData.get(0).getOpen();
         this.volume = quoteData.getTotalVolume();
-        Log.d("volume", this.volume + "");
         // TODO: fix Optional.get
         this.low = barData.stream().min(Comparator.comparing(BarData::getLow)).get().getLow();
         this.high = barData.stream().max(Comparator.comparing(BarData::getHigh)).get().getHigh();
