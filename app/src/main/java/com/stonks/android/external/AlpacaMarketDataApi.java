@@ -1,8 +1,8 @@
 package com.stonks.android.external;
 
-import com.stonks.android.model.AlpacaTimeframe;
 import com.stonks.android.model.BarData;
 import com.stonks.android.model.Symbols;
+import com.stonks.android.model.alpaca.AlpacaTimeframe;
 import io.reactivex.rxjava3.core.Observable;
 import java.util.List;
 import java.util.Map;

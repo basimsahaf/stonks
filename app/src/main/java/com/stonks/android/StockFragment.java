@@ -1,6 +1,10 @@
 package com.stonks.android;
 
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
@@ -14,14 +18,17 @@ import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.core.widget.NestedScrollView;
+import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.stonks.android.adapter.StockChartAdapter;
 import com.stonks.android.adapter.TransactionViewAdapter;
+import com.stonks.android.databinding.FragmentStockBinding;
 import com.stonks.android.external.MarketDataService;
 import com.stonks.android.model.*;
+import com.stonks.android.model.alpaca.AlpacaTimeframe;
 import com.stonks.android.uicomponent.CustomSparkView;
 import com.stonks.android.uicomponent.SpeedDialExtendedFab;
 import com.stonks.android.utility.Constants;
@@ -40,19 +47,16 @@ public class StockFragment extends BaseFragment {
     private String symbol;
     private RecyclerView transactionList;
     private RecyclerView.Adapter<RecyclerView.ViewHolder> transactionListAdapter;
-    private TextView textViewSymbol, currentPrice, priceChange;
+    private TextView currentPrice, priceChange;
     private SpeedDialExtendedFab tradeButton;
     private LinearLayout overlay;
     private NestedScrollView scrollView;
+    private ImageView changeIndicator;
     private final StockChartAdapter dataAdapter = new StockChartAdapter(new ArrayList<>());
-    private StockData stockData;
-    private TextView companyName, open, dailyLow, dailyHigh, yearlyLow, yearlyHigh;
-    private FloatingActionButton tryButton;
-    private FloatingActionButton buyButton;
-    private FloatingActionButton sellButton;
     private ImageView favIcon;
 
     private boolean favourited = false;
+    private final StockData stockData = new StockData();
 
     @Nullable
     @Override
@@ -60,32 +64,51 @@ public class StockFragment extends BaseFragment {
             @NonNull LayoutInflater inflater,
             @Nullable ViewGroup container,
             @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_stock, container, false);
+        FragmentStockBinding binding =
+                DataBindingUtil.inflate(inflater, R.layout.fragment_stock, container, false);
+
+        // update properties like change string and change indicator
+        stockData.addOnPropertyChangedCallback(
+                new androidx.databinding.Observable.OnPropertyChangedCallback() {
+                    @Override
+                    public void onPropertyChanged(
+                            androidx.databinding.Observable observable, int i) {
+                        priceChange.setText(generateChangeString(stockData.getCurrentPrice()));
+                        changeIndicator.setImageDrawable(getIndicatorDrawable());
+                    }
+                });
+
+        binding.setStock(stockData);
+
+        return binding.getRoot();
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        this.symbol = getArguments().getString(getString(R.string.intent_extra_symbol));
+
+        getMainActivity().subscribe(symbol, stockData);
+        getActionBar().setDisplayHomeAsUpEnabled(true);
+        getMainActivity().setGlobalTitle(this.symbol);
+
         final ConstraintLayout buyButtonContainer = view.findViewById(R.id.buy_button_container);
         final ConstraintLayout sellButtonContainer = view.findViewById(R.id.sell_button_container);
         final ConstraintLayout tryButtonContainer = view.findViewById(R.id.try_button_container);
         final ConstraintLayout positionContainer = view.findViewById(R.id.position_container);
+        final FloatingActionButton tryButton = view.findViewById(R.id.try_button);
+        final FloatingActionButton buyButton = view.findViewById(R.id.buy_button);
+        final FloatingActionButton sellButton = view.findViewById(R.id.sell_button);
 
         this.favIcon = view.findViewById(R.id.fav_icon);
-        this.textViewSymbol = view.findViewById(R.id.stock_symbol);
         this.overlay = view.findViewById(R.id.screen_overlay);
         this.tradeButton = view.findViewById(R.id.trade_button);
         this.transactionList = view.findViewById(R.id.history_list);
         this.scrollView = view.findViewById(R.id.scroll_view);
         this.currentPrice = view.findViewById(R.id.current_price);
         this.priceChange = view.findViewById(R.id.change);
-        this.companyName = view.findViewById(R.id.stock_name);
-        this.open = view.findViewById(R.id.open);
-        this.dailyLow = view.findViewById(R.id.daily_low);
-        this.dailyHigh = view.findViewById(R.id.daily_high);
-        this.yearlyLow = view.findViewById(R.id.yearly_low);
-        this.yearlyHigh = view.findViewById(R.id.yearly_high);
+        this.changeIndicator = view.findViewById(R.id.change_indicator);
 
         this.tradeButton.addToSpeedDial(buyButtonContainer);
         this.tradeButton.addToSpeedDial(sellButtonContainer);
@@ -93,12 +116,6 @@ public class StockFragment extends BaseFragment {
 
         RecyclerView.LayoutManager transactionListManager = new LinearLayoutManager(getContext());
         this.transactionList.setLayoutManager(transactionListManager);
-
-        this.symbol = getArguments().getString(getString(R.string.intent_extra_symbol));
-
-        getActionBar().setDisplayHomeAsUpEnabled(true);
-        getMainActivity().setGlobalTitle(this.symbol);
-        this.textViewSymbol.setText(this.symbol);
         this.transactionListAdapter =
                 new TransactionViewAdapter(this.getFakeTransactionsForStock());
         this.transactionList.setAdapter(this.transactionListAdapter);
@@ -110,6 +127,7 @@ public class StockFragment extends BaseFragment {
                 () -> {
                     this.currentPrice.setText(Formatters.formatPrice(stockData.getCurrentPrice()));
                     this.priceChange.setText(this.generateChangeString());
+                    this.changeIndicator.setImageDrawable(getIndicatorDrawable());
                 });
         sparkView.setScrubListener(
                 value -> {
@@ -121,6 +139,7 @@ public class StockFragment extends BaseFragment {
 
                         currentPrice.setText(Formatters.formatPrice(price));
                         this.priceChange.setText(this.generateChangeString(price));
+                        this.changeIndicator.setImageDrawable(getIndicatorDrawable(price));
                     }
                 });
 
@@ -131,8 +150,7 @@ public class StockFragment extends BaseFragment {
             positionContainer.setVisibility(View.GONE);
         }
 
-        this.tryButton = view.findViewById(R.id.try_button);
-        this.tryButton.setOnClickListener(
+        tryButton.setOnClickListener(
                 v -> {
                     Fragment hypotheticalFragment = new HypotheticalFragment();
                     Bundle bundle = new Bundle();
@@ -147,10 +165,7 @@ public class StockFragment extends BaseFragment {
                             .commit();
                 });
 
-        this.buyButton = this.tryButton = view.findViewById(R.id.buy_button);
-        this.sellButton = this.tryButton = view.findViewById(R.id.sell_button);
-
-        this.buyButton.setOnClickListener(
+        buyButton.setOnClickListener(
                 v -> {
                     Bundle bundle = new Bundle();
                     bundle.putSerializable(BuySellFragment.STOCK_DATA_ARG, this.stockData);
@@ -165,7 +180,7 @@ public class StockFragment extends BaseFragment {
                             .addToBackStack(null)
                             .commit();
                 });
-        this.sellButton.setOnClickListener(
+        sellButton.setOnClickListener(
                 v -> {
                     Bundle bundle = new Bundle();
                     bundle.putSerializable(BuySellFragment.STOCK_DATA_ARG, this.stockData);
@@ -214,11 +229,9 @@ public class StockFragment extends BaseFragment {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(
-                        stockData -> {
-                            List<BarData> barData = stockData.getGraphData();
-                            this.stockData = stockData;
-
-                            this.loadStats();
+                        newStockData -> {
+                            List<BarData> barData = newStockData.getGraphData();
+                            this.stockData.updateStock(newStockData);
 
                             dataAdapter.setData(
                                     barData.stream()
@@ -241,37 +254,45 @@ public class StockFragment extends BaseFragment {
         return list;
     }
 
-    private void loadStats() {
-        this.currentPrice.setText(Formatters.formatPrice(this.stockData.getCurrentPrice()));
-        this.companyName.setText(this.stockData.getCompanyName());
-        this.dailyLow.setText(Formatters.formatPrice(this.stockData.getLow()));
-        this.dailyHigh.setText(Formatters.formatPrice(this.stockData.getHigh()));
-        this.open.setText(Formatters.formatPrice(this.stockData.getOpen()));
-        this.yearlyLow.setText(Formatters.formatPrice(this.stockData.getYearlyLow()));
-        this.yearlyHigh.setText(Formatters.formatPrice(this.stockData.getYearlyHigh()));
-        this.priceChange.setText(this.generateChangeString());
+    SpannableString generateChangeString() {
+        return this.generateChangeString(this.stockData.getCurrentPrice());
     }
 
-    String generateChangeString() {
-        float change = this.stockData.getCurrentPrice() - this.stockData.getOpen();
-        float changePercentage = change * 100 / this.stockData.getOpen();
-        String sign = change >= 0 ? "+" : "-";
-
-        String formattedPrice = Formatters.formatPrice(Math.abs(change));
-
-        return String.format(
-                Locale.CANADA, "%s%s (%.2f)", sign, formattedPrice, Math.abs(changePercentage));
-    }
-
-    String generateChangeString(Float price) {
+    SpannableString generateChangeString(Float price) {
         float change = price - this.stockData.getOpen();
         float changePercentage = change * 100 / this.stockData.getOpen();
-        String sign = change >= 0 ? "+" : "-";
 
         String formattedPrice = Formatters.formatPrice(Math.abs(change));
+        String changeString =
+                String.format(
+                        Locale.CANADA, "%s (%.2f%%)", formattedPrice, Math.abs(changePercentage));
+        SpannableString text = new SpannableString(changeString);
 
-        return String.format(
-                Locale.CANADA, "%s%s (%.2f)", sign, formattedPrice, Math.abs(changePercentage));
+        int color = change >= 0 ? R.color.green : R.color.red;
+
+        text.setSpan(
+                new ForegroundColorSpan(ContextCompat.getColor(getContext(), color)),
+                0,
+                changeString.length(),
+                Spanned.SPAN_EXCLUSIVE_INCLUSIVE);
+
+        return text;
+    }
+
+    Drawable getIndicatorDrawable() {
+        return getIndicatorDrawable(stockData.getCurrentPrice());
+    }
+
+    Drawable getIndicatorDrawable(float value) {
+        float change = value - stockData.getOpen();
+
+        if (change >= 0) {
+            return ContextCompat.getDrawable(
+                    getMainActivity(), R.drawable.ic_baseline_arrow_drop_up_24);
+        } else {
+            return ContextCompat.getDrawable(
+                    getMainActivity(), R.drawable.ic_baseline_arrow_drop_down_24);
+        }
     }
 
     // Determines whether the user owns shares of the stock

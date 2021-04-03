@@ -73,6 +73,7 @@ public class HomePageFragment extends BaseFragment {
         list.add(new StockListItem("UBER", "Uber Technologies Inc.", 9.22f, 3, 2.23f, 2.85f));
         list.add(new StockListItem("AMZN", "Amazon.com  Inc.", 20.99f, 1, -8.90f, -4.0f));
         list.add(new StockListItem("GOOG", "Google", 30.81f, 22, 1.11f, 3.33f));
+        list.add(new StockListItem("SPY", "SPY ETF", 30.81f, 22, 1.11f, 3.33f));
 
         return list;
     }

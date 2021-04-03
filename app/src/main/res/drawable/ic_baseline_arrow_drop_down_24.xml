@@ -1,21 +1,22 @@
 <vector
-  android:width="24dp"
-  android:height="24dp"
+  android:width="20dp"
+  android:height="20dp"
   android:tint="@color/red"
-  android:viewportWidth="24"
-  android:viewportHeight="24"
+  android:viewportWidth="20"
+  android:viewportHeight="20"
   xmlns:android="http://schemas.android.com/apk/res/android">
 
   <group
       android:pivotX="12"
       android:pivotY="12"
       android:scaleX="2.0"
-      android:scaleY="2.5"
-      android:translateY="0">
+      android:scaleY="2.0"
+      android:translateX="0"
+      android:translateY="-2">
 
     <path
         android:fillColor="@android:color/white"
-        android:pathData="M7,10l5,5 5,-5z"/>
+        android:pathData="M7,10l4,5 4,-5z"/>
 
   </group>
 </vector>

@@ -29,7 +29,7 @@ public class AlpacaApiHttpClient {
                                 return chain.proceed(requestBuilder.build());
                             });
 
-            return httpClientBuilder.build();
+            httpClient = httpClientBuilder.build();
         }
 
         return httpClient;
