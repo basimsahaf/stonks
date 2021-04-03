@@ -7,5 +7,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: Write gradle.properties
+        run: |
+          touch gradle.properties
+          echo "org.gradle.jvmargs=-Xmx2048m
+                android.useAndroidX=true
+                android.enableJetifier=true
+                ALPACA_KEY_ID=\"your_api_key_here\"
+                ALPACA_SECRET_KEY=\"your_api_key_here\"
+                TD_API_KEY=\"your_api_key_here\"
+                FINNHUB_TOKEN=\"your_api_key_here\"
+                DATABASE_NAME=\"stonks_db\"" > gradle.properties
       - name: Run spotlessCheck
         run: ./gradlew spotlessCheck
