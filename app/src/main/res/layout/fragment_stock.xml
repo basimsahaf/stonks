@@ -214,7 +214,7 @@
                         android:layout_height="300dp"
                         android:layout_marginTop="@dimen/section_margin"
                         app:layout_constraintTop_toBottomOf="@id/header">
-                    <com.stonks.android.uicomponent.CustomSparkView
+                    <com.stonks.android.uicomponent.StockChart
                             android:id="@+id/stock_chart"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"

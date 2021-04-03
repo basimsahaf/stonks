@@ -1,5 +1,6 @@
 package com.stonks.android;
 
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.SpannableString;
@@ -22,17 +23,20 @@ import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import com.github.mikephil.charting.components.LimitLine;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.stonks.android.adapter.StockChartAdapter;
 import com.stonks.android.adapter.TransactionViewAdapter;
 import com.stonks.android.databinding.FragmentStockBinding;
 import com.stonks.android.external.MarketDataService;
 import com.stonks.android.model.*;
 import com.stonks.android.model.alpaca.AlpacaTimeframe;
 import com.stonks.android.model.alpaca.DateRange;
-import com.stonks.android.uicomponent.CustomSparkView;
 import com.stonks.android.uicomponent.SpeedDialExtendedFab;
+import com.stonks.android.uicomponent.StockChart;
 import com.stonks.android.utility.Constants;
 import com.stonks.android.utility.Formatters;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
@@ -41,6 +45,7 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 public class StockFragment extends BaseFragment {
@@ -59,8 +64,8 @@ public class StockFragment extends BaseFragment {
     private LinearLayout overlay;
     private NestedScrollView scrollView;
     private ImageView changeIndicator;
-    private final StockChartAdapter dataAdapter = new StockChartAdapter(new ArrayList<>());
     private ImageView favIcon;
+    private StockChart stockChart;
 
     private boolean favourited = false;
     private final StockData stockData = new StockData();
@@ -121,6 +126,7 @@ public class StockFragment extends BaseFragment {
         this.currentPrice = view.findViewById(R.id.current_price);
         this.priceChange = view.findViewById(R.id.change);
         this.changeIndicator = view.findViewById(R.id.change_indicator);
+        this.stockChart = view.findViewById(R.id.stock_chart);
 
         this.rangeDayButton = view.findViewById(R.id.range_day);
         this.rangeWeekButton = view.findViewById(R.id.range_week);
@@ -138,35 +144,25 @@ public class StockFragment extends BaseFragment {
                 new TransactionViewAdapter(this.getFakeTransactionsForStock());
         this.transactionList.setAdapter(this.transactionListAdapter);
 
-        CustomSparkView sparkView = view.findViewById(R.id.stock_chart);
-
-        sparkView.setAdapter(dataAdapter);
-        sparkView.setOnEndedCallback(
+        StockChart.CustomGestureListener customGestureListener =
+                new StockChart.CustomGestureListener(this.stockChart, this.scrollView);
+        this.stockChart.setOnScrub(
+                (x, y) -> {
+                    currentPrice.setText(Formatters.formatPrice(y));
+                    this.priceChange.setText(this.generateChangeString(y));
+                    this.changeIndicator.setImageDrawable(getIndicatorDrawable(y));
+                });
+        customGestureListener.setOnGestureEnded(
                 () -> {
                     this.currentPrice.setText(Formatters.formatPrice(stockData.getCurrentPrice()));
                     this.priceChange.setText(this.generateChangeString());
                     this.changeIndicator.setImageDrawable(getIndicatorDrawable());
                 });
-        sparkView.setScrubListener(
-                value -> {
-                    // disable scrolling when a value is selected
-                    scrollView.requestDisallowInterceptTouchEvent(value != null);
-
-                    if (value != null) {
-                        Float price = (Float) value;
-
-                        currentPrice.setText(Formatters.formatPrice(price));
-                        this.priceChange.setText(this.generateChangeString(price));
-                        this.changeIndicator.setImageDrawable(getIndicatorDrawable(price));
-                    }
-                });
+        this.stockChart.addValueListener(currentPrice);
+        this.stockChart.setOnChartGestureListener(customGestureListener);
 
         this.tradeButton.setOnClickListener(v -> tradeButton.trigger(this.overlay));
         this.overlay.setOnClickListener(v -> tradeButton.close(v));
-
-        if (!this.doesUserPositionExist()) {
-            positionContainer.setVisibility(View.GONE);
-        }
 
         tryButton.setOnClickListener(
                 v -> {
@@ -253,6 +249,9 @@ public class StockFragment extends BaseFragment {
         this.rangeDayButton.setChecked(true);
         this.currentDateRange = DateRange.DAY;
 
+        if (!this.doesUserPositionExist()) {
+            positionContainer.setVisibility(View.GONE);
+        }
         this.fetchInitialData();
     }
 
@@ -303,12 +302,25 @@ public class StockFragment extends BaseFragment {
                             List<BarData> barData = newStockData.getGraphData();
                             this.stockData.updateStock(newStockData);
 
-                            dataAdapter.setData(
-                                    barData.stream()
-                                            .map(BarData::getClose)
-                                            .collect(Collectors.toList()));
-                            dataAdapter.setBaseline(barData.get(0).getOpen());
-                            dataAdapter.notifyDataSetChanged();
+                            AtomicInteger i = new AtomicInteger();
+                            LineDataSet dataSet =
+                                    buildDataSet(
+                                            barData.stream()
+                                                    .map(
+                                                            bar ->
+                                                                    new Pair<>(
+                                                                            i.getAndIncrement(),
+                                                                            bar.getClose()))
+                                                    .collect(Collectors.toList()));
+
+                            LimitLine prevClose = new LimitLine(barData.get(0).getOpen());
+                            prevClose.setLineColor(Color.WHITE);
+                            prevClose.setLineWidth(2f);
+                            prevClose.enableDashedLine(5f, 10f, 10f);
+
+                            this.stockChart.getAxisLeft().addLimitLine(prevClose);
+                            this.stockChart.setData(new LineData(dataSet));
+                            this.stockChart.invalidate();
                         },
                         err -> Log.e(TAG, err.toString()));
     }
@@ -338,12 +350,12 @@ public class StockFragment extends BaseFragment {
         this.fetchInitialData();
     }
 
-    public static ArrayList<Pair<Float, Float>> getFakeStockPrices() {
-        ArrayList<Pair<Float, Float>> list = new ArrayList<>();
+    public static ArrayList<Pair<Integer, Float>> getFakeStockPrices() {
+        ArrayList<Pair<Integer, Float>> list = new ArrayList<>();
         Float[] prices = Constants.stockDataPoints;
 
         for (int i = 0; i < prices.length; i += 5) {
-            list.add(new Pair<>((float) i, prices[i]));
+            list.add(new Pair<>(i, prices[i]));
         }
 
         return list;
@@ -366,7 +378,7 @@ public class StockFragment extends BaseFragment {
         int color = change >= 0 ? R.color.green : R.color.red;
 
         text.setSpan(
-                new ForegroundColorSpan(ContextCompat.getColor(getContext(), color)),
+                new ForegroundColorSpan(ContextCompat.getColor(getMainActivity(), color)),
                 0,
                 changeString.length(),
                 Spanned.SPAN_EXCLUSIVE_INCLUSIVE);
@@ -388,6 +400,34 @@ public class StockFragment extends BaseFragment {
             return ContextCompat.getDrawable(
                     getMainActivity(), R.drawable.ic_baseline_arrow_drop_down_24);
         }
+    }
+
+    static LineDataSet buildDataSet(List<Pair<Integer, Float>> data) {
+        LineDataSet dataSet =
+                new LineDataSet(
+                        data.stream()
+                                .map(p -> new Entry(p.first, p.second))
+                                .collect(Collectors.toList()),
+                        "");
+
+        dataSet.setLineWidth(3f);
+        dataSet.setDrawValues(false);
+        dataSet.setColor(Constants.primaryColor);
+
+        // No indicators for individual data points
+        dataSet.setDrawCircles(false);
+        dataSet.setDrawCircleHole(false);
+
+        // configure the scrub (a.k.a Highlight)
+        dataSet.setHighLightColor(Color.WHITE);
+        dataSet.setDrawHorizontalHighlightIndicator(false);
+        dataSet.setHighlightLineWidth(2f);
+
+        // smoothen graph
+        dataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
+        dataSet.setCubicIntensity(0.1f);
+
+        return dataSet;
     }
 
     // Determines whether the user owns shares of the stock
