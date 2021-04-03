@@ -63,13 +63,11 @@ public class AlpacaWebSocketListener extends WebSocketListener {
 
     private void handleMessage(String text, AtomicBoolean authenticated) {
         WebSocketResponse message = gson.fromJson(text, WebSocketResponse.class);
-
-        Log.d(TAG, "Handling: " + text);
-        Log.d(TAG, message.toString());
+        String stream = message.getStream();
 
         if (!authenticated.get()) {
             Log.d(TAG, "WebSocket stream is unauthenticated");
-            if (message.getStream().equals("authorization")) {
+            if (stream.equals("authorization")) {
                 if (message.getData().getStatus().equals("authorized")) {
                     Log.i(TAG, "WebSocket stream is authenticated");
                     this.authenticated.set(true);
@@ -79,7 +77,7 @@ public class AlpacaWebSocketListener extends WebSocketListener {
                 }
             }
         } else {
-            if ("listening".equals(message.getStream())) {
+            if ("listening".equals(stream)) {
                 // received a subscription confirmation
                 // move observers from pending map to confirmed map
                 message.getData().getStreams().stream()
@@ -88,7 +86,7 @@ public class AlpacaWebSocketListener extends WebSocketListener {
             } else {
                 // received a new price update
                 this.alpacaWebSocket.updateCurrentPrice(
-                        removeAlpacaPrefix(message.getStream()), message.getData().getClose());
+                        removeAlpacaPrefix(stream), message.getData().getClose());
             }
         }
     }

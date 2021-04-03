@@ -81,7 +81,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void subscribe(String symbol, WebSocketObserver observer) {
-        Log.d("MainActivity", "sending subscribe request for " + symbol);
         this.socket.subscribe(symbol, observer);
     }
 
