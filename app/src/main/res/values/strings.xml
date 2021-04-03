@@ -48,6 +48,7 @@
     <string name="sign_up_button_label">Sign up</string>
     <string name="sign_in_button_label">Sign in</string>
     <string name="login">Login</string>
+    <string name="login_biometrics">Login via Biometrics</string>
     <string name="create_account">Create account</string>
     <string name="login_incorrect_error">Invalid username/password</string>
 
