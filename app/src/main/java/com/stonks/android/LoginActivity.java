@@ -84,13 +84,19 @@ public class LoginActivity extends BaseActivity {
 
         loginButton.setOnClickListener(
                 view -> {
-                    authorize();
+                    // TODO: use this after testing is done
+//                    authorize();
+
+                    // this is just for testing purposes
+                    authorizeTestLogin();
+
                     usernameChanged = false;
                     passwordChanged = false;
                 });
 
         // disable login button initially as no data is entered
-        loginButton.setEnabled(false);
+        // TODO: change to disable once testing is done
+        loginButton.setEnabled(true);
 
         // set error messages visibility to gone by default
         usernameErrorMessage.setVisibility(View.GONE);
@@ -255,5 +261,12 @@ public class LoginActivity extends BaseActivity {
             signUpModeButton.setChecked(true);
             loginButton.setText(getString(R.string.create_account));
         }
+    }
+
+    // TODO: remove test function
+    private void authorizeTestLogin() {
+        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
     }
 }
