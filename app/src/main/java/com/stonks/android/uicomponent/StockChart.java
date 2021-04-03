@@ -1,19 +1,24 @@
 package com.stonks.android.uicomponent;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.widget.TextView;
 import androidx.core.widget.NestedScrollView;
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.LimitLine;
 import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.listener.ChartTouchListener;
 import com.github.mikephil.charting.listener.OnChartGestureListener;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
+import com.stonks.android.utility.Constants;
+import com.stonks.android.utility.Formatters;
 import java.util.ArrayList;
-import java.util.Locale;
+import java.util.List;
 
 public class StockChart extends LineChart {
     private ArrayList<TextView> priceListeners;
@@ -77,14 +82,54 @@ public class StockChart extends LineChart {
                 new OnChartValueSelectedListener() {
                     @Override
                     public void onValueSelected(Entry e, Highlight h) {
-                        priceListeners.forEach(
-                                v -> v.setText(String.format(Locale.CANADA, "$%.2f", e.getY())));
+                        priceListeners.forEach(v -> v.setText(Formatters.formatPrice(e.getY())));
                         onScrub.accept((int) e.getX(), e.getY());
                     }
 
                     @Override
                     public void onNothingSelected() {}
                 });
+    }
+
+    public void setData(List<Entry> data) {
+        this.setData(new LineData(buildDataSet(data)));
+    }
+
+    public void setLimitLine(float limit) {
+        this.getAxisLeft().removeAllLimitLines();
+        this.getAxisLeft().addLimitLine(getLimitLine(limit));
+    }
+
+    private static LineDataSet buildDataSet(List<Entry> data) {
+        LineDataSet dataSet = new LineDataSet(data, "");
+
+        dataSet.setLineWidth(3f);
+        dataSet.setDrawValues(false);
+        dataSet.setColor(Constants.primaryColor);
+
+        // No indicators for individual data points
+        dataSet.setDrawCircles(false);
+        dataSet.setDrawCircleHole(false);
+
+        // configure the scrub (a.k.a Highlight)
+        dataSet.setHighLightColor(Color.WHITE);
+        dataSet.setDrawHorizontalHighlightIndicator(false);
+        dataSet.setHighlightLineWidth(2f);
+
+        // smoothen graph
+        dataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
+        dataSet.setCubicIntensity(0.1f);
+
+        return dataSet;
+    }
+
+    private static LimitLine getLimitLine(float limit) {
+        LimitLine line = new LimitLine(limit);
+        line.setLineColor(Color.WHITE);
+        line.setLineWidth(2f);
+        line.enableDashedLine(5f, 10f, 10f);
+
+        return line;
     }
 
     @FunctionalInterface
@@ -128,7 +173,6 @@ public class StockChart extends LineChart {
             chart.highlightValue(h);
 
             chart.setHighlightPerDragEnabled(true);
-            Log.d("Selected: ", me.getX() + ", " + me.getY());
         }
 
         @Override

@@ -1,6 +1,5 @@
 package com.stonks.android;
 
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.SpannableString;
@@ -23,10 +22,7 @@ import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import com.github.mikephil.charting.components.LimitLine;
 import com.github.mikephil.charting.data.Entry;
-import com.github.mikephil.charting.data.LineData;
-import com.github.mikephil.charting.data.LineDataSet;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.stonks.android.adapter.TransactionViewAdapter;
@@ -160,6 +156,7 @@ public class StockFragment extends BaseFragment {
                 });
         this.stockChart.addValueListener(currentPrice);
         this.stockChart.setOnChartGestureListener(customGestureListener);
+        this.stockChart.setData(Collections.emptyList());
 
         this.tradeButton.setOnClickListener(v -> tradeButton.trigger(this.overlay));
         this.overlay.setOnClickListener(v -> tradeButton.close(v));
@@ -303,23 +300,17 @@ public class StockFragment extends BaseFragment {
                             this.stockData.updateStock(newStockData);
 
                             AtomicInteger i = new AtomicInteger();
-                            LineDataSet dataSet =
-                                    buildDataSet(
-                                            barData.stream()
-                                                    .map(
-                                                            bar ->
-                                                                    new Pair<>(
-                                                                            i.getAndIncrement(),
-                                                                            bar.getClose()))
-                                                    .collect(Collectors.toList()));
+                            List<Entry> dataSet =
+                                    barData.stream()
+                                            .map(
+                                                    bar ->
+                                                            new Entry(
+                                                                    i.getAndIncrement(),
+                                                                    bar.getClose()))
+                                            .collect(Collectors.toList());
 
-                            LimitLine prevClose = new LimitLine(barData.get(0).getOpen());
-                            prevClose.setLineColor(Color.WHITE);
-                            prevClose.setLineWidth(2f);
-                            prevClose.enableDashedLine(5f, 10f, 10f);
-
-                            this.stockChart.getAxisLeft().addLimitLine(prevClose);
-                            this.stockChart.setData(new LineData(dataSet));
+                            this.stockChart.setData(dataSet);
+                            this.stockChart.setLimitLine(barData.get(0).getOpen());
                             this.stockChart.invalidate();
                         },
                         err -> Log.e(TAG, err.toString()));
@@ -400,34 +391,6 @@ public class StockFragment extends BaseFragment {
             return ContextCompat.getDrawable(
                     getMainActivity(), R.drawable.ic_baseline_arrow_drop_down_24);
         }
-    }
-
-    static LineDataSet buildDataSet(List<Pair<Integer, Float>> data) {
-        LineDataSet dataSet =
-                new LineDataSet(
-                        data.stream()
-                                .map(p -> new Entry(p.first, p.second))
-                                .collect(Collectors.toList()),
-                        "");
-
-        dataSet.setLineWidth(3f);
-        dataSet.setDrawValues(false);
-        dataSet.setColor(Constants.primaryColor);
-
-        // No indicators for individual data points
-        dataSet.setDrawCircles(false);
-        dataSet.setDrawCircleHole(false);
-
-        // configure the scrub (a.k.a Highlight)
-        dataSet.setHighLightColor(Color.WHITE);
-        dataSet.setDrawHorizontalHighlightIndicator(false);
-        dataSet.setHighlightLineWidth(2f);
-
-        // smoothen graph
-        dataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
-        dataSet.setCubicIntensity(0.1f);
-
-        return dataSet;
     }
 
     // Determines whether the user owns shares of the stock
