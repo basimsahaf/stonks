@@ -285,7 +285,7 @@ public class StockFragment extends BaseFragment {
 
     Drawable getIndicatorDrawable(float value) {
         float change = value - stockData.getOpen();
-        Log.d(TAG, "change: " + (change));
+
         if (change >= 0) {
             return ContextCompat.getDrawable(
                     getMainActivity(), R.drawable.ic_baseline_arrow_drop_up_24);
