@@ -118,14 +118,19 @@ public class LoginActivity extends BaseActivity {
         String password = getFieldText(passwordField);
         authErrorMessage.setVisibility(View.GONE);
 
-        switch (currentAuthMode) {
-            case LOGIN:
-                loginViewModel.login(username, password);
-                break;
+        // only login on non-empty username and password, otherwise show error
+        if (!username.equals("") && !password.equals("")) {
+            switch (currentAuthMode) {
+                case LOGIN:
+                    loginViewModel.login(username, password);
+                    break;
 
-            case SIGNUP:
-                loginViewModel.signup(username, password, biometricsEnabled);
-                break;
+                case SIGNUP:
+                    loginViewModel.signup(username, password, biometricsEnabled);
+                    break;
+            }
+        } else {
+            showLoginFailed(R.string.login_incomplete);
         }
     }
 
@@ -144,6 +149,7 @@ public class LoginActivity extends BaseActivity {
 
                     @Override
                     public void afterTextChanged(Editable s) {
+                        authErrorMessage.setVisibility(View.GONE);
                         if (field == usernameField) {
                             usernameChanged = true;
                         } else {
@@ -188,15 +194,24 @@ public class LoginActivity extends BaseActivity {
                             loginButton.setEnabled(loginFormState.isDataValid());
 
                             // display error if invalid username or password
-                            setFieldState(
-                                    usernameChanged,
-                                    usernameErrorMessage,
-                                    loginFormState.getUsernameError());
+                            boolean usernameState =
+                                    setFieldState(
+                                            usernameChanged,
+                                            usernameErrorMessage,
+                                            loginFormState.getUsernameError());
 
-                            setFieldState(
-                                    passwordChanged,
-                                    passwordErrorMessage,
-                                    loginFormState.getPasswordError());
+                            boolean passwordState =
+                                    setFieldState(
+                                            passwordChanged,
+                                            passwordErrorMessage,
+                                            loginFormState.getPasswordError());
+
+                            // disable login button in case either of the fields is incorrect
+                            if (usernameState && passwordState) {
+                                loginButton.setEnabled(true);
+                            } else {
+                                loginButton.setEnabled(false);
+                            }
                         });
 
         loginViewModel
@@ -217,15 +232,15 @@ public class LoginActivity extends BaseActivity {
                         });
     }
 
-    private void setFieldState(boolean fieldChanged, TextView errorView, Integer error) {
+    private boolean setFieldState(boolean fieldChanged, TextView errorView, Integer error) {
         if (fieldChanged && error != null) {
-            loginButton.setEnabled(false);
             errorView.setText(error);
             errorView.setTextColor(getResources().getColor(R.color.red, getTheme()));
             errorView.setVisibility(View.VISIBLE);
+            return false;
         } else {
             errorView.setVisibility(View.GONE);
-            loginButton.setEnabled(true);
+            return true;
         }
     }
 

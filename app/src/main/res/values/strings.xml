@@ -104,6 +104,7 @@
     <string name="internal_server_error">Internal Server Error</string>
     <string name="user_exists">User already exists</string>
     <string name="try_again">Please try again!</string>
+    <string name="login_incomplete">Please enter both username and password</string>
 
     <!-- Hypothetical Page Strings -->
     <string name="price_on_label">Price on</string>
