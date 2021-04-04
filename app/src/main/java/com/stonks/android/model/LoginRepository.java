@@ -51,4 +51,8 @@ public class LoginRepository {
         }
         return result;
     }
+
+    public String getCurrentUser() {
+        return this.user.getUserId();
+    }
 }
