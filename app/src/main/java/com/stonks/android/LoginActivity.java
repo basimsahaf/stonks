@@ -50,6 +50,7 @@ public class LoginActivity extends BaseActivity {
     private AuthMode currentAuthMode;
     private  BiometricPrompt.PromptInfo promptInfo;
     private BiometricPrompt biometricPrompt;
+    private LoginRepository repo;
 
 
     @RequiresApi(api = Build.VERSION_CODES.P)
@@ -60,7 +61,7 @@ public class LoginActivity extends BaseActivity {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
 
         UserTable userTable = new UserTable(this);
-        LoginRepository repo = LoginRepository.getInstance(new LoginDataSource(userTable));
+        repo = LoginRepository.getInstance(new LoginDataSource(userTable));
         loginViewModel = new LoginViewModel(repo);
 
         loginModeButton = findViewById(R.id.login_mode_button);
@@ -115,23 +116,22 @@ public class LoginActivity extends BaseActivity {
         // disable the back button on the login page
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
 
-        // TODO: do biometrics here
-
         // toggle login mode by default
         switchView(AuthMode.LOGIN);
 
         // debug
         UserModel bioUser = new UserModel("biometrics", "biometrics", true);
         userTable.addUser(bioUser);
-        biometricsButton.setOnClickListener(v -> biometricPrompt.authenticate(promptInfo));
 
         if (repo.isBiometricsEnabled()) {
-            LoggedInUser user = repo.getCurrentUser();
-            setupBiometrics(user.getUserId());
-            biometricPrompt.authenticate(promptInfo);
-            usernameField.getEditText().setText(user.getUserId());
+            biometricsButton.setEnabled(true);
+            authorizeViaBiometrics();
+        } else {
+            biometricsButton.setEnabled(false);
         }
-     }
+
+        biometricsButton.setOnClickListener(v -> biometricPrompt.authenticate(promptInfo));
+    }
 
     private String getFieldText(TextInputLayout field) {
         if (field.getEditText().getText() != null) {
@@ -157,10 +157,18 @@ public class LoginActivity extends BaseActivity {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.P)
+    private void authorizeViaBiometrics() {
+        LoggedInUser user = repo.getCurrentUser();
+        setupBiometrics(user.getUserId());
+        biometricPrompt.authenticate(promptInfo);
+        usernameField.getEditText().setText(user.getUserId());
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.P)
     private void setupBiometrics(String username) {
         promptInfo = new BiometricPrompt.PromptInfo.Builder()
-                .setTitle("Sign in to Stonks")
-                .setSubtitle(String.format("Welcome %s", username))
+                .setTitle(String.format("Welcome %s", username))
+                .setSubtitle("Sign in to Stonks")
                 .setDescription("Sign in via biometrics")
                 .setNegativeButtonText("Cancel")
                 .build();
