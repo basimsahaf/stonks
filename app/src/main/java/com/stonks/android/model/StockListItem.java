@@ -9,7 +9,6 @@ public class StockListItem {
 
     public StockListItem(
             String stockSymbol,
-            String companyName,
             float price,
             int quantity,
             float priceChange,
