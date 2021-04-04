@@ -1,8 +1,10 @@
 package com.stonks.android.model;
 
+import android.graphics.drawable.Drawable;
+import com.github.mikephil.charting.data.CandleEntry;
 import com.google.gson.annotations.SerializedName;
 
-public class BarData {
+public class BarData extends CandleEntry {
     @SerializedName("t")
     private Integer timestamp;
 
@@ -21,6 +23,31 @@ public class BarData {
     @SerializedName("v")
     private Integer volume;
 
+    private Integer endTimestamp;
+
+    public BarData(float x, float shadowH, float shadowL, float open, float close) {
+        super(x, shadowH, shadowL, open, close);
+    }
+
+    public BarData(float x, float shadowH, float shadowL, float open, float close, Object data) {
+        super(x, shadowH, shadowL, open, close, data);
+    }
+
+    public BarData(float x, float shadowH, float shadowL, float open, float close, Drawable icon) {
+        super(x, shadowH, shadowL, open, close, icon);
+    }
+
+    public BarData(
+            float x,
+            float shadowH,
+            float shadowL,
+            float open,
+            float close,
+            Drawable icon,
+            Object data) {
+        super(x, shadowH, shadowL, open, close, icon, data);
+    }
+
     public Integer getVolume() {
         return volume;
     }
@@ -37,35 +64,51 @@ public class BarData {
         this.timestamp = timestamp;
     }
 
-    public Float getOpen() {
+    public Integer getEndTimestamp() {
+        return endTimestamp;
+    }
+
+    public void setEndTimestamp(Integer endTimestamp) {
+        this.endTimestamp = endTimestamp;
+    }
+
+    @Override
+    public float getOpen() {
         return open;
     }
 
-    public void setOpen(Float open) {
+    public void setOpen(float open) {
         this.open = open;
     }
 
-    public Float getClose() {
+    @Override
+    public float getClose() {
         return close;
     }
 
-    public void setClose(Float close) {
+    public void setClose(float close) {
         this.close = close;
     }
 
-    public Float getLow() {
+    @Override
+    public float getLow() {
         return low;
     }
 
-    public void setLow(Float low) {
+    public void setLow(float low) {
         this.low = low;
     }
 
-    public Float getHigh() {
+    @Override
+    public float getHigh() {
         return high;
     }
 
-    public void setHigh(Float high) {
+    public void setHigh(float high) {
         this.high = high;
+    }
+
+    public CandleEntry toCandleEntry(int x) {
+        return new CandleEntry(x, this.high, this.low, this.open, this.close);
     }
 }

@@ -31,6 +31,8 @@ import com.stonks.android.external.MarketDataService;
 import com.stonks.android.model.*;
 import com.stonks.android.model.alpaca.AlpacaTimeframe;
 import com.stonks.android.model.alpaca.DateRange;
+import com.stonks.android.uicomponent.CandleChart;
+import com.stonks.android.uicomponent.ChartMarker;
 import com.stonks.android.uicomponent.SpeedDialExtendedFab;
 import com.stonks.android.uicomponent.StockChart;
 import com.stonks.android.utility.Constants;
@@ -62,6 +64,7 @@ public class StockFragment extends BaseFragment {
     private ImageView changeIndicator;
     private ImageView favIcon;
     private StockChart stockChart;
+    private CandleChart candleChart;
 
     private boolean favourited = false;
     private final StockData stockData = new StockData();
@@ -123,6 +126,7 @@ public class StockFragment extends BaseFragment {
         this.priceChange = view.findViewById(R.id.change);
         this.changeIndicator = view.findViewById(R.id.change_indicator);
         this.stockChart = view.findViewById(R.id.stock_chart);
+        this.candleChart = view.findViewById(R.id.stock_chart_candle);
 
         this.rangeDayButton = view.findViewById(R.id.range_day);
         this.rangeWeekButton = view.findViewById(R.id.range_week);
@@ -140,23 +144,32 @@ public class StockFragment extends BaseFragment {
                 new TransactionViewAdapter(this.getFakeTransactionsForStock());
         this.transactionList.setAdapter(this.transactionListAdapter);
 
-        StockChart.CustomGestureListener customGestureListener =
+        ChartMarker marker = new ChartMarker(getContext(), R.layout.chart_marker);
+        marker.setChartView(this.candleChart);
+        StockChart.CustomGestureListener lineChartGestureListener =
                 new StockChart.CustomGestureListener(this.stockChart, this.scrollView);
-        this.stockChart.setOnScrub(
-                (x, y) -> {
-                    currentPrice.setText(Formatters.formatPrice(y));
-                    this.priceChange.setText(this.generateChangeString(y));
-                    this.changeIndicator.setImageDrawable(getIndicatorDrawable(y));
-                });
-        customGestureListener.setOnGestureEnded(
+        StockChart.CustomGestureListener candleChartGestureListener =
+                new StockChart.CustomGestureListener(this.candleChart, this.scrollView);
+        lineChartGestureListener.setOnGestureEnded(
                 () -> {
                     this.currentPrice.setText(Formatters.formatPrice(stockData.getCurrentPrice()));
                     this.priceChange.setText(this.generateChangeString());
                     this.changeIndicator.setImageDrawable(getIndicatorDrawable());
                 });
+        this.stockChart.setOnScrub(
+                (x, y) -> {
+                    this.currentPrice.setText(Formatters.formatPrice(y));
+                    this.priceChange.setText(this.generateChangeString(y));
+                    this.changeIndicator.setImageDrawable(getIndicatorDrawable(y));
+                });
+
         this.stockChart.addValueListener(currentPrice);
-        this.stockChart.setOnChartGestureListener(customGestureListener);
+        this.stockChart.setOnChartGestureListener(lineChartGestureListener);
         this.stockChart.setData(Collections.emptyList());
+
+        this.candleChart.setOnChartGestureListener(candleChartGestureListener);
+        this.candleChart.setMarker(marker);
+        this.candleChart.setData(Collections.emptyList());
 
         this.tradeButton.setOnClickListener(v -> tradeButton.trigger(this.overlay));
         this.overlay.setOnClickListener(v -> tradeButton.close(v));
@@ -312,6 +325,24 @@ public class StockFragment extends BaseFragment {
                             this.stockChart.setData(dataSet);
                             this.stockChart.setLimitLine(barData.get(0).getOpen());
                             this.stockChart.invalidate();
+
+                            List<BarData> clubbedBars = new ArrayList<>();
+                            for (int x = 0; x < barData.size(); x += 5) {
+                                BarData newBar =
+                                        clubBars(
+                                                barData.subList(
+                                                        x, Math.min(x + 4, barData.size() - 1)));
+
+                                clubbedBars.add(newBar);
+                            }
+
+                            i.set(1);
+                            this.candleChart.setData(
+                                    clubbedBars.stream()
+                                            .map(bar -> bar.toCandleEntry(i.getAndIncrement()))
+                                            .collect(Collectors.toList()));
+                            this.stockChart.setLimitLine(clubbedBars.get(0).getOpen());
+                            this.candleChart.invalidate();
                         },
                         err -> Log.e(TAG, err.toString()));
     }
@@ -339,6 +370,21 @@ public class StockFragment extends BaseFragment {
                 this.rangeDayButton.setChecked(true);
         }
         this.fetchInitialData();
+    }
+
+    private BarData clubBars(List<BarData> bars) {
+        BarData barData = new BarData(-1, -1, -1, -1, -1);
+
+        barData.setHigh(
+                bars.stream().map(BarData::getHigh).max(Comparator.naturalOrder()).orElse(0f));
+        barData.setLow(
+                bars.stream().map(BarData::getLow).min(Comparator.naturalOrder()).orElse(0f));
+        barData.setOpen(bars.get(0).getOpen());
+        barData.setTimestamp(bars.get(0).getTimestamp());
+        barData.setClose(bars.get(bars.size() - 1).getClose());
+        barData.setEndTimestamp(bars.get(bars.size() - 1).getTimestamp());
+
+        return barData;
     }
 
     public static ArrayList<Pair<Integer, Float>> getFakeStockPrices() {

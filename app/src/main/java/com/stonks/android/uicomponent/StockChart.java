@@ -6,6 +6,7 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.widget.TextView;
 import androidx.core.widget.NestedScrollView;
+import com.github.mikephil.charting.charts.BarLineChartBase;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.LimitLine;
 import com.github.mikephil.charting.data.Entry;
@@ -138,11 +139,11 @@ public class StockChart extends LineChart {
     }
 
     public static class CustomGestureListener implements OnChartGestureListener {
-        private final StockChart chart;
+        private final BarLineChartBase chart;
         private final NestedScrollView scrollView;
         private OnGestureEnded onGestureEnded;
 
-        public CustomGestureListener(StockChart c, NestedScrollView s) {
+        public CustomGestureListener(BarLineChartBase c, NestedScrollView s) {
             chart = c;
             scrollView = s;
             onGestureEnded = () -> {};

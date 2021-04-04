@@ -218,6 +218,12 @@
                             android:id="@+id/stock_chart"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
+                            android:visibility="gone"
+                    />
+                    <com.stonks.android.uicomponent.CandleChart
+                            android:id="@+id/stock_chart_candle"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
                     />
 
                 </RelativeLayout>
