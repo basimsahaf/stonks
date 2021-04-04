@@ -30,6 +30,10 @@
     <string name="sell_label">Sell</string>
     <string name="try_it_out_label">Try it out</string>
     <string name="change_indicator">Change Indicator</string>
+    <string name="day">1D</string>
+    <string name="week">1W</string>
+    <string name="month">1M</string>
+    <string name="year">1Y</string>
 
     <!-- Buy/Sell fragment strings -->
     <string name="buy_button_label">Buy</string>
