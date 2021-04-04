@@ -45,8 +45,7 @@ public class LoginActivity extends BaseActivity {
         setContentView(R.layout.activity_login);
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
 
-        UserTable userTable = new UserTable(this);
-        LoginRepository repo = LoginRepository.getInstance(new LoginDataSource(userTable));
+        LoginRepository repo = LoginRepository.getInstance(getApplicationContext());
         loginViewModel = new LoginViewModel(repo);
 
         loginModeButton = findViewById(R.id.login_mode_button);

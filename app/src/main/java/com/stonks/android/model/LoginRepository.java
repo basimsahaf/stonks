@@ -1,5 +1,9 @@
 package com.stonks.android.model;
 
+import android.content.Context;
+
+import com.stonks.android.storage.UserTable;
+
 /**
  * Class that requests authentication and user information from the remote data source and maintains
  * an in-memory cache of login status and user credentials information.
@@ -15,9 +19,10 @@ public class LoginRepository {
         this.dataSource = dataSource;
     }
 
-    public static LoginRepository getInstance(LoginDataSource dataSource) {
+    public static LoginRepository getInstance(Context context) {
         if (instance == null) {
-            instance = new LoginRepository(dataSource);
+            UserTable userTable = new UserTable(context);
+            instance = new LoginRepository(new LoginDataSource(userTable));
         }
         return instance;
     }
