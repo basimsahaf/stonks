@@ -86,4 +86,6 @@ public class UserTable extends SQLiteOpenHelper {
         cursor.close();
         return exists;
     }
+
+    public
 }

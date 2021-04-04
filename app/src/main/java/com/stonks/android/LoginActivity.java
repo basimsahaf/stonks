@@ -2,14 +2,20 @@ package com.stonks.android;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import androidx.biometric.BiometricPrompt;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatDelegate;
 import com.google.android.material.button.MaterialButton;
@@ -21,11 +27,15 @@ import com.stonks.android.model.LoginRepository;
 import com.stonks.android.model.LoginViewModel;
 import com.stonks.android.storage.UserTable;
 
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+
 public class LoginActivity extends BaseActivity {
 
     private final String TAG = this.getClass().getSimpleName();
 
     private Button loginButton;
+    private Button biometricsButton;
     private TextInputLayout usernameField;
     private TextInputLayout passwordField;
     private TextView usernameErrorMessage;
@@ -38,7 +48,11 @@ public class LoginActivity extends BaseActivity {
     private boolean passwordChanged;
     private AuthMode currentAuthMode;
     private boolean biometricsEnabled;
+    private  BiometricPrompt.PromptInfo promptInfo;
+    private BiometricPrompt biometricPrompt;
 
+
+    @RequiresApi(api = Build.VERSION_CODES.P)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,6 +69,7 @@ public class LoginActivity extends BaseActivity {
         usernameField = findViewById(R.id.username_field);
         passwordField = findViewById(R.id.password_field);
         loginButton = findViewById(R.id.login_button);
+        biometricsButton = findViewById(R.id.biometrics_button);
         usernameErrorMessage = findViewById(R.id.username_error_message);
         passwordErrorMessage = findViewById(R.id.password_error_message);
 
@@ -101,6 +116,8 @@ public class LoginActivity extends BaseActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
 
         // TODO: do biometrics here
+        setupBiometrics();
+        biometricsButton.setOnClickListener(v -> biometricPrompt.authenticate(promptInfo));
 
         // toggle login mode by default
         switchView(AuthMode.LOGIN);
@@ -127,6 +144,39 @@ public class LoginActivity extends BaseActivity {
                 loginViewModel.signup(username, password, biometricsEnabled);
                 break;
         }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.P)
+    private void setupBiometrics() {
+        promptInfo = new BiometricPrompt.PromptInfo.Builder()
+                .setTitle("Title text goes here")
+                .setSubtitle("Subtitle goes here")
+                .setDescription("This is the description")
+                .setNegativeButtonText("Cancel")
+                .build();
+
+        Executor executor = Executors.newSingleThreadExecutor();
+        biometricPrompt = new BiometricPrompt(LoginActivity.this, executor, new BiometricPrompt.AuthenticationCallback() {
+            @Override
+
+            public void onAuthenticationError(int errorCode, @NonNull CharSequence errString) {
+                super.onAuthenticationError(errorCode, errString);
+                Log.d(TAG, "An unrecoverable error occurred");
+            }
+
+            @Override
+            public void onAuthenticationSucceeded(@NonNull BiometricPrompt.AuthenticationResult result) {
+                super.onAuthenticationSucceeded(result);
+                showLoginSucceeded();
+                Log.d(TAG, "Fingerprint recognised successfully");
+            }
+
+            @Override
+            public void onAuthenticationFailed() {
+                super.onAuthenticationFailed();
+                Log.d(TAG, "Fingerprint not recognised");
+            }
+        });
     }
 
     private void setTextWatcher(TextInputLayout field) {
@@ -158,9 +208,8 @@ public class LoginActivity extends BaseActivity {
         field.getEditText().addTextChangedListener(textWatcher);
     }
 
-    private void showLoginSucceeded(LoggedInUserView model) {
+    private void showLoginSucceeded() {
         String welcome = getString(R.string.welcome);
-        Toast.makeText(getApplicationContext(), welcome, Toast.LENGTH_LONG).show();
         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
@@ -211,7 +260,7 @@ public class LoginActivity extends BaseActivity {
                                 showLoginFailed(loginResult.getError());
                             }
                             if (loginResult.getSuccess() != null) {
-                                showLoginSucceeded(loginResult.getSuccess());
+                                showLoginSucceeded();
                             }
                             setResult(Activity.RESULT_OK);
                         });
