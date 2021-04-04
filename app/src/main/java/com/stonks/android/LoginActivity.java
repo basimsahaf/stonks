@@ -130,7 +130,7 @@ public class LoginActivity extends BaseActivity {
             biometricsButton.setEnabled(false);
         }
 
-        biometricsButton.setOnClickListener(v -> biometricPrompt.authenticate(promptInfo));
+        biometricsButton.setOnClickListener(v -> authorizeViaBiometrics());
     }
 
     private String getFieldText(TextInputLayout field) {
