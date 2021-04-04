@@ -1,6 +1,8 @@
 package com.stonks.android;
 
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,13 +13,16 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.checkbox.MaterialCheckBox;
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.stonks.android.adapter.CompanyFilterListAdapter;
-import java.util.ArrayList;
+import com.stonks.android.manager.RecentTransactionsManager;
+import com.stonks.android.model.TransactionMode;
 
 public class FilterFragment extends BaseFragment
         implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
-    private RecyclerView.Adapter companiesFilterListAdapter;
+    private CompanyFilterListAdapter companiesFilterListAdapter;
+    private RecentTransactionsManager recentTransactionsManager;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -42,12 +47,15 @@ public class FilterFragment extends BaseFragment
                 new LinearLayoutManager(this.getContext());
         companiesFilterList = view.findViewById(R.id.companies_list);
         companiesFilterList.setLayoutManager(companiesFilterListManager);
-        companiesFilterListAdapter = new CompanyFilterListAdapter(getCompanyList(), this);
+        companiesFilterListAdapter =
+                new CompanyFilterListAdapter(recentTransactionsManager.getSymbols(), this);
         companiesFilterList.setAdapter(companiesFilterListAdapter);
 
         setupRadioListeners(view);
-        setupResetButton(view);
+        setupResetMinMaxAmountButton(view);
         setupResetAllButton(view);
+        setupMinAmountInputEdit(view);
+        setupMaxAmountInputEdit(view);
 
         MaterialButton button = view.findViewById(R.id.apply_button);
         button.setOnClickListener(
@@ -56,17 +64,32 @@ public class FilterFragment extends BaseFragment
                 });
     }
 
+    public void setRecentTransactionsManager(RecentTransactionsManager recentTransactionsManager) {
+        this.recentTransactionsManager = recentTransactionsManager;
+    }
+
     private void setupRadioListeners(View view) {
         RadioButton allRadio = view.findViewById(R.id.radio_all);
         RadioButton buyRadio = view.findViewById(R.id.radio_buy);
         RadioButton sellRadio = view.findViewById(R.id.radio_sell);
 
-        allRadio.setOnClickListener(this);
-        buyRadio.setOnClickListener(this);
-        sellRadio.setOnClickListener(this);
+        allRadio.setOnClickListener(
+                v -> {
+                    recentTransactionsManager.resetModeFilter();
+                });
+
+        buyRadio.setOnClickListener(
+                v -> {
+                    recentTransactionsManager.applyModeFilter(TransactionMode.BUY);
+                });
+
+        sellRadio.setOnClickListener(
+                v -> {
+                    recentTransactionsManager.applyModeFilter(TransactionMode.SELL);
+                });
     }
 
-    private void setupResetButton(View view) {
+    private void setupResetMinMaxAmountButton(View view) {
         TextView reset = view.findViewById(R.id.reset_button);
 
         reset.setOnClickListener(
@@ -76,6 +99,46 @@ public class FilterFragment extends BaseFragment
 
                     TextInputLayout max = view.findViewById(R.id.max_field);
                     max.getEditText().getText().clear();
+
+                    recentTransactionsManager.resetMinMaxAmount();
+                });
+    }
+
+    private void setupMinAmountInputEdit(View view) {
+        TextInputEditText min = view.findViewById(R.id.min_input);
+        min.addTextChangedListener(
+                new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(
+                            CharSequence s, int start, int count, int after) {}
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+                    @Override
+                    public void afterTextChanged(Editable s) {
+                        String minAmount = min.getText().toString();
+                        recentTransactionsManager.applyMinAmountFilter(Integer.parseInt(minAmount));
+                    }
+                });
+    }
+
+    private void setupMaxAmountInputEdit(View view) {
+        TextInputEditText max = view.findViewById(R.id.max_input);
+        max.addTextChangedListener(
+                new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(
+                            CharSequence s, int start, int count, int after) {}
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+                    @Override
+                    public void afterTextChanged(Editable s) {
+                        String maxAmount = max.getText().toString();
+                        recentTransactionsManager.applyMaxAmountFilter(Integer.parseInt(maxAmount));
+                    }
                 });
     }
 
@@ -91,6 +154,7 @@ public class FilterFragment extends BaseFragment
                     reset.performClick();
 
                     companiesFilterListAdapter.notifyDataSetChanged();
+                    recentTransactionsManager.resetFilters();
                 });
     }
 
@@ -102,16 +166,12 @@ public class FilterFragment extends BaseFragment
     @Override
     public void onCheckedChanged(CompoundButton view, boolean isChecked) {
         MaterialCheckBox checkBox = ((MaterialCheckBox) view);
-    }
-
-    private ArrayList<String> getCompanyList() {
-        ArrayList<String> list = new ArrayList<>();
-
-        list.add("Blizzard");
-        list.add("Nintendo");
-        list.add("Shopify");
-        list.add("Google");
-
-        return list;
+        checkBox.setChecked(isChecked);
+        String symbol = checkBox.getText().toString();
+        if (isChecked) {
+            recentTransactionsManager.applySymbolFilter(symbol);
+        } else {
+            recentTransactionsManager.unapplySymbolFilter(symbol);
+        }
     }
 }

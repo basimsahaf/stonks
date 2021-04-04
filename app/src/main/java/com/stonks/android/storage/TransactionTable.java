@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import androidx.annotation.Nullable;
 import com.stonks.android.BuildConfig;
 import com.stonks.android.model.Transaction;
+import com.stonks.android.model.TransactionFilters;
 import com.stonks.android.model.TransactionMode;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -20,6 +21,7 @@ public class TransactionTable extends SQLiteOpenHelper {
     public static final String COLUMN_PRICE = "price";
     public static final String COLUMN_TRANSACTION_TYPE = "transaction_type";
     public static final String COLUMN_CREATED_AT = "transaction_date";
+    public static final String COLUMN_COMPUTED_AMOUNT = COLUMN_PRICE + " * " + COLUMN_SHARES;
 
     public TransactionTable(@Nullable Context context) {
         super(context, BuildConfig.DATABASE_NAME, null, 3);
@@ -89,6 +91,65 @@ public class TransactionTable extends SQLiteOpenHelper {
                         "SELECT * FROM %s WHERE %s = ? AND %s = ?",
                         TRANSACTION_TABLE, COLUMN_USERNAME, COLUMN_SYMBOL);
         return queryTransactions(query, new String[] {username, symbol});
+    }
+
+    public ArrayList<Transaction> filterTransactions(TransactionFilters filters) {
+        String query =
+                String.format("SELECT * FROM %s WHERE %s = ?", TRANSACTION_TABLE, COLUMN_USERNAME);
+        ArrayList<String> selectionArgsList = new ArrayList();
+        selectionArgsList.add(filters.getUsername());
+
+        if (filters.isMinAmountFilterApplied()) {
+            query =
+                    query
+                            + String.format(
+                                    "  AND %s >= %s",
+                                    COLUMN_COMPUTED_AMOUNT,
+                                    Integer.toString(filters.getMinAmount()));
+        }
+
+        if (filters.isMaxAmountFilterApplied()) {
+            query =
+                    query
+                            + String.format(
+                                    " AND %s <= %s",
+                                    COLUMN_COMPUTED_AMOUNT,
+                                    Integer.toString(filters.getMaxAmount()));
+        }
+
+        if (filters.isModeFilterApplied()) {
+            query = query + String.format(" AND %s = ?", COLUMN_TRANSACTION_TYPE);
+            selectionArgsList.add(filters.getMode().toString());
+        }
+
+        if (filters.isSymbolFilterApplied()) {
+            query =
+                    query
+                            + String.format(" AND %s IN ", COLUMN_SYMBOL)
+                            + filters.getSymbolsAsQueryString();
+        }
+
+        return queryTransactions(
+                query, selectionArgsList.toArray(new String[selectionArgsList.size()]));
+    }
+
+    public ArrayList<String> getSymbols(String username) {
+        String query =
+                String.format(
+                        "SELECT %s FROM %s WHERE %s = ?",
+                        COLUMN_SYMBOL, TRANSACTION_TABLE, COLUMN_USERNAME);
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(query, new String[] {username});
+        ArrayList<String> symbols = new ArrayList<>();
+
+        if (cursor.moveToFirst()) {
+            do {
+                String symbol = cursor.getString(cursor.getColumnIndex(COLUMN_SYMBOL));
+                symbols.add(symbol);
+            } while (cursor.moveToNext());
+        }
+
+        return symbols;
     }
 
     private ArrayList<Transaction> queryTransactions(String query, String[] selectionArgs) {
