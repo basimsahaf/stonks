@@ -4,18 +4,24 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
+
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.stonks.android.adapter.StockChartAdapter;
 import com.stonks.android.adapter.StockListRecyclerViewAdapter;
+import com.stonks.android.manager.PortfolioManager;
 import com.stonks.android.model.StockListItem;
 import com.stonks.android.uicomponent.CustomSparkView;
+import com.stonks.android.utility.Formatters;
+
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 public class HomePageFragment extends BaseFragment {
+    private PortfolioManager portfolioManager;
     private int currentInfoHeaderHeight = -1;
 
     @Override
@@ -26,6 +32,8 @@ public class HomePageFragment extends BaseFragment {
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
+        portfolioManager = PortfolioManager.getInstance(this.getContext());
+
         RecyclerView.LayoutManager portfolioListManager =
                 new LinearLayoutManager(this.getContext());
         RecyclerView portfolioList = view.findViewById(R.id.portfolio_list);
@@ -64,6 +72,16 @@ public class HomePageFragment extends BaseFragment {
         dataAdapter.setBaseline(121.08f);
 
         sparkView.setAdapter(dataAdapter);
+
+        populateAccountInfo(view);
+    }
+
+    private void populateAccountInfo(View view) {
+        TextView currentValue = view.findViewById(R.id.current_value_price);
+        TextView moneyLeft = view.findViewById(R.id.money_left);
+
+        currentValue.setText(Formatters.formatPrice(portfolioManager.getAccountValue()));
+        moneyLeft.setText(Formatters.formatPrice(portfolioManager.getAccountBalance()));
     }
 
     public static ArrayList<StockListItem> getMockItems() {

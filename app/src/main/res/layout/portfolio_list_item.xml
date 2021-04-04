@@ -25,16 +25,6 @@
             app:layout_constraintLeft_toLeftOf="parent"/>
 
         <TextView
-            android:id="@+id/company_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/company_name_placeholder"
-            style="@style/AppTheme.TextAppearance.MediumLabel"
-            app:layout_constraintTop_toBottomOf="@id/stock_symbol"
-            app:layout_constraintLeft_toLeftOf="parent"
-            />
-
-        <TextView
             android:id="@+id/current_price"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

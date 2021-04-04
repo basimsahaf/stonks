@@ -2,7 +2,6 @@ package com.stonks.android.model;
 
 public class StockListItem {
     private String stockSymbol;
-    private String companyName;
     private float price;
     private int quantity;
     private float priceChange;
@@ -16,7 +15,6 @@ public class StockListItem {
             float priceChange,
             float changePercent) {
         this.stockSymbol = stockSymbol;
-        this.companyName = companyName;
         this.price = price;
         this.quantity = quantity;
         this.priceChange = priceChange;
@@ -25,10 +23,6 @@ public class StockListItem {
 
     public String getStockSymbol() {
         return stockSymbol;
-    }
-
-    public String getCompanyName() {
-        return companyName;
     }
 
     public float getPrice() {
