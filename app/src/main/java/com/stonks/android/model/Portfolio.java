@@ -28,5 +28,4 @@ public class Portfolio {
     public ArrayList<PortfolioItem> getPortfolioItems() {
         return portfolioItems;
     }
-
 }
