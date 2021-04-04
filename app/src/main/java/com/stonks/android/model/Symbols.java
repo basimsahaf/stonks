@@ -3,9 +3,11 @@ package com.stonks.android.model;
 import java.util.List;
 
 public class Symbols {
-    private final List<String> symbols;
+    private List<String> symbols;
 
-    public Symbols(List<String> symbols) {
+    public Symbols() {}
+
+    public void setSymbols(List<String> symbols) {
         this.symbols = symbols;
     }
 
