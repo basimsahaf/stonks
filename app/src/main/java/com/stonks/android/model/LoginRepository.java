@@ -53,6 +53,16 @@ public class LoginRepository {
     }
 
     public boolean isBiometricsEnabled() {
-        dataSource.
+        Result<LoggedInUser> biometricsUser = dataSource.getBiometricsUser();
+
+        if (biometricsUser instanceof Result.Success) {
+            setLoggedInUser(((Result.Success<LoggedInUser>) biometricsUser).getData());
+            return true;
+        }
+        return false;
+    }
+
+    public LoggedInUser getCurrentUser() {
+        return this.user;
     }
 }

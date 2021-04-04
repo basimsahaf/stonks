@@ -21,10 +21,11 @@ import androidx.appcompat.app.AppCompatDelegate;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputLayout;
 import com.stonks.android.model.AuthMode;
-import com.stonks.android.model.LoggedInUserView;
+import com.stonks.android.model.LoggedInUser;
 import com.stonks.android.model.LoginDataSource;
 import com.stonks.android.model.LoginRepository;
 import com.stonks.android.model.LoginViewModel;
+import com.stonks.android.model.UserModel;
 import com.stonks.android.storage.UserTable;
 
 import java.util.concurrent.Executor;
@@ -47,7 +48,6 @@ public class LoginActivity extends BaseActivity {
     private boolean usernameChanged;
     private boolean passwordChanged;
     private AuthMode currentAuthMode;
-    private boolean biometricsEnabled;
     private  BiometricPrompt.PromptInfo promptInfo;
     private BiometricPrompt biometricPrompt;
 
@@ -116,12 +116,22 @@ public class LoginActivity extends BaseActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
 
         // TODO: do biometrics here
-        setupBiometrics();
-        biometricsButton.setOnClickListener(v -> biometricPrompt.authenticate(promptInfo));
 
         // toggle login mode by default
         switchView(AuthMode.LOGIN);
-    }
+
+        // debug
+        UserModel bioUser = new UserModel("biometrics", "biometrics", true);
+        userTable.addUser(bioUser);
+        biometricsButton.setOnClickListener(v -> biometricPrompt.authenticate(promptInfo));
+
+        if (repo.isBiometricsEnabled()) {
+            LoggedInUser user = repo.getCurrentUser();
+            setupBiometrics(user.getUserId());
+            biometricPrompt.authenticate(promptInfo);
+            usernameField.getEditText().setText(user.getUserId());
+        }
+     }
 
     private String getFieldText(TextInputLayout field) {
         if (field.getEditText().getText() != null) {
@@ -141,17 +151,17 @@ public class LoginActivity extends BaseActivity {
                 break;
 
             case SIGNUP:
-                loginViewModel.signup(username, password, biometricsEnabled);
+                loginViewModel.signup(username, password, false);
                 break;
         }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.P)
-    private void setupBiometrics() {
+    private void setupBiometrics(String username) {
         promptInfo = new BiometricPrompt.PromptInfo.Builder()
-                .setTitle("Title text goes here")
-                .setSubtitle("Subtitle goes here")
-                .setDescription("This is the description")
+                .setTitle("Sign in to Stonks")
+                .setSubtitle(String.format("Welcome %s", username))
+                .setDescription("Sign in via biometrics")
                 .setNegativeButtonText("Cancel")
                 .build();
 

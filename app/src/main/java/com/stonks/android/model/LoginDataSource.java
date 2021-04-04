@@ -61,5 +61,11 @@ public class LoginDataSource {
         // TODO: revoke authentication
     }
 
-    public boolean
+    public Result<LoggedInUser> getBiometricsUser() {
+        try {
+            return userTable.getBiometricsUser();
+        } catch (Exception e) {
+            return new Result.Error(R.string.internal_server_error);
+        }
+    }
 }
