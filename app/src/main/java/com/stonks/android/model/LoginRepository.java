@@ -1,7 +1,6 @@
 package com.stonks.android.model;
 
 import android.content.Context;
-
 import com.stonks.android.storage.UserTable;
 
 /**
