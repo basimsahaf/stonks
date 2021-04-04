@@ -30,6 +30,7 @@ import com.stonks.android.databinding.FragmentStockBinding;
 import com.stonks.android.external.MarketDataService;
 import com.stonks.android.model.*;
 import com.stonks.android.model.alpaca.AlpacaTimeframe;
+import com.stonks.android.model.alpaca.DateRange;
 import com.stonks.android.uicomponent.CustomSparkView;
 import com.stonks.android.uicomponent.SpeedDialExtendedFab;
 import com.stonks.android.utility.Constants;
@@ -65,8 +66,8 @@ public class StockFragment extends BaseFragment {
     private final StockData stockData = new StockData();
     private DateRange currentDateRange;
 
-    final Symbols symbols = new Symbols();
-    final MarketDataService marketDataService = new MarketDataService();
+    private Symbols symbols;
+    private final MarketDataService marketDataService = new MarketDataService();
 
     @Nullable
     @Override
@@ -98,6 +99,7 @@ public class StockFragment extends BaseFragment {
         super.onViewCreated(view, savedInstanceState);
 
         this.symbol = getArguments().getString(getString(R.string.intent_extra_symbol));
+        symbols = new Symbols(Collections.singletonList(symbol));
 
         getMainActivity().subscribe(symbol, stockData);
         getActionBar().setDisplayHomeAsUpEnabled(true);
@@ -255,8 +257,6 @@ public class StockFragment extends BaseFragment {
     }
 
     private void fetchInitialData() {
-        this.symbols.setSymbols(Collections.singletonList(symbol));
-
         AlpacaTimeframe timeframe;
         int limit;
 
