@@ -92,7 +92,8 @@ public class UserTable extends SQLiteOpenHelper {
 
     public Result<LoggedInUser> getBiometricsUser() {
         SQLiteDatabase db = this.getReadableDatabase();
-        String query = String.format("SELECT * FROM %s WHERE %s = 1", USER_TABLE, COLUMN_BIOMETRICS);
+        String query =
+                String.format("SELECT * FROM %s WHERE %s = 1", USER_TABLE, COLUMN_BIOMETRICS);
         Cursor cursor = db.rawQuery(query, null);
         LoggedInUser loggedInUser;
         if (cursor.moveToFirst()) {
