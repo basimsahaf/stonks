@@ -9,6 +9,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.res.ResourcesCompat;
+
+import com.google.android.material.checkbox.MaterialCheckBox;
 import com.google.android.material.textfield.TextInputEditText;
 import com.stonks.android.manager.SettingsManager;
 import com.stonks.android.model.LoggedInUser;
@@ -31,6 +33,7 @@ public class SettingsFragment extends BaseFragment {
     private TextInputEditText oldPassword;
     private TextInputEditText newPassword;
     private TextView currentUsername;
+    private MaterialCheckBox biometricsCheckBox;
 
     @Override
     public View onCreateView(
@@ -61,8 +64,11 @@ public class SettingsFragment extends BaseFragment {
         currentUsername = view.findViewById(R.id.current_username);
         oldPassword = view.findViewById(R.id.old_password_text);
         newPassword = view.findViewById(R.id.new_password_text);
+        biometricsCheckBox = view.findViewById(R.id.biometrics_checkbox);
+
         usernameField.setText(settingsManager.getCurrentUsername());
         currentUsername.setText(settingsManager.getCurrentUsername());
+
 
         usernameSetting.setOnClickListener(
                 v -> {
@@ -122,7 +128,7 @@ public class SettingsFragment extends BaseFragment {
                 break;
 
             case BIOMETRICS:
-                //                status = toggleBiometrics();
+                status = toggleBiometrics();
                 break;
 
             case TRAINING_PERIOD:
@@ -173,9 +179,10 @@ public class SettingsFragment extends BaseFragment {
         return status;
     }
 
-    //    private boolean toggleBiometrics() {
-    //    }
-    //
+    private boolean toggleBiometrics() {
+
+    }
+
     //    private boolean changeTrainingPeriod() {
     //    }
 }
