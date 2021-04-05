@@ -176,6 +176,11 @@ public class LoginActivity extends BaseActivity {
                             public void onAuthenticationSucceeded(
                                     @NonNull BiometricPrompt.AuthenticationResult result) {
                                 super.onAuthenticationSucceeded(result);
+                                Toast.makeText(
+                                                getApplicationContext(),
+                                                R.string.welcome,
+                                                Toast.LENGTH_LONG)
+                                        .show();
                                 showLoginSucceeded();
                                 Log.d(TAG, "Fingerprint recognised successfully");
                             }
@@ -219,7 +224,6 @@ public class LoginActivity extends BaseActivity {
     }
 
     private void showLoginSucceeded() {
-        String welcome = getString(R.string.welcome);
         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
@@ -279,6 +283,11 @@ public class LoginActivity extends BaseActivity {
                                 showLoginFailed(loginResult.getError());
                             }
                             if (loginResult.getSuccess() != null) {
+                                Toast.makeText(
+                                                getApplicationContext(),
+                                                R.string.welcome,
+                                                Toast.LENGTH_LONG)
+                                        .show();
                                 showLoginSucceeded();
                             }
                             setResult(Activity.RESULT_OK);
