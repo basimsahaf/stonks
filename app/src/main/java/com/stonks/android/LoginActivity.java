@@ -98,15 +98,11 @@ public class LoginActivity extends BaseActivity {
         // toggle login mode by default
         switchView(AuthMode.LOGIN);
 
-        // debug
-        //        UserModel bioUser = new UserModel("biometrics", "biometrics", true);
-        //        userTable.addUser(bioUser);
-
         if (repo.isBiometricsEnabled()) {
-            biometricsButton.setEnabled(true);
+            biometricsButton.setVisibility(View.VISIBLE);
             authorizeViaBiometrics();
         } else {
-            biometricsButton.setEnabled(false);
+            biometricsButton.setVisibility(View.GONE);
         }
     }
 
