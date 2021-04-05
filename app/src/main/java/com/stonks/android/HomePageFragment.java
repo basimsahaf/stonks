@@ -10,6 +10,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.stonks.android.adapter.StockChartAdapter;
 import com.stonks.android.adapter.StockListRecyclerViewAdapter;
 import com.stonks.android.manager.PortfolioManager;
@@ -21,10 +22,11 @@ import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 public class HomePageFragment extends BaseFragment {
-    private static PortfolioManager portfolioManager;
     private int currentInfoHeaderHeight = -1;
+    private TextView accountValue;
+    private TextView totalReturn;
+    private static PortfolioManager portfolioManager;
     private static RecyclerView.Adapter portfolioListAdapter;
-    private static TextView accountValue;
 
     @Override
     public View onCreateView(
@@ -37,6 +39,7 @@ public class HomePageFragment extends BaseFragment {
         portfolioManager = PortfolioManager.getInstance(this.getContext(), this);
 
         accountValue = view.findViewById(R.id.current_value_price);
+        totalReturn = view.findViewById(R.id.total_return);
 
         RecyclerView.LayoutManager portfolioListManager =
                 new LinearLayoutManager(this.getContext());
@@ -101,8 +104,10 @@ public class HomePageFragment extends BaseFragment {
     }
 
     public void updateData() {
+        ((StockListRecyclerViewAdapter) portfolioListAdapter).setNewStocks(portfolioManager.getStocks());
         portfolioListAdapter.notifyDataSetChanged();
         accountValue.setText(Formatters.formatPrice(portfolioManager.getAccountValue()));
+        totalReturn.setText(Formatters.formatPrice(portfolioManager.calculateProfit()) + " since Mar 2019"); // TODO: get training period start form user table
         getMainActivity().setPortfolioValue(portfolioManager.getAccountValue());
     }
 }

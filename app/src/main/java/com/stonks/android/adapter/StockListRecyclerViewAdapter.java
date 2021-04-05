@@ -10,22 +10,25 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.stonks.android.R;
 import com.stonks.android.StockFragment;
 import com.stonks.android.model.StockListItem;
 import com.stonks.android.utility.Formatters;
+
 import java.util.ArrayList;
 import java.util.Locale;
 
 public class StockListRecyclerViewAdapter
         extends RecyclerView.Adapter<StockListRecyclerViewAdapter.ViewHolder> {
     private final FragmentActivity parentActivity;
-    private final ArrayList<StockListItem> portfolioItems;
+    private ArrayList<StockListItem> portfolioItems;
     private final boolean isSavedStocksList;
 
     public StockListRecyclerViewAdapter(
@@ -89,6 +92,10 @@ public class StockListRecyclerViewAdapter
         }
 
         return 0;
+    }
+
+    public void setNewStocks(ArrayList<StockListItem> newStocks) {
+        this.portfolioItems = newStocks;
     }
 
     SpannableString generateChangeString(float change, float changePercentage) {
