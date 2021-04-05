@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 public class HomePageFragment extends BaseFragment {
     private PortfolioManager portfolioManager;
     private int currentInfoHeaderHeight = -1;
+    static RecyclerView.Adapter portfolioListAdapter;
 
     @Override
     public View onCreateView(
@@ -38,7 +39,7 @@ public class HomePageFragment extends BaseFragment {
                 new LinearLayoutManager(this.getContext());
         RecyclerView portfolioList = view.findViewById(R.id.portfolio_list);
         portfolioList.setLayoutManager(portfolioListManager);
-        RecyclerView.Adapter portfolioListAdapter =
+        portfolioListAdapter =
                 new StockListRecyclerViewAdapter(this.getActivity(), portfolioManager.getStocks(), false);
         portfolioList.setAdapter(portfolioListAdapter);
 
@@ -94,5 +95,9 @@ public class HomePageFragment extends BaseFragment {
         list.add(new StockListItem("SPY", 30.81f, 22, 1.11f, 3.33f));
 
         return list;
+    }
+
+    public static void updateData() {
+        portfolioListAdapter.notifyDataSetChanged();
     }
 }
