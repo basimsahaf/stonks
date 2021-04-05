@@ -2,28 +2,35 @@ package com.stonks.android;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.biometric.BiometricPrompt;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputLayout;
 import com.stonks.android.model.AuthMode;
-import com.stonks.android.model.LoggedInUserView;
 import com.stonks.android.model.LoginRepository;
 import com.stonks.android.model.LoginViewModel;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 public class LoginActivity extends BaseActivity {
 
     private final String TAG = this.getClass().getSimpleName();
 
     private Button loginButton;
+    private Button biometricsButton;
     private TextInputLayout usernameField;
     private TextInputLayout passwordField;
     private TextView usernameErrorMessage;
@@ -35,8 +42,11 @@ public class LoginActivity extends BaseActivity {
     private boolean usernameChanged;
     private boolean passwordChanged;
     private AuthMode currentAuthMode;
-    private boolean biometricsEnabled;
+    private BiometricPrompt.PromptInfo promptInfo;
+    private BiometricPrompt biometricPrompt;
+    private LoginRepository repo;
 
+    @RequiresApi(api = Build.VERSION_CODES.P)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,18 +62,11 @@ public class LoginActivity extends BaseActivity {
         usernameField = findViewById(R.id.username_field);
         passwordField = findViewById(R.id.password_field);
         loginButton = findViewById(R.id.login_button);
+        biometricsButton = findViewById(R.id.biometrics_button);
         usernameErrorMessage = findViewById(R.id.username_error_message);
         passwordErrorMessage = findViewById(R.id.password_error_message);
 
-        loginModeButton.setOnClickListener(
-                myView -> {
-                    switchView(AuthMode.LOGIN);
-                });
-        signUpModeButton.setOnClickListener(
-                myView -> {
-                    switchView(AuthMode.SIGNUP);
-                });
-
+        setButtonListeners();
         setTextWatcher(usernameField);
         setTextWatcher(passwordField);
         // TODO: enable this later
@@ -75,7 +78,8 @@ public class LoginActivity extends BaseActivity {
                 .setOnEditorActionListener(
                         (v, actionId, event) -> {
                             if (actionId == EditorInfo.IME_ACTION_DONE) {
-                                authorize();
+                                //                                authorizeViaForm();
+                                authorizeTestLogin();
                             }
                             return false;
                         });
@@ -83,10 +87,10 @@ public class LoginActivity extends BaseActivity {
         loginButton.setOnClickListener(
                 view -> {
                     // TODO: use this after testing is done
-                    authorize();
+//                    authorize();
 
                     // this is just for testing purposes
-                    //                    authorizeTestLogin();
+                    authorizeTestLogin();
 
                     usernameChanged = false;
                     passwordChanged = false;
@@ -104,20 +108,31 @@ public class LoginActivity extends BaseActivity {
         // disable the back button on the login page
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
 
-        // TODO: do biometrics here
-
         // toggle login mode by default
         switchView(AuthMode.LOGIN);
-    }
 
-    private String getFieldText(TextInputLayout field) {
-        if (field.getEditText().getText() != null) {
-            return field.getEditText().getText().toString();
+        if (repo.isBiometricsEnabled()) {
+            biometricsButton.setVisibility(View.VISIBLE);
+            authorizeViaBiometrics();
+        } else {
+            biometricsButton.setVisibility(View.GONE);
         }
-        return "";
     }
 
-    private void authorize() {
+    private void switchView(AuthMode login) {
+        authErrorMessage.setVisibility(View.GONE);
+        if (login == AuthMode.LOGIN) {
+            currentAuthMode = AuthMode.LOGIN;
+            loginModeButton.setChecked(true);
+            loginButton.setText(getString(R.string.login));
+        } else {
+            currentAuthMode = AuthMode.SIGNUP;
+            signUpModeButton.setChecked(true);
+            loginButton.setText(getString(R.string.create_account));
+        }
+    }
+
+    private void authorizeViaForm() {
         String username = getFieldText(usernameField);
         String password = getFieldText(passwordField);
         authErrorMessage.setVisibility(View.GONE);
@@ -130,12 +145,64 @@ public class LoginActivity extends BaseActivity {
                     break;
 
                 case SIGNUP:
-                    loginViewModel.signup(username, password, biometricsEnabled);
+                    loginViewModel.signup(username, password, false);
                     break;
             }
         } else {
             showLoginFailed(R.string.login_incomplete);
         }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.P)
+    private void authorizeViaBiometrics() {
+        String currentUser = repo.getCurrentUser();
+        setupBiometrics(currentUser);
+        biometricPrompt.authenticate(promptInfo);
+        usernameField.getEditText().setText(currentUser);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.P)
+    private void setupBiometrics(String username) {
+        promptInfo =
+                new BiometricPrompt.PromptInfo.Builder()
+                        .setTitle(String.format("Welcome %s", username))
+                        .setSubtitle("Sign in to Stonks")
+                        .setDescription("Sign in via biometrics")
+                        .setNegativeButtonText("Cancel")
+                        .build();
+
+        Executor executor = Executors.newSingleThreadExecutor();
+        biometricPrompt =
+                new BiometricPrompt(
+                        LoginActivity.this,
+                        executor,
+                        new BiometricPrompt.AuthenticationCallback() {
+                            @Override
+                            public void onAuthenticationError(
+                                    int errorCode, @NonNull CharSequence errString) {
+                                super.onAuthenticationError(errorCode, errString);
+                                Log.d(TAG, "An unrecoverable error occurred");
+                            }
+
+                            @Override
+                            public void onAuthenticationSucceeded(
+                                    @NonNull BiometricPrompt.AuthenticationResult result) {
+                                super.onAuthenticationSucceeded(result);
+                                Toast.makeText(
+                                                getApplicationContext(),
+                                                R.string.welcome,
+                                                Toast.LENGTH_LONG)
+                                        .show();
+                                showLoginSucceeded();
+                                Log.d(TAG, "Fingerprint recognised successfully");
+                            }
+
+                            @Override
+                            public void onAuthenticationFailed() {
+                                super.onAuthenticationFailed();
+                                Log.d(TAG, "Fingerprint not recognised");
+                            }
+                        });
     }
 
     private void setTextWatcher(TextInputLayout field) {
@@ -168,9 +235,7 @@ public class LoginActivity extends BaseActivity {
         field.getEditText().addTextChangedListener(textWatcher);
     }
 
-    private void showLoginSucceeded(LoggedInUserView model) {
-        String welcome = getString(R.string.welcome);
-        Toast.makeText(getApplicationContext(), welcome, Toast.LENGTH_LONG).show();
+    private void showLoginSucceeded() {
         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
@@ -230,10 +295,44 @@ public class LoginActivity extends BaseActivity {
                                 showLoginFailed(loginResult.getError());
                             }
                             if (loginResult.getSuccess() != null) {
-                                showLoginSucceeded(loginResult.getSuccess());
+                                Toast.makeText(
+                                                getApplicationContext(),
+                                                R.string.welcome,
+                                                Toast.LENGTH_LONG)
+                                        .show();
+                                showLoginSucceeded();
                             }
                             setResult(Activity.RESULT_OK);
                         });
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.P)
+    private void setButtonListeners() {
+        loginModeButton.setOnClickListener(
+                myView -> {
+                    switchView(AuthMode.LOGIN);
+                });
+        signUpModeButton.setOnClickListener(
+                myView -> {
+                    switchView(AuthMode.SIGNUP);
+                });
+
+        loginButton.setOnClickListener(
+                view -> {
+                    //                    authorizeViaForm();
+                    authorizeTestLogin();
+                    usernameChanged = false;
+                    passwordChanged = false;
+                });
+
+        biometricsButton.setOnClickListener(v -> authorizeViaBiometrics());
+    }
+
+    private String getFieldText(TextInputLayout field) {
+        if (field.getEditText().getText() != null) {
+            return field.getEditText().getText().toString();
+        }
+        return "";
     }
 
     private boolean setFieldState(boolean fieldChanged, TextView errorView, Integer error) {
@@ -245,19 +344,6 @@ public class LoginActivity extends BaseActivity {
         } else {
             errorView.setVisibility(View.GONE);
             return true;
-        }
-    }
-
-    private void switchView(AuthMode login) {
-        authErrorMessage.setVisibility(View.GONE);
-        if (login == AuthMode.LOGIN) {
-            currentAuthMode = AuthMode.LOGIN;
-            loginModeButton.setChecked(true);
-            loginButton.setText(getString(R.string.login));
-        } else {
-            currentAuthMode = AuthMode.SIGNUP;
-            signUpModeButton.setChecked(true);
-            loginButton.setText(getString(R.string.create_account));
         }
     }
 

@@ -72,4 +72,12 @@ public class LoginDataSource {
     public Result<LoggedInUser> changePassword(String username, String newPassword) {
         return userTable.changePassword(username, newPassword);
     }
+
+    public Result<LoggedInUser> getBiometricsUser() {
+        try {
+            return userTable.getBiometricsUser();
+        } catch (Exception e) {
+            return new Result.Error(R.string.internal_server_error);
+        }
+    }
 }

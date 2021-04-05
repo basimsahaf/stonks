@@ -110,12 +110,14 @@
     <string name="internal_server_error">Internal Server Error</string>
     <string name="user_exists">User already exists</string>
     <string name="try_again">Please try again!</string>
+    <string name="no_biometrics">Biometrics not set up</string>
     <string name="login_incomplete">Please enter both username and password</string>
     <string name="sign_up_button_label">Sign up</string>
     <string name="sign_in_button_label">Sign in</string>
     <string name="login">Login</string>
     <string name="create_account">Create account</string>
     <string name="login_incorrect_error">Invalid username/password</string>
+    <string name="login_biometrics">Login via Biometrics</string>
 
     <!-- Hypothetical Page Strings -->
     <string name="price_on_label">Price on</string>
