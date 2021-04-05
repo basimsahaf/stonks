@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
-import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,14 +21,15 @@ import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import com.github.mikephil.charting.data.CandleEntry;
 import com.github.mikephil.charting.data.Entry;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.stonks.android.adapter.TransactionViewAdapter;
 import com.stonks.android.databinding.FragmentStockBinding;
 import com.stonks.android.external.MarketDataService;
+import com.stonks.android.manager.StockManager;
 import com.stonks.android.model.*;
-import com.stonks.android.model.alpaca.AlpacaTimeframe;
 import com.stonks.android.model.alpaca.DateRange;
 import com.stonks.android.uicomponent.CandleChart;
 import com.stonks.android.uicomponent.ChartMarker;
@@ -37,14 +37,9 @@ import com.stonks.android.uicomponent.SpeedDialExtendedFab;
 import com.stonks.android.uicomponent.StockChart;
 import com.stonks.android.utility.Constants;
 import com.stonks.android.utility.Formatters;
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
-import io.reactivex.rxjava3.core.Observable;
-import io.reactivex.rxjava3.schedulers.Schedulers;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 
 public class StockFragment extends BaseFragment {
     private static String TAG = StockFragment.class.getCanonicalName();
@@ -67,11 +62,12 @@ public class StockFragment extends BaseFragment {
     private CandleChart candleChart;
 
     private boolean favourited = false;
-    private final StockData stockData = new StockData();
     private DateRange currentDateRange;
 
     private Symbols symbols;
     private final MarketDataService marketDataService = new MarketDataService();
+    private StockManager manager;
+    private boolean isCandleVisible = true;
 
     @Nullable
     @Override
@@ -82,30 +78,60 @@ public class StockFragment extends BaseFragment {
         FragmentStockBinding binding =
                 DataBindingUtil.inflate(inflater, R.layout.fragment_stock, container, false);
 
-        // update properties like change string and change indicator
-        stockData.addOnPropertyChangedCallback(
-                new androidx.databinding.Observable.OnPropertyChangedCallback() {
-                    @Override
-                    public void onPropertyChanged(
-                            androidx.databinding.Observable observable, int i) {
-                        priceChange.setText(generateChangeString(stockData.getCurrentPrice()));
-                        changeIndicator.setImageDrawable(getIndicatorDrawable());
-                    }
-                });
+        this.symbol = getArguments().getString(getString(R.string.intent_extra_symbol));
+        this.symbols = new Symbols(Collections.singletonList(symbol));
 
-        binding.setStock(stockData);
+        this.manager = new StockManager(this.symbol);
+        // update properties like change string and change indicator
+        this.manager
+                .getStockData()
+                .addOnPropertyChangedCallback(
+                        new androidx.databinding.Observable.OnPropertyChangedCallback() {
+                            @Override
+                            public void onPropertyChanged(
+                                    androidx.databinding.Observable observable, int i) {
+                                priceChange.setText(
+                                        generateChangeString(
+                                                manager.getStockData().getCurrentPrice()));
+                                changeIndicator.setImageDrawable(getIndicatorDrawable());
+
+                                List<CandleEntry> newCandleData = manager.getCandleStickData();
+                                List<Entry> newLineData = manager.getLineData();
+
+                                if (newCandleData != null && newCandleData.size() > 0) {
+                                    candleChart.setData(newCandleData);
+                                    candleChart.setVisibleXRangeMinimum(
+                                            manager.getMaxCandlePoints(newCandleData.size()));
+                                    candleChart.invalidate();
+                                }
+
+                                if (newLineData != null && newLineData.size() > 0) {
+                                    stockChart.setData(newLineData);
+                                    stockChart.setVisibleXRangeMinimum(
+                                            manager.getMaxLinePoints(newLineData.size()));
+                                    stockChart.invalidate();
+                                }
+                            }
+                        });
+
+        binding.setStock(this.manager.getStockData());
 
         return binding.getRoot();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        // unsubscribe from WebSocket updates when the fragment is paused
+        getMainActivity().unsubscribe(this.symbol);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        this.symbol = getArguments().getString(getString(R.string.intent_extra_symbol));
-        symbols = new Symbols(Collections.singletonList(symbol));
-
-        getMainActivity().subscribe(symbol, stockData);
+        getMainActivity().subscribe(symbol, this.manager.getStockData());
         getActionBar().setDisplayHomeAsUpEnabled(true);
         getMainActivity().setGlobalTitle(this.symbol);
 
@@ -116,6 +142,7 @@ public class StockFragment extends BaseFragment {
         final FloatingActionButton tryButton = view.findViewById(R.id.try_button);
         final FloatingActionButton buyButton = view.findViewById(R.id.buy_button);
         final FloatingActionButton sellButton = view.findViewById(R.id.sell_button);
+        final ImageView chartToggleButton = view.findViewById(R.id.chart_toggle);
 
         this.favIcon = view.findViewById(R.id.fav_icon);
         this.overlay = view.findViewById(R.id.screen_overlay);
@@ -152,7 +179,8 @@ public class StockFragment extends BaseFragment {
                 new StockChart.CustomGestureListener(this.candleChart, this.scrollView);
         lineChartGestureListener.setOnGestureEnded(
                 () -> {
-                    this.currentPrice.setText(Formatters.formatPrice(stockData.getCurrentPrice()));
+                    this.currentPrice.setText(
+                            Formatters.formatPrice(this.manager.getStockData().getCurrentPrice()));
                     this.priceChange.setText(this.generateChangeString());
                     this.changeIndicator.setImageDrawable(getIndicatorDrawable());
                 });
@@ -169,7 +197,7 @@ public class StockFragment extends BaseFragment {
 
         this.candleChart.setOnChartGestureListener(candleChartGestureListener);
         this.candleChart.setMarker(marker);
-        this.candleChart.setData(Collections.emptyList());
+        this.candleChart.setData(Collections.singletonList(new CandleEntry(1, 4f, 2f, 3f, 2.5f)));
 
         this.tradeButton.setOnClickListener(v -> tradeButton.trigger(this.overlay));
         this.overlay.setOnClickListener(v -> tradeButton.close(v));
@@ -179,7 +207,8 @@ public class StockFragment extends BaseFragment {
                     Fragment hypotheticalFragment = new HypotheticalFragment();
                     Bundle bundle = new Bundle();
                     bundle.putFloat(
-                            HypotheticalFragment.CURRENT_PRICE_ARG, stockData.getCurrentPrice());
+                            HypotheticalFragment.CURRENT_PRICE_ARG,
+                            this.manager.getStockData().getCurrentPrice());
                     hypotheticalFragment.setArguments(bundle);
                     getActivity()
                             .getSupportFragmentManager()
@@ -192,7 +221,8 @@ public class StockFragment extends BaseFragment {
         buyButton.setOnClickListener(
                 v -> {
                     Bundle bundle = new Bundle();
-                    bundle.putSerializable(BuySellFragment.STOCK_DATA_ARG, this.stockData);
+                    bundle.putSerializable(
+                            BuySellFragment.STOCK_DATA_ARG, this.manager.getStockData());
                     bundle.putSerializable(
                             BuySellFragment.TRANSACTION_MODE_ARG, TransactionMode.BUY);
                     Fragment buyFrag = new BuySellFragment();
@@ -207,7 +237,8 @@ public class StockFragment extends BaseFragment {
         sellButton.setOnClickListener(
                 v -> {
                     Bundle bundle = new Bundle();
-                    bundle.putSerializable(BuySellFragment.STOCK_DATA_ARG, this.stockData);
+                    bundle.putSerializable(
+                            BuySellFragment.STOCK_DATA_ARG, this.manager.getStockData());
                     bundle.putSerializable(
                             BuySellFragment.TRANSACTION_MODE_ARG, TransactionMode.BUY);
                     Fragment sellFrag = new BuySellFragment();
@@ -236,24 +267,31 @@ public class StockFragment extends BaseFragment {
 
         rangeDayButton.setOnClickListener(
                 v -> {
+                    this.manager.setCurrentRange(DateRange.DAY);
                     switchDateRange(DateRange.DAY);
                 });
         rangeWeekButton.setOnClickListener(
                 v -> {
                     switchDateRange(DateRange.WEEK);
+                    this.manager.setCurrentRange(DateRange.WEEK);
                 });
         rangeMonthButton.setOnClickListener(
                 v -> {
                     switchDateRange(DateRange.MONTH);
+                    this.manager.setCurrentRange(DateRange.MONTH);
                 });
         rangeYearButton.setOnClickListener(
                 v -> {
                     switchDateRange(DateRange.YEAR);
+                    this.manager.setCurrentRange(DateRange.YEAR);
                 });
         rangeAllButton.setOnClickListener(
                 v -> {
                     switchDateRange(DateRange.THREE_YEARS);
+                    this.manager.setCurrentRange(DateRange.THREE_YEARS);
                 });
+
+        chartToggleButton.setOnClickListener(v -> this.toggleCandleVisible());
 
         // default date range is daily
         this.rangeDayButton.setChecked(true);
@@ -262,89 +300,20 @@ public class StockFragment extends BaseFragment {
         if (!this.doesUserPositionExist()) {
             positionContainer.setVisibility(View.GONE);
         }
-        this.fetchInitialData();
+
+        this.manager.fetchInitialData();
     }
 
-    private void fetchInitialData() {
-        AlpacaTimeframe timeframe;
-        int limit;
-
-        switch (this.currentDateRange) {
-            case DAY:
-                limit = 390; // 390 trading hours in a day
-                timeframe = AlpacaTimeframe.MINUTE;
-                break;
-            case WEEK:
-                limit = 390; // 390 * 5 days / 5 min increments
-                timeframe = AlpacaTimeframe.MINUTES_5;
-                break;
-            case MONTH:
-                limit = 806; // 390 * 31 days / 15 min increments
-                timeframe = AlpacaTimeframe.MINUTES_15;
-                break;
-            case YEAR:
-                limit = 366;
-                timeframe = AlpacaTimeframe.DAY;
-                break;
-            case THREE_YEARS:
-                limit = 1000;
-                timeframe = AlpacaTimeframe.DAY;
-                break;
-            default:
-                limit = 100;
-                timeframe = AlpacaTimeframe.MINUTE;
-                break;
+    private void toggleCandleVisible() {
+        if (this.isCandleVisible) {
+            this.stockChart.setVisibility(View.VISIBLE);
+            this.candleChart.setVisibility(View.GONE);
+        } else {
+            this.stockChart.setVisibility(View.GONE);
+            this.candleChart.setVisibility(View.VISIBLE);
         }
 
-        Observable.zip(
-                        marketDataService.getBars(symbols, timeframe, limit),
-                        marketDataService.getQuotes(symbols),
-                        (bars, quotes) -> {
-                            List<BarData> barData = bars.get(symbol);
-                            QuoteData quoteData = quotes.get(symbol);
-
-                            return new StockData(barData, quoteData);
-                        })
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io())
-                .subscribe(
-                        newStockData -> {
-                            List<BarData> barData = newStockData.getGraphData();
-                            this.stockData.updateStock(newStockData);
-
-                            AtomicInteger i = new AtomicInteger();
-                            List<Entry> dataSet =
-                                    barData.stream()
-                                            .map(
-                                                    bar ->
-                                                            new Entry(
-                                                                    i.getAndIncrement(),
-                                                                    bar.getClose()))
-                                            .collect(Collectors.toList());
-
-                            this.stockChart.setData(dataSet);
-                            this.stockChart.setLimitLine(barData.get(0).getOpen());
-                            this.stockChart.invalidate();
-
-                            List<BarData> clubbedBars = new ArrayList<>();
-                            for (int x = 0; x < barData.size(); x += 5) {
-                                BarData newBar =
-                                        clubBars(
-                                                barData.subList(
-                                                        x, Math.min(x + 4, barData.size() - 1)));
-
-                                clubbedBars.add(newBar);
-                            }
-
-                            i.set(1);
-                            this.candleChart.setData(
-                                    clubbedBars.stream()
-                                            .map(bar -> bar.toCandleEntry(i.getAndIncrement()))
-                                            .collect(Collectors.toList()));
-                            this.stockChart.setLimitLine(clubbedBars.get(0).getOpen());
-                            this.candleChart.invalidate();
-                        },
-                        err -> Log.e(TAG, err.toString()));
+        this.isCandleVisible = !this.isCandleVisible;
     }
 
     private void switchDateRange(DateRange dateRange) {
@@ -369,22 +338,6 @@ public class StockFragment extends BaseFragment {
                 this.currentDateRange = DateRange.DAY;
                 this.rangeDayButton.setChecked(true);
         }
-        this.fetchInitialData();
-    }
-
-    private BarData clubBars(List<BarData> bars) {
-        BarData barData = new BarData(-1, -1, -1, -1, -1);
-
-        barData.setHigh(
-                bars.stream().map(BarData::getHigh).max(Comparator.naturalOrder()).orElse(0f));
-        barData.setLow(
-                bars.stream().map(BarData::getLow).min(Comparator.naturalOrder()).orElse(0f));
-        barData.setOpen(bars.get(0).getOpen());
-        barData.setTimestamp(bars.get(0).getTimestamp());
-        barData.setClose(bars.get(bars.size() - 1).getClose());
-        barData.setEndTimestamp(bars.get(bars.size() - 1).getTimestamp());
-
-        return barData;
     }
 
     public static ArrayList<Pair<Integer, Float>> getFakeStockPrices() {
@@ -399,12 +352,12 @@ public class StockFragment extends BaseFragment {
     }
 
     SpannableString generateChangeString() {
-        return this.generateChangeString(this.stockData.getCurrentPrice());
+        return this.generateChangeString(this.manager.getStockData().getCurrentPrice());
     }
 
     SpannableString generateChangeString(Float price) {
-        float change = price - this.stockData.getOpen();
-        float changePercentage = change * 100 / this.stockData.getOpen();
+        float change = price - this.manager.getStockData().getOpen();
+        float changePercentage = change * 100 / this.manager.getStockData().getOpen();
 
         String formattedPrice = Formatters.formatPrice(Math.abs(change));
         String changeString =
@@ -415,7 +368,7 @@ public class StockFragment extends BaseFragment {
         int color = change >= 0 ? R.color.green : R.color.red;
 
         text.setSpan(
-                new ForegroundColorSpan(ContextCompat.getColor(getMainActivity(), color)),
+                new ForegroundColorSpan(ContextCompat.getColor(getContext(), color)),
                 0,
                 changeString.length(),
                 Spanned.SPAN_EXCLUSIVE_INCLUSIVE);
@@ -424,11 +377,11 @@ public class StockFragment extends BaseFragment {
     }
 
     Drawable getIndicatorDrawable() {
-        return getIndicatorDrawable(stockData.getCurrentPrice());
+        return getIndicatorDrawable(this.manager.getStockData().getCurrentPrice());
     }
 
     Drawable getIndicatorDrawable(float value) {
-        float change = value - stockData.getOpen();
+        float change = value - this.manager.getStockData().getOpen();
 
         if (change >= 0) {
             return ContextCompat.getDrawable(

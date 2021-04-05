@@ -111,4 +111,24 @@ public class BarData extends CandleEntry {
     public CandleEntry toCandleEntry(int x) {
         return new CandleEntry(x, this.high, this.low, this.open, this.close);
     }
+
+    @Override
+    public String toString() {
+        return "BarData{"
+                + "timestamp="
+                + timestamp
+                + ", open="
+                + open
+                + ", close="
+                + close
+                + ", low="
+                + low
+                + ", high="
+                + high
+                + ", volume="
+                + volume
+                + ", endTimestamp="
+                + endTimestamp
+                + '}';
+    }
 }
