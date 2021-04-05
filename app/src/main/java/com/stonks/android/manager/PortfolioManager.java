@@ -47,6 +47,7 @@ public class PortfolioManager {
 
         //String username = LoginRepository.getInstance(new LoginDataSource(userTable)).getCurrentUser();
         portfolio = new Portfolio(0.0f, 0.0f, portfolioTable.getPortfolioItems("username"));
+        fragment = f;
 
         ArrayList<String> symbolList = new ArrayList<>();
         for (PortfolioItem item : portfolio.getPortfolioItems()) {

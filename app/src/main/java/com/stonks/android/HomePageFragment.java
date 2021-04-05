@@ -23,8 +23,8 @@ import java.util.stream.Collectors;
 
 public class HomePageFragment extends BaseFragment {
     private int currentInfoHeaderHeight = -1;
-    private static TextView accountValue;
-    private static TextView totalReturn;
+    private TextView accountValue;
+    private TextView totalReturn;
     private static PortfolioManager portfolioManager;
     private static RecyclerView.Adapter portfolioListAdapter;
 
@@ -38,8 +38,8 @@ public class HomePageFragment extends BaseFragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         portfolioManager = PortfolioManager.getInstance(this.getContext(), this);
 
-        accountValue = view.findViewById(R.id.current_value_price);
-        totalReturn = view.findViewById(R.id.total_return);
+        this.accountValue = view.findViewById(R.id.current_value_price);
+        this.totalReturn = view.findViewById(R.id.total_return);
 
         RecyclerView.LayoutManager portfolioListManager =
                 new LinearLayoutManager(this.getContext());
@@ -57,7 +57,7 @@ public class HomePageFragment extends BaseFragment {
 
         getActionBar().setDisplayHomeAsUpEnabled(false);
         getMainActivity().setActionBarCustomViewAlpha(0);
-        getMainActivity().setPortfolioValue(129.32f);
+        //getMainActivity().setPortfolioValue(129.32f);
 
         scrollView.setOnScrollChangeListener(
                 (View.OnScrollChangeListener)
@@ -87,7 +87,8 @@ public class HomePageFragment extends BaseFragment {
         TextView currentValue = view.findViewById(R.id.current_value_price);
         TextView moneyLeft = view.findViewById(R.id.money_left);
 
-        //currentValue.setText(Formatters.formatPrice(portfolioManager.getAccountValue()));
+        currentValue.setText(Formatters.formatPrice(portfolioManager.getAccountValue()));
+        getMainActivity().setPortfolioValue(portfolioManager.getAccountValue());
         moneyLeft.setText(Formatters.formatPrice(portfolioManager.getAccountBalance()));
     }
 
@@ -106,8 +107,8 @@ public class HomePageFragment extends BaseFragment {
     public void updateData() {
         ((StockListRecyclerViewAdapter) portfolioListAdapter).setNewStocks(portfolioManager.getStocks());
         portfolioListAdapter.notifyDataSetChanged();
-        accountValue.setText(Formatters.formatPrice(portfolioManager.getAccountValue()));
-        totalReturn.setText(Formatters.formatPrice(portfolioManager.calculateProfit()) + " since Mar 2019"); // TODO: get training period start form user table
+        this.accountValue.setText(Formatters.formatPrice(portfolioManager.getAccountValue()));
+        this.totalReturn.setText(Formatters.formatPrice(portfolioManager.calculateProfit()) + " since Mar 2019"); // TODO: get training period start form user table
         getMainActivity().setPortfolioValue(portfolioManager.getAccountValue());
     }
 }
