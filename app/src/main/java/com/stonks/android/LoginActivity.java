@@ -78,7 +78,8 @@ public class LoginActivity extends BaseActivity {
                 .setOnEditorActionListener(
                         (v, actionId, event) -> {
                             if (actionId == EditorInfo.IME_ACTION_DONE) {
-                                authorizeViaForm();
+//                                authorizeViaForm();
+                                authorizeTestLogin();
                             }
                             return false;
                         });
@@ -297,7 +298,8 @@ public class LoginActivity extends BaseActivity {
 
         loginButton.setOnClickListener(
                 view -> {
-                    authorizeViaForm();
+//                    authorizeViaForm();
+                    authorizeTestLogin();
                     usernameChanged = false;
                     passwordChanged = false;
                 });
