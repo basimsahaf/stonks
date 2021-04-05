@@ -12,4 +12,8 @@ public class LoggedInUser {
     public String getUserId() {
         return userId;
     }
+
+    public void setUserId(String newUserId) {
+        this.userId = newUserId;
+    }
 }

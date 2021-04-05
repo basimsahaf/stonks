@@ -86,4 +86,31 @@ public class UserTable extends SQLiteOpenHelper {
         cursor.close();
         return exists;
     }
+
+    public boolean updateUsername(String oldUsername, String newUsername) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query =
+                String.format(
+                        "SELECT * FROM %s WHERE %s = '%s'",
+                        USER_TABLE, COLUMN_USERNAME, oldUsername);
+        Cursor cursor = db.rawQuery(query, null);
+        String whereClause = String.format("%s = '%s'", COLUMN_USERNAME, oldUsername);
+        long result = 0;
+
+        if (cursor.moveToFirst()) {
+            String password = cursor.getString(cursor.getColumnIndex(COLUMN_PASSWORD));
+            String biometrics = cursor.getString(cursor.getColumnIndex(COLUMN_BIOMETRICS));
+            String totalAmount = cursor.getString(cursor.getColumnIndex(COLUMN_TOTAL_AMOUNT));
+
+            ContentValues cv = new ContentValues();
+            cv.put(COLUMN_USERNAME, newUsername);
+            cv.put(COLUMN_PASSWORD, password);
+            cv.put(COLUMN_BIOMETRICS, biometrics);
+            cv.put(COLUMN_TOTAL_AMOUNT, totalAmount);
+
+            result = db.update(USER_TABLE, cv, whereClause, null);
+        }
+        cursor.close();
+        return result >= 0;
+    }
 }

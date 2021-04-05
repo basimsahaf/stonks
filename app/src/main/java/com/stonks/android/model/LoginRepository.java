@@ -59,4 +59,12 @@ public class LoginRepository {
     public String getCurrentUser() {
         return this.user.getUserId();
     }
+
+    public boolean updateUsername(String newUsername) {
+        boolean result = dataSource.updateUsername(this.user.getUserId(), newUsername);
+        if (result) {
+            this.user.setUserId(newUsername);
+        }
+        return result;
+    }
 }

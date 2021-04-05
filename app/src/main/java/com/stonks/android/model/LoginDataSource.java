@@ -60,4 +60,8 @@ public class LoginDataSource {
     public void logout() {
         // TODO: revoke authentication
     }
+
+    public boolean updateUsername(String oldUsername, String newUsername) {
+        return userTable.updateUsername(oldUsername, newUsername);
+    }
 }
