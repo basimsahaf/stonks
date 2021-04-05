@@ -15,8 +15,6 @@ import com.stonks.android.model.LoggedInUser;
 import com.stonks.android.model.Result;
 import com.stonks.android.model.SettingsMode;
 
-import java.util.Set;
-
 public class SettingsFragment extends BaseFragment {
 
     private ConstraintLayout settingsScreen,
@@ -46,7 +44,7 @@ public class SettingsFragment extends BaseFragment {
         getActionBar().setDisplayShowTitleEnabled(false);
         getMainActivity().hideActionBarCustomViews();
 
-        settingsManager =  SettingsManager.getInstance(getContext());
+        settingsManager = SettingsManager.getInstance(getContext());
 
         // default settings mode
         currentMode = SettingsMode.SETTINGS_HOME;
@@ -106,7 +104,8 @@ public class SettingsFragment extends BaseFragment {
                         // reset back to blue + save text case returning from change training period
                         submitButton.setText(getString(R.string.submit));
                         submitButton.setBackgroundColor(
-                                ResourcesCompat.getColor(getResources(), R.color.colorPrimary, null));
+                                ResourcesCompat.getColor(
+                                        getResources(), R.color.colorPrimary, null));
                     }
                 });
     }
@@ -123,11 +122,11 @@ public class SettingsFragment extends BaseFragment {
                 break;
 
             case BIOMETRICS:
-//                status = toggleBiometrics();
+                //                status = toggleBiometrics();
                 break;
 
             case TRAINING_PERIOD:
-//                status = changeTrainingPeriod();
+                //                status = changeTrainingPeriod();
                 break;
         }
         return status;
@@ -174,9 +173,9 @@ public class SettingsFragment extends BaseFragment {
         return status;
     }
 
-//    private boolean toggleBiometrics() {
-//    }
-//
-//    private boolean changeTrainingPeriod() {
-//    }
+    //    private boolean toggleBiometrics() {
+    //    }
+    //
+    //    private boolean changeTrainingPeriod() {
+    //    }
 }

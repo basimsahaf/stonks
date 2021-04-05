@@ -63,7 +63,7 @@ public class LoginRepository {
     public Result<LoggedInUser> changeUsername(String newUsername) {
         Result<LoggedInUser> result = dataSource.changeUsername(this.user.getUserId(), newUsername);
         if (result instanceof Result.Success) {
-           setLoggedInUser(((Result.Success<LoggedInUser>) result).getData());
+            setLoggedInUser(((Result.Success<LoggedInUser>) result).getData());
         }
         return result;
     }

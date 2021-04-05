@@ -119,13 +119,21 @@ public class UserTable extends SQLiteOpenHelper {
                 return new Result.Error(R.string.user_exists);
             }
         }
-        // this shouldn't happen but just in case something goes wrong, this will allow graceful exit
+        // this shouldn't happen but just in case something goes wrong, this will allow graceful
+        // exit
         return new Result.Error(R.string.internal_server_error);
     }
 
     public boolean verifyCurrentPassword(String currentUsername, String currentPassword) {
         SQLiteDatabase db = this.getReadableDatabase();
-        String query = String.format("SELECT * FROM %s WHERE %s = '%s' AND %s = '%s'", USER_TABLE, COLUMN_USERNAME, currentUsername, COLUMN_PASSWORD, currentPassword);
+        String query =
+                String.format(
+                        "SELECT * FROM %s WHERE %s = '%s' AND %s = '%s'",
+                        USER_TABLE,
+                        COLUMN_USERNAME,
+                        currentUsername,
+                        COLUMN_PASSWORD,
+                        currentPassword);
         Cursor cursor = db.rawQuery(query, null);
         boolean result = false;
         if (cursor.moveToFirst()) {
@@ -133,14 +141,13 @@ public class UserTable extends SQLiteOpenHelper {
         }
         cursor.close();
         return result;
-     }
+    }
 
     public Result<LoggedInUser> changePassword(String username, String newPassword) {
         SQLiteDatabase db = this.getWritableDatabase();
         String query =
                 String.format(
-                        "SELECT * FROM %s WHERE %s = '%s'",
-                        USER_TABLE, COLUMN_USERNAME, username);
+                        "SELECT * FROM %s WHERE %s = '%s'", USER_TABLE, COLUMN_USERNAME, username);
         Cursor cursor = db.rawQuery(query, null);
         String whereClause = String.format("%s = '%s'", COLUMN_USERNAME, username);
 
@@ -162,7 +169,8 @@ public class UserTable extends SQLiteOpenHelper {
                 return new Result.Error(R.string.password_update_error);
             }
         }
-        // this shouldn't happen but just in case something goes wrong, this will allow graceful exit
+        // this shouldn't happen but just in case something goes wrong, this will allow graceful
+        // exit
         return new Result.Error(R.string.internal_server_error);
     }
 }

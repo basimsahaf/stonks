@@ -86,7 +86,7 @@ public class LoginActivity extends BaseActivity {
                     authorize();
 
                     // this is just for testing purposes
-//                    authorizeTestLogin();
+                    //                    authorizeTestLogin();
 
                     usernameChanged = false;
                     passwordChanged = false;

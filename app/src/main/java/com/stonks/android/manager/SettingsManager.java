@@ -1,7 +1,6 @@
 package com.stonks.android.manager;
 
 import android.content.Context;
-
 import com.stonks.android.model.LoggedInUser;
 import com.stonks.android.model.LoginRepository;
 import com.stonks.android.model.Result;
