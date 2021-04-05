@@ -20,12 +20,8 @@ import androidx.biometric.BiometricPrompt;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputLayout;
 import com.stonks.android.model.AuthMode;
-import com.stonks.android.model.LoggedInUser;
-import com.stonks.android.model.LoginDataSource;
 import com.stonks.android.model.LoginRepository;
 import com.stonks.android.model.LoginViewModel;
-import com.stonks.android.model.UserModel;
-import com.stonks.android.storage.UserTable;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -103,8 +99,8 @@ public class LoginActivity extends BaseActivity {
         switchView(AuthMode.LOGIN);
 
         // debug
-//        UserModel bioUser = new UserModel("biometrics", "biometrics", true);
-//        userTable.addUser(bioUser);
+        //        UserModel bioUser = new UserModel("biometrics", "biometrics", true);
+        //        userTable.addUser(bioUser);
 
         if (repo.isBiometricsEnabled()) {
             biometricsButton.setEnabled(true);
