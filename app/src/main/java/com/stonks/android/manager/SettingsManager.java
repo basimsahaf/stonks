@@ -1,30 +1,41 @@
 package com.stonks.android.manager;
 
 import android.content.Context;
+
+import com.stonks.android.model.LoggedInUser;
 import com.stonks.android.model.LoginRepository;
+import com.stonks.android.model.Result;
 
 public class SettingsManager {
-    SettingsManager settingsManager;
-    LoginRepository loginRepository;
+    private static volatile SettingsManager settingsManager;
+    private LoginRepository loginRepository;
 
     private SettingsManager(Context context) {
         loginRepository = LoginRepository.getInstance(context);
     }
 
-    public SettingsManager getInstance(Context context) {
+    public static SettingsManager getInstance(Context context) {
         if (settingsManager == null) {
             settingsManager = new SettingsManager(context);
         }
         return settingsManager;
     }
 
-    public boolean updateUsername(String newUsername) {
-        return loginRepository.updateUsername(newUsername);
+    public Result<LoggedInUser> changeUsername(String newUsername) {
+        return loginRepository.changeUsername(newUsername);
     }
 
-    //    public boolean updatePassword(String newPassword) {
-    //
-    //    }
+    public String getCurrentUsername() {
+        return loginRepository.getCurrentUser();
+    }
+
+    public boolean verifyCurrentPassword(String currentPassword) {
+        return loginRepository.verifyCurrentPassword(currentPassword);
+    }
+
+    public Result<LoggedInUser> changePassword(String newPassword) {
+        return loginRepository.changePassword(newPassword);
+    }
     //
     //    public boolean enableBiometrics() {
     //

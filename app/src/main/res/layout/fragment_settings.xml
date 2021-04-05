@@ -49,7 +49,7 @@
             app:layout_constraintTop_toBottomOf="@id/account_subheader">
 
             <TextView
-                android:id="@+id/email_label"
+                android:id="@+id/username_label"
                 style="@style/AppTheme.TextAppearance.SmallLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -59,18 +59,18 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/current_email"
+                android:id="@+id/current_username"
                 style="@style/AppTheme.TextAppearance.SmallLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingRight="10sp"
                 android:text="@string/sample_email"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintRight_toLeftOf="@id/email_arrow"
+                app:layout_constraintRight_toLeftOf="@id/username_arrow"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/email_arrow"
+                android:id="@+id/username_arrow"
                 style="@style/AppTheme.TextAppearance.LargeLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

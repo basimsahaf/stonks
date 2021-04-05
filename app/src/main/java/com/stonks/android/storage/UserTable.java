@@ -3,10 +3,14 @@ package com.stonks.android.storage;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import androidx.annotation.Nullable;
 import com.stonks.android.BuildConfig;
+import com.stonks.android.R;
+import com.stonks.android.model.LoggedInUser;
+import com.stonks.android.model.Result;
 import com.stonks.android.model.UserModel;
 
 public class UserTable extends SQLiteOpenHelper {
@@ -87,7 +91,7 @@ public class UserTable extends SQLiteOpenHelper {
         return exists;
     }
 
-    public boolean updateUsername(String oldUsername, String newUsername) {
+    public Result<LoggedInUser> changeUsername(String oldUsername, String newUsername) {
         SQLiteDatabase db = this.getWritableDatabase();
         String query =
                 String.format(
@@ -95,7 +99,6 @@ public class UserTable extends SQLiteOpenHelper {
                         USER_TABLE, COLUMN_USERNAME, oldUsername);
         Cursor cursor = db.rawQuery(query, null);
         String whereClause = String.format("%s = '%s'", COLUMN_USERNAME, oldUsername);
-        long result = 0;
 
         if (cursor.moveToFirst()) {
             String password = cursor.getString(cursor.getColumnIndex(COLUMN_PASSWORD));
@@ -108,9 +111,58 @@ public class UserTable extends SQLiteOpenHelper {
             cv.put(COLUMN_BIOMETRICS, biometrics);
             cv.put(COLUMN_TOTAL_AMOUNT, totalAmount);
 
-            result = db.update(USER_TABLE, cv, whereClause, null);
+            try {
+                db.update(USER_TABLE, cv, whereClause, null);
+                cursor.close();
+                return new Result.Success<>(new LoggedInUser(newUsername));
+            } catch (SQLiteConstraintException e) {
+                return new Result.Error(R.string.user_exists);
+            }
+        }
+        // this shouldn't happen but just in case something goes wrong, this will allow graceful exit
+        return new Result.Error(R.string.internal_server_error);
+    }
+
+    public boolean verifyCurrentPassword(String currentUsername, String currentPassword) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = String.format("SELECT * FROM %s WHERE %s = '%s' AND %s = '%s'", USER_TABLE, COLUMN_USERNAME, currentUsername, COLUMN_PASSWORD, currentPassword);
+        Cursor cursor = db.rawQuery(query, null);
+        boolean result = false;
+        if (cursor.moveToFirst()) {
+            result = true;
         }
         cursor.close();
-        return result >= 0;
+        return result;
+     }
+
+    public Result<LoggedInUser> changePassword(String username, String newPassword) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query =
+                String.format(
+                        "SELECT * FROM %s WHERE %s = '%s'",
+                        USER_TABLE, COLUMN_USERNAME, username);
+        Cursor cursor = db.rawQuery(query, null);
+        String whereClause = String.format("%s = '%s'", COLUMN_USERNAME, username);
+
+        if (cursor.moveToFirst()) {
+            String biometrics = cursor.getString(cursor.getColumnIndex(COLUMN_BIOMETRICS));
+            String totalAmount = cursor.getString(cursor.getColumnIndex(COLUMN_TOTAL_AMOUNT));
+
+            ContentValues cv = new ContentValues();
+            cv.put(COLUMN_USERNAME, username);
+            cv.put(COLUMN_PASSWORD, newPassword);
+            cv.put(COLUMN_BIOMETRICS, biometrics);
+            cv.put(COLUMN_TOTAL_AMOUNT, totalAmount);
+
+            try {
+                db.update(USER_TABLE, cv, whereClause, null);
+                cursor.close();
+                return new Result.Success<>(new LoggedInUser(username));
+            } catch (SQLiteConstraintException e) {
+                return new Result.Error(R.string.password_update_error);
+            }
+        }
+        // this shouldn't happen but just in case something goes wrong, this will allow graceful exit
+        return new Result.Error(R.string.internal_server_error);
     }
 }

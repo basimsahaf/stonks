@@ -60,10 +60,22 @@ public class LoginRepository {
         return this.user.getUserId();
     }
 
-    public boolean updateUsername(String newUsername) {
-        boolean result = dataSource.updateUsername(this.user.getUserId(), newUsername);
-        if (result) {
-            this.user.setUserId(newUsername);
+    public Result<LoggedInUser> changeUsername(String newUsername) {
+        Result<LoggedInUser> result = dataSource.changeUsername(this.user.getUserId(), newUsername);
+        if (result instanceof Result.Success) {
+           setLoggedInUser(((Result.Success<LoggedInUser>) result).getData());
+        }
+        return result;
+    }
+
+    public boolean verifyCurrentPassword(String currentPassword) {
+        return dataSource.verifyCurrentPassword(this.user.getUserId(), currentPassword);
+    }
+
+    public Result<LoggedInUser> changePassword(String newPassword) {
+        Result<LoggedInUser> result = dataSource.changePassword(this.user.getUserId(), newPassword);
+        if (result instanceof Result.Success) {
+            setLoggedInUser(((Result.Success<LoggedInUser>) result).getData());
         }
         return result;
     }

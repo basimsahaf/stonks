@@ -83,7 +83,11 @@
     <string name="new_password">New Password</string>
     <string name="reset_training_period">Reset training period</string>
     <string name="username_updated">Username successfully updated</string>
+    <string name="password_updated">Password successfully updated</string>
+    <string name="invalid_current_password">Invalid password</string>
     <string name="username_update_failed">Username update failed, please try again!</string>
+    <string name="password_update_error">Password could not be updated, please try again!</string>
+
 
     <!-- Search page strings -->
     <string name="search_hint">Search companies…</string>

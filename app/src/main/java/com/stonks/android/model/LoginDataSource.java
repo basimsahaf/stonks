@@ -61,7 +61,15 @@ public class LoginDataSource {
         // TODO: revoke authentication
     }
 
-    public boolean updateUsername(String oldUsername, String newUsername) {
-        return userTable.updateUsername(oldUsername, newUsername);
+    public Result<LoggedInUser> changeUsername(String oldUsername, String newUsername) {
+        return userTable.changeUsername(oldUsername, newUsername);
+    }
+
+    public boolean verifyCurrentPassword(String currentUsername, String currentPassword) {
+        return userTable.verifyCurrentPassword(currentUsername, currentPassword);
+    }
+
+    public Result<LoggedInUser> changePassword(String username, String newPassword) {
+        return userTable.changePassword(username, newPassword);
     }
 }
