@@ -22,6 +22,7 @@ import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.stonks.android.adapter.StockChartAdapter;
 import com.stonks.android.adapter.TransactionViewAdapter;
@@ -29,6 +30,7 @@ import com.stonks.android.databinding.FragmentStockBinding;
 import com.stonks.android.external.MarketDataService;
 import com.stonks.android.model.*;
 import com.stonks.android.model.alpaca.AlpacaTimeframe;
+import com.stonks.android.model.alpaca.DateRange;
 import com.stonks.android.uicomponent.CustomSparkView;
 import com.stonks.android.uicomponent.SpeedDialExtendedFab;
 import com.stonks.android.utility.Constants;
@@ -49,6 +51,11 @@ public class StockFragment extends BaseFragment {
     private RecyclerView.Adapter<RecyclerView.ViewHolder> transactionListAdapter;
     private TextView currentPrice, priceChange;
     private SpeedDialExtendedFab tradeButton;
+    private MaterialButton rangeDayButton,
+            rangeWeekButton,
+            rangeMonthButton,
+            rangeYearButton,
+            rangeAllButton;
     private LinearLayout overlay;
     private NestedScrollView scrollView;
     private ImageView changeIndicator;
@@ -57,6 +64,10 @@ public class StockFragment extends BaseFragment {
 
     private boolean favourited = false;
     private final StockData stockData = new StockData();
+    private DateRange currentDateRange;
+
+    private Symbols symbols;
+    private final MarketDataService marketDataService = new MarketDataService();
 
     @Nullable
     @Override
@@ -88,6 +99,7 @@ public class StockFragment extends BaseFragment {
         super.onViewCreated(view, savedInstanceState);
 
         this.symbol = getArguments().getString(getString(R.string.intent_extra_symbol));
+        symbols = new Symbols(Collections.singletonList(symbol));
 
         getMainActivity().subscribe(symbol, stockData);
         getActionBar().setDisplayHomeAsUpEnabled(true);
@@ -109,6 +121,12 @@ public class StockFragment extends BaseFragment {
         this.currentPrice = view.findViewById(R.id.current_price);
         this.priceChange = view.findViewById(R.id.change);
         this.changeIndicator = view.findViewById(R.id.change_indicator);
+
+        this.rangeDayButton = view.findViewById(R.id.range_day);
+        this.rangeWeekButton = view.findViewById(R.id.range_week);
+        this.rangeMonthButton = view.findViewById(R.id.range_month);
+        this.rangeYearButton = view.findViewById(R.id.range_year);
+        this.rangeAllButton = view.findViewById(R.id.range_all);
 
         this.tradeButton.addToSpeedDial(buyButtonContainer);
         this.tradeButton.addToSpeedDial(sellButtonContainer);
@@ -210,15 +228,67 @@ public class StockFragment extends BaseFragment {
                     }
                 });
 
+        rangeDayButton.setOnClickListener(
+                v -> {
+                    switchDateRange(DateRange.DAY);
+                });
+        rangeWeekButton.setOnClickListener(
+                v -> {
+                    switchDateRange(DateRange.WEEK);
+                });
+        rangeMonthButton.setOnClickListener(
+                v -> {
+                    switchDateRange(DateRange.MONTH);
+                });
+        rangeYearButton.setOnClickListener(
+                v -> {
+                    switchDateRange(DateRange.YEAR);
+                });
+        rangeAllButton.setOnClickListener(
+                v -> {
+                    switchDateRange(DateRange.THREE_YEARS);
+                });
+
+        // default date range is daily
+        this.rangeDayButton.setChecked(true);
+        this.currentDateRange = DateRange.DAY;
+
         this.fetchInitialData();
     }
 
     private void fetchInitialData() {
-        final Symbols symbols = new Symbols(Collections.singletonList(symbol));
-        final MarketDataService marketDataService = new MarketDataService();
+        AlpacaTimeframe timeframe;
+        int limit;
+
+        switch (this.currentDateRange) {
+            case DAY:
+                limit = 390; // 390 trading hours in a day
+                timeframe = AlpacaTimeframe.MINUTE;
+                break;
+            case WEEK:
+                limit = 390; // 390 * 5 days / 5 min increments
+                timeframe = AlpacaTimeframe.MINUTES_5;
+                break;
+            case MONTH:
+                limit = 806; // 390 * 31 days / 15 min increments
+                timeframe = AlpacaTimeframe.MINUTES_15;
+                break;
+            case YEAR:
+                limit = 366;
+                timeframe = AlpacaTimeframe.DAY;
+                break;
+            case THREE_YEARS:
+                limit = 1000;
+                timeframe = AlpacaTimeframe.DAY;
+                break;
+            default:
+                limit = 100;
+                timeframe = AlpacaTimeframe.MINUTE;
+                break;
+        }
 
         Observable.zip(
-                        marketDataService.getBars(AlpacaTimeframe.MINUTE, symbols),
+                        marketDataService.getBars(symbols, timeframe, limit),
                         marketDataService.getQuotes(symbols),
                         (bars, quotes) -> {
                             List<BarData> barData = bars.get(symbol);
@@ -241,6 +311,31 @@ public class StockFragment extends BaseFragment {
                             dataAdapter.notifyDataSetChanged();
                         },
                         err -> Log.e(TAG, err.toString()));
+    }
+
+    private void switchDateRange(DateRange dateRange) {
+        switch (dateRange) {
+            case WEEK:
+                this.currentDateRange = DateRange.WEEK;
+                this.rangeWeekButton.setChecked(true);
+                break;
+            case MONTH:
+                this.currentDateRange = DateRange.MONTH;
+                this.rangeMonthButton.setChecked(true);
+                break;
+            case YEAR:
+                this.currentDateRange = DateRange.YEAR;
+                this.rangeYearButton.setChecked(true);
+                break;
+            case THREE_YEARS:
+                this.currentDateRange = DateRange.THREE_YEARS;
+                this.rangeAllButton.setChecked(true);
+                break;
+            default:
+                this.currentDateRange = DateRange.DAY;
+                this.rangeDayButton.setChecked(true);
+        }
+        this.fetchInitialData();
     }
 
     public static ArrayList<Pair<Float, Float>> getFakeStockPrices() {

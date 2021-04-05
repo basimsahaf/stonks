@@ -6,6 +6,7 @@ import com.stonks.android.model.QuoteData;
 import com.stonks.android.model.Symbols;
 import com.stonks.android.model.alpaca.AlpacaTimeframe;
 import io.reactivex.rxjava3.core.Observable;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import retrofit2.Retrofit;
@@ -37,8 +38,12 @@ public class MarketDataService {
     }
 
     public Observable<Map<String, List<BarData>>> getBars(
-            AlpacaTimeframe timeframe, Symbols symbols) {
-        return alpacaMarketDataApi.getBars(timeframe, symbols);
+            Symbols symbols, AlpacaTimeframe timeframe, int limit) {
+        HashMap<String, String> params = new HashMap();
+        params.put("symbols", symbols.toString());
+        params.put("limit", String.valueOf(limit));
+
+        return alpacaMarketDataApi.getBars(timeframe, params);
     }
 
     public Observable<Map<String, QuoteData>> getQuotes(Symbols symbols) {
