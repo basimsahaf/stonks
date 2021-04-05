@@ -10,6 +10,7 @@ import com.stonks.android.model.StockData;
 import com.stonks.android.model.Symbols;
 import com.stonks.android.model.alpaca.AlpacaTimeframe;
 import com.stonks.android.model.alpaca.DateRange;
+import com.stonks.android.utility.ChartHelpers;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
@@ -45,10 +46,10 @@ public class StockManager {
         this.candleMarker =
                 (x) -> {
                     BarData bar = this.candleData.get(x);
-
                     if (bar == null) {
                         return "";
                     }
+
                     LocalDateTime start =
                             LocalDateTime.ofInstant(
                                     Instant.ofEpochSecond(bar.getTimestamp()),
@@ -57,8 +58,7 @@ public class StockManager {
                             LocalDateTime.ofInstant(
                                     Instant.ofEpochSecond(bar.getEndTimestamp()),
                                     TimeZone.getDefault().toZoneId());
-
-                    DateTimeFormatter formatter = getFormatter();
+                    DateTimeFormatter formatter = ChartHelpers.getMarkerDateFormatter(this.currentRange);
 
                     return String.format("%s - %s", formatter.format(start), formatter.format(end));
                 };
@@ -66,16 +66,16 @@ public class StockManager {
         this.lineMarker =
                 (x) -> {
                     BarData bar = this.lineData.get(x);
-
                     if (bar == null) {
                         return "";
                     }
+
                     LocalDateTime date =
                             LocalDateTime.ofInstant(
                                     Instant.ofEpochSecond(bar.getTimestamp()),
                                     TimeZone.getDefault().toZoneId());
 
-                    return getFormatter().format(date);
+                    return ChartHelpers.getMarkerDateFormatter(this.currentRange).format(date);
                 };
     }
 
@@ -98,9 +98,11 @@ public class StockManager {
 
     public void fetchInitialData() {
         final Symbols symbols = new Symbols(Collections.singletonList(this.symbol));
+        final int limit = ChartHelpers.getDataPointLimit(this.currentRange);
+        final AlpacaTimeframe timeframe = ChartHelpers.getDataPointTimeframe(this.currentRange);
 
         Observable.zip(
-                        this.marketDataService.getBars(symbols, AlpacaTimeframe.MINUTE, 390),
+                        this.marketDataService.getBars(symbols, timeframe, limit),
                         this.marketDataService.getQuotes(symbols),
                         (bars, quotes) -> {
                             List<BarData> barData = bars.get(symbol);
@@ -112,54 +114,22 @@ public class StockManager {
                 .subscribeOn(Schedulers.io())
                 .subscribe(
                         newStockData -> {
-                            List<BarData> barData = getSameDayBars(newStockData.getGraphData());
+                            List<BarData> barData = ChartHelpers.getSameDayBars(newStockData.getGraphData());
                             this.stockData.updateStock(newStockData, this.currentRange, barData);
                         },
-                        err -> Log.e(TAG, "API error: " + err.toString()));
+                        err -> Log.e(TAG, "fetchInitialData: " + err.toString()));
     }
 
-    public void fetchGraphData() {
-        int limit;
-        AlpacaTimeframe timeframe;
-
-        switch (this.currentRange) {
-            case WEEK:
-                limit = 390;
-                timeframe = AlpacaTimeframe.MINUTES_15;
-                break;
-            case MONTH:
-                limit = 217;
-                timeframe = AlpacaTimeframe.MINUTES_15;
-                break;
-            case YEAR:
-                limit = 365;
-                timeframe = AlpacaTimeframe.DAY;
-                break;
-            case THREE_YEARS:
-                limit = 1000;
-                timeframe = AlpacaTimeframe.DAY;
-                break;
-            case DAY:
-            default:
-                limit = 390;
-                timeframe = AlpacaTimeframe.MINUTE;
-        }
-
-        Log.d(
-                TAG,
-                "fetchGraph query params"
-                        + timeframe
-                        + " "
-                        + limit
-                        + " "
-                        + getIsoStartDate(this.currentRange));
+    private void fetchGraphData() {
+        final int limit = ChartHelpers.getDataPointLimit(this.currentRange);
+        final AlpacaTimeframe timeframe = ChartHelpers.getDataPointTimeframe(this.currentRange);
 
         marketDataService
                 .getBars(
                         new Symbols(Collections.singletonList(symbol)),
                         timeframe,
                         limit,
-                        getIsoStartDate(this.currentRange))
+                        ChartHelpers.getIsoStartDate(this.currentRange))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(
@@ -168,46 +138,12 @@ public class StockManager {
                             Log.d(TAG, "newGraphData:" + bars);
 
                             if (this.currentRange == DateRange.DAY) {
-                                bars = getSameDayBars(bars);
+                                bars = ChartHelpers.getSameDayBars(bars);
                             }
 
                             this.stockData.updateCachedGraphData(this.currentRange, bars);
                         },
                         err -> Log.d(TAG, "fetchGraphData: " + err.getMessage()));
-    }
-
-    private String getIsoStartDate(DateRange range) {
-        if (range == DateRange.DAY) {
-            // for a single day chart, we fetch 390 data points then filter
-            // this is to account for holidays since there is
-            // no stock data available when markets are closed
-            return "";
-        }
-
-        LocalDateTime now = LocalDateTime.now();
-
-        switch (range) {
-            case WEEK:
-                now = now.minusDays(7);
-                break;
-            case MONTH:
-                now = now.minusMonths(1);
-                break;
-            case YEAR:
-                now = now.minusYears(1);
-                break;
-            case THREE_YEARS:
-                now = now.minusYears(3);
-                break;
-        }
-
-        ZonedDateTime dateTime =
-                ZonedDateTime.ofInstant(
-                        now.atZone(TimeZone.getDefault().toZoneId()).toInstant(),
-                        ZoneId.systemDefault());
-        DateTimeFormatter df = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
-
-        return df.format(dateTime);
     }
 
     public int getMaxCandlePoints(int dataSize) {
@@ -236,60 +172,8 @@ public class StockManager {
         }
     }
 
-    private DateTimeFormatter getFormatter() {
-        switch (this.currentRange) {
-            case DAY:
-            default:
-                return DateTimeFormatter.ofPattern("HH:mm");
-            case WEEK:
-            case MONTH:
-                return DateTimeFormatter.ofPattern("HH:mm MMM dd");
-            case YEAR:
-            case THREE_YEARS:
-                return DateTimeFormatter.ofPattern("MMM dd, yyyy");
-        }
-    }
-
-    private BarData clubBars(List<BarData> bars) {
-        BarData barData = new BarData(-1, -1, -1, -1, -1);
-
-        barData.setHigh(
-                bars.stream().map(BarData::getHigh).max(Comparator.naturalOrder()).orElse(0f));
-        barData.setLow(
-                bars.stream().map(BarData::getLow).min(Comparator.naturalOrder()).orElse(0f));
-        barData.setOpen(bars.get(0).getOpen());
-        barData.setTimestamp(bars.get(0).getTimestamp());
-        barData.setClose(bars.get(bars.size() - 1).getClose());
-        barData.setEndTimestamp(bars.get(bars.size() - 1).getTimestamp());
-
-        return barData;
-    }
-
-    private List<BarData> getSameDayBars(List<BarData> bars) {
-        BarData lastBar = bars.get(bars.size() - 1);
-        LocalDateTime day =
-                LocalDateTime.ofInstant(
-                        Instant.ofEpochSecond(lastBar.getTimestamp()),
-                        TimeZone.getDefault().toZoneId());
-
-        LocalDateTime firstEntry = day.withHour(9).withMinute(30).withSecond(0);
-        long firstTimeStamp = firstEntry.atZone(TimeZone.getDefault().toZoneId()).toEpochSecond();
-
-        List<BarData> sameDayBars = new ArrayList<>();
-
-        for (BarData bar : bars) {
-            if (bar.getTimestamp() < firstTimeStamp) continue;
-
-            sameDayBars.add(bar);
-        }
-
-        return sameDayBars;
-    }
-
     public List<CandleEntry> getCandleStickData() {
         List<BarData> bars = this.stockData.getCachedGraphData(this.currentRange);
-        Log.d(TAG, "getCandle: " + bars);
-        List<BarData> clubbedBars = new ArrayList<>();
         int windowSize = 1;
 
         switch (this.currentRange) {
@@ -308,13 +192,7 @@ public class StockManager {
                 break;
         }
 
-        for (int x = 0; x < bars.size(); x += windowSize) {
-            int endIdx = Math.min(x + windowSize, bars.size() - 1);
-            if (x == endIdx) break;
-
-            BarData newBar = clubBars(bars.subList(x, endIdx));
-            clubbedBars.add(newBar);
-        }
+        List<BarData> clubbedBars = ChartHelpers.mergeBars(bars, windowSize);
 
         AtomicInteger i = new AtomicInteger(1);
         this.candleData.clear();
@@ -335,8 +213,6 @@ public class StockManager {
 
     public List<Entry> getLineData() {
         List<BarData> bars = this.stockData.getCachedGraphData(this.currentRange);
-        Log.d(TAG, "getLine: " + bars);
-        List<BarData> clubbedBars = new ArrayList<>();
         int windowSize = 1;
 
         switch (this.currentRange) {
@@ -353,13 +229,7 @@ public class StockManager {
                 break;
         }
 
-        for (int x = 0; x < bars.size(); x += windowSize) {
-            int endIdx = Math.min(x + windowSize, bars.size() - 1);
-            if (x == endIdx) break;
-
-            BarData newBar = clubBars(bars.subList(x, endIdx));
-            clubbedBars.add(newBar);
-        }
+        List<BarData> clubbedBars = ChartHelpers.mergeBars(bars, windowSize);
 
         this.lineData.clear();
         AtomicInteger i = new AtomicInteger(1);
