@@ -17,15 +17,25 @@ public class Portfolio {
         return accountBalance;
     }
 
-    public void setAccountBalance(float accountBalance) {
-        this.accountBalance = accountBalance;
-    }
-
     public float getAccountValue() {
         return accountValue;
     }
 
+    public void setAccountValue(float accountValue) {
+        this.accountValue = accountValue;
+    }
+
     public ArrayList<PortfolioItem> getPortfolioItems() {
         return portfolioItems;
+    }
+
+    public int getStockQuantity(String symbol) {
+        for (PortfolioItem portfolioItem : portfolioItems) {
+            if (portfolioItem.getSymbol() == symbol) {
+                return portfolioItem.getQuantity();
+            }
+        }
+
+        return 10;
     }
 }

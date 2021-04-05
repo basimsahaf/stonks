@@ -21,9 +21,10 @@ import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 public class HomePageFragment extends BaseFragment {
-    private PortfolioManager portfolioManager;
+    private static PortfolioManager portfolioManager;
     private int currentInfoHeaderHeight = -1;
-    static RecyclerView.Adapter portfolioListAdapter;
+    private static RecyclerView.Adapter portfolioListAdapter;
+    private static TextView accountValue;
 
     @Override
     public View onCreateView(
@@ -33,7 +34,9 @@ public class HomePageFragment extends BaseFragment {
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-        portfolioManager = PortfolioManager.getInstance(this.getContext());
+        portfolioManager = PortfolioManager.getInstance(this.getContext(), this);
+
+        accountValue = view.findViewById(R.id.current_value_price);
 
         RecyclerView.LayoutManager portfolioListManager =
                 new LinearLayoutManager(this.getContext());
@@ -97,7 +100,9 @@ public class HomePageFragment extends BaseFragment {
         return list;
     }
 
-    public static void updateData() {
+    public void updateData() {
         portfolioListAdapter.notifyDataSetChanged();
+        accountValue.setText(Formatters.formatPrice(portfolioManager.getAccountValue()));
+        getMainActivity().setPortfolioValue(portfolioManager.getAccountValue());
     }
 }
