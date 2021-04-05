@@ -2,28 +2,31 @@ package com.stonks.android.uicomponent;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.util.Log;
 import android.widget.TextView;
 import com.github.mikephil.charting.components.MarkerView;
-import com.github.mikephil.charting.data.CandleEntry;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.utils.MPPointF;
 import com.stonks.android.R;
+import java.util.function.Function;
 
 public class ChartMarker extends MarkerView {
     private final TextView markerText;
+    private final Function<Integer, String> getMarkerText;
 
-    public ChartMarker(Context context, int layoutResource) {
+    public ChartMarker(
+            Context context, int layoutResource, Function<Integer, String> getMarkerText) {
         super(context, layoutResource);
 
-        markerText = findViewById(R.id.marker_text_view);
+        this.markerText = findViewById(R.id.marker_text_view);
+        this.getMarkerText = getMarkerText;
     }
 
     @Override
     public void refreshContent(Entry e, Highlight highlight) {
-        CandleEntry entry = (CandleEntry) e;
-
-        markerText.setText(entry.getOpen() + " - " + entry.getClose());
+        Log.d("marker", "x: " + (int) e.getX() + ", y: " + e.getY());
+        markerText.setText(this.getMarkerText.apply((int) e.getX()));
 
         super.refreshContent(e, highlight);
     }

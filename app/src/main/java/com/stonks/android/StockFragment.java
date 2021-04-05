@@ -27,7 +27,6 @@ import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.stonks.android.adapter.TransactionViewAdapter;
 import com.stonks.android.databinding.FragmentStockBinding;
-import com.stonks.android.external.MarketDataService;
 import com.stonks.android.manager.StockManager;
 import com.stonks.android.model.*;
 import com.stonks.android.model.alpaca.DateRange;
@@ -49,11 +48,11 @@ public class StockFragment extends BaseFragment {
     private RecyclerView.Adapter<RecyclerView.ViewHolder> transactionListAdapter;
     private TextView currentPrice, priceChange;
     private SpeedDialExtendedFab tradeButton;
-    private MaterialButton rangeDayButton,
-            rangeWeekButton,
-            rangeMonthButton,
-            rangeYearButton,
-            rangeAllButton;
+    private MaterialButton rangeDayButton;
+    private MaterialButton rangeWeekButton;
+    private MaterialButton rangeMonthButton;
+    private MaterialButton rangeYearButton;
+    private MaterialButton rangeAllButton;
     private LinearLayout overlay;
     private NestedScrollView scrollView;
     private ImageView changeIndicator;
@@ -64,8 +63,6 @@ public class StockFragment extends BaseFragment {
     private boolean favourited = false;
     private DateRange currentDateRange;
 
-    private Symbols symbols;
-    private final MarketDataService marketDataService = new MarketDataService();
     private StockManager manager;
     private boolean isCandleVisible = true;
 
@@ -79,10 +76,11 @@ public class StockFragment extends BaseFragment {
                 DataBindingUtil.inflate(inflater, R.layout.fragment_stock, container, false);
 
         this.symbol = getArguments().getString(getString(R.string.intent_extra_symbol));
-        this.symbols = new Symbols(Collections.singletonList(symbol));
-
         this.manager = new StockManager(this.symbol);
-        // update properties like change string and change indicator
+
+        // using the addOnPropertyChangedCallback method to update properties that
+        // aren't compatible with the @Binding annotation
+        // updates the change string, the indicator drawable, and the graphs
         this.manager
                 .getStockData()
                 .addOnPropertyChangedCallback(
@@ -171,8 +169,13 @@ public class StockFragment extends BaseFragment {
                 new TransactionViewAdapter(this.getFakeTransactionsForStock());
         this.transactionList.setAdapter(this.transactionListAdapter);
 
-        ChartMarker marker = new ChartMarker(getContext(), R.layout.chart_marker);
-        marker.setChartView(this.candleChart);
+        ChartMarker candleMarker =
+                new ChartMarker(
+                        getContext(), R.layout.chart_marker, this.manager.getCandleMarker());
+        candleMarker.setChartView(this.candleChart);
+        ChartMarker lineMarker =
+                new ChartMarker(getContext(), R.layout.chart_marker, this.manager.getLineMarker());
+        lineMarker.setChartView(this.stockChart);
         StockChart.CustomGestureListener lineChartGestureListener =
                 new StockChart.CustomGestureListener(this.stockChart, this.scrollView);
         StockChart.CustomGestureListener candleChartGestureListener =
@@ -193,10 +196,11 @@ public class StockFragment extends BaseFragment {
 
         this.stockChart.addValueListener(currentPrice);
         this.stockChart.setOnChartGestureListener(lineChartGestureListener);
+        this.stockChart.setMarker(lineMarker);
         this.stockChart.setData(Collections.emptyList());
 
         this.candleChart.setOnChartGestureListener(candleChartGestureListener);
-        this.candleChart.setMarker(marker);
+        this.candleChart.setMarker(candleMarker);
         this.candleChart.setData(Collections.singletonList(new CandleEntry(1, 4f, 2f, 3f, 2.5f)));
 
         this.tradeButton.setOnClickListener(v -> tradeButton.trigger(this.overlay));

@@ -20,6 +20,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class StockManager {
@@ -28,6 +29,10 @@ public class StockManager {
     private final StockData stockData;
     private final MarketDataService marketDataService;
     private DateRange currentRange;
+    private final HashMap<Integer, BarData> candleData;
+    private final HashMap<Integer, BarData> lineData;
+    private final Function<Integer, String> candleMarker;
+    private final Function<Integer, String> lineMarker;
 
     public StockManager(String symbol) {
         this.symbol = symbol;
@@ -35,6 +40,51 @@ public class StockManager {
         // TODO: use singleton
         this.marketDataService = new MarketDataService();
         this.currentRange = DateRange.DAY;
+        this.candleData = new HashMap<>();
+        this.lineData = new HashMap<>();
+        this.candleMarker =
+                (x) -> {
+                    BarData bar = this.candleData.get(x);
+
+                    if (bar == null) {
+                        return "";
+                    }
+                    LocalDateTime start =
+                            LocalDateTime.ofInstant(
+                                    Instant.ofEpochSecond(bar.getTimestamp()),
+                                    TimeZone.getDefault().toZoneId());
+                    LocalDateTime end =
+                            LocalDateTime.ofInstant(
+                                    Instant.ofEpochSecond(bar.getEndTimestamp()),
+                                    TimeZone.getDefault().toZoneId());
+
+                    DateTimeFormatter formatter = getFormatter();
+
+                    return String.format("%s - %s", formatter.format(start), formatter.format(end));
+                };
+
+        this.lineMarker =
+                (x) -> {
+                    BarData bar = this.lineData.get(x);
+
+                    if (bar == null) {
+                        return "";
+                    }
+                    LocalDateTime date =
+                            LocalDateTime.ofInstant(
+                                    Instant.ofEpochSecond(bar.getTimestamp()),
+                                    TimeZone.getDefault().toZoneId());
+
+                    return getFormatter().format(date);
+                };
+    }
+
+    public Function<Integer, String> getCandleMarker() {
+        return candleMarker;
+    }
+
+    public Function<Integer, String> getLineMarker() {
+        return lineMarker;
     }
 
     public StockData getStockData() {
@@ -68,7 +118,7 @@ public class StockManager {
                         err -> Log.e(TAG, "API error: " + err.toString()));
     }
 
-    public List<BarData> fetchGraphData() {
+    public void fetchGraphData() {
         int limit;
         AlpacaTimeframe timeframe;
 
@@ -124,13 +174,13 @@ public class StockManager {
                             this.stockData.updateCachedGraphData(this.currentRange, bars);
                         },
                         err -> Log.d(TAG, "fetchGraphData: " + err.getMessage()));
-
-        return Collections.emptyList();
     }
 
     private String getIsoStartDate(DateRange range) {
         if (range == DateRange.DAY) {
-            // for a single day chart, we fetch 390 data points and then filter
+            // for a single day chart, we fetch 390 data points then filter
+            // this is to account for holidays since there is
+            // no stock data available when markets are closed
             return "";
         }
 
@@ -186,6 +236,20 @@ public class StockManager {
         }
     }
 
+    private DateTimeFormatter getFormatter() {
+        switch (this.currentRange) {
+            case DAY:
+            default:
+                return DateTimeFormatter.ofPattern("HH:mm");
+            case WEEK:
+            case MONTH:
+                return DateTimeFormatter.ofPattern("HH:mm MMM dd");
+            case YEAR:
+            case THREE_YEARS:
+                return DateTimeFormatter.ofPattern("MMM dd, yyyy");
+        }
+    }
+
     private BarData clubBars(List<BarData> bars) {
         BarData barData = new BarData(-1, -1, -1, -1, -1);
 
@@ -197,8 +261,6 @@ public class StockManager {
         barData.setTimestamp(bars.get(0).getTimestamp());
         barData.setClose(bars.get(bars.size() - 1).getClose());
         barData.setEndTimestamp(bars.get(bars.size() - 1).getTimestamp());
-
-        Log.d(TAG, "clubBars complete");
 
         return barData;
     }
@@ -212,8 +274,6 @@ public class StockManager {
 
         LocalDateTime firstEntry = day.withHour(9).withMinute(30).withSecond(0);
         long firstTimeStamp = firstEntry.atZone(TimeZone.getDefault().toZoneId()).toEpochSecond();
-
-        Log.d(TAG, "FirstEntry: " + firstTimeStamp);
 
         List<BarData> sameDayBars = new ArrayList<>();
 
@@ -250,24 +310,26 @@ public class StockManager {
 
         for (int x = 0; x < bars.size(); x += windowSize) {
             int endIdx = Math.min(x + windowSize, bars.size() - 1);
-
             if (x == endIdx) break;
 
             BarData newBar = clubBars(bars.subList(x, endIdx));
-
             clubbedBars.add(newBar);
         }
 
         AtomicInteger i = new AtomicInteger(1);
-        return clubbedBars.stream()
+        this.candleData.clear();
+        clubbedBars.forEach(bar -> this.candleData.put(i.getAndIncrement(), bar));
+
+        return this.candleData.entrySet().stream()
+                .sorted(Comparator.comparingInt(Map.Entry::getKey))
                 .map(
-                        bar ->
+                        entry ->
                                 new CandleEntry(
-                                        i.getAndIncrement(),
-                                        bar.getHigh(),
-                                        bar.getLow(),
-                                        bar.getOpen(),
-                                        bar.getClose()))
+                                        entry.getKey(),
+                                        entry.getValue().getHigh(),
+                                        entry.getValue().getLow(),
+                                        entry.getValue().getOpen(),
+                                        entry.getValue().getClose()))
                 .collect(Collectors.toList());
     }
 
@@ -293,17 +355,19 @@ public class StockManager {
 
         for (int x = 0; x < bars.size(); x += windowSize) {
             int endIdx = Math.min(x + windowSize, bars.size() - 1);
-
             if (x == endIdx) break;
 
             BarData newBar = clubBars(bars.subList(x, endIdx));
-
             clubbedBars.add(newBar);
         }
 
+        this.lineData.clear();
         AtomicInteger i = new AtomicInteger(1);
-        return clubbedBars.stream()
-                .map(bar -> new Entry(i.getAndIncrement(), bar.getClose()))
+        clubbedBars.forEach(bar -> this.lineData.put(i.getAndIncrement(), bar));
+
+        return this.lineData.entrySet().stream()
+                .sorted(Comparator.comparingInt(Map.Entry::getKey))
+                .map(entry -> new Entry(entry.getKey(), entry.getValue().getClose()))
                 .collect(Collectors.toList());
     }
 }
