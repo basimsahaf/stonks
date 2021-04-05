@@ -23,8 +23,8 @@ import java.util.stream.Collectors;
 
 public class HomePageFragment extends BaseFragment {
     private int currentInfoHeaderHeight = -1;
-    private TextView accountValue;
-    private TextView totalReturn;
+    private static TextView accountValue;
+    private static TextView totalReturn;
     private static PortfolioManager portfolioManager;
     private static RecyclerView.Adapter portfolioListAdapter;
 
@@ -46,7 +46,7 @@ public class HomePageFragment extends BaseFragment {
         RecyclerView portfolioList = view.findViewById(R.id.portfolio_list);
         portfolioList.setLayoutManager(portfolioListManager);
         portfolioListAdapter =
-                new StockListRecyclerViewAdapter(this.getActivity(), portfolioManager.getStocks(), false);
+                new StockListRecyclerViewAdapter(this.getActivity(), new ArrayList<>(), false);
         portfolioList.setAdapter(portfolioListAdapter);
 
         NestedScrollView scrollView = view.findViewById(R.id.scroll_view);
@@ -87,7 +87,7 @@ public class HomePageFragment extends BaseFragment {
         TextView currentValue = view.findViewById(R.id.current_value_price);
         TextView moneyLeft = view.findViewById(R.id.money_left);
 
-        currentValue.setText(Formatters.formatPrice(portfolioManager.getAccountValue()));
+        //currentValue.setText(Formatters.formatPrice(portfolioManager.getAccountValue()));
         moneyLeft.setText(Formatters.formatPrice(portfolioManager.getAccountBalance()));
     }
 

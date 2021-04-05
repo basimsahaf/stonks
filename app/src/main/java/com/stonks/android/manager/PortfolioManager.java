@@ -56,7 +56,7 @@ public class PortfolioManager {
         symbolList.add("UBER");
 
         Symbols symbols = new Symbols(symbolList);
-        marketDataService.getBars(symbols, AlpacaTimeframe.MINUTE, 10)
+        marketDataService.getBars(symbols, AlpacaTimeframe.MINUTE, 390)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(
