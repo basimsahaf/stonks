@@ -57,8 +57,7 @@ public class LoginActivity extends BaseActivity {
         setContentView(R.layout.activity_login);
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
 
-        UserTable userTable = new UserTable(this);
-        repo = LoginRepository.getInstance(new LoginDataSource(userTable));
+        LoginRepository repo = LoginRepository.getInstance(getApplicationContext());
         loginViewModel = new LoginViewModel(repo);
 
         loginModeButton = findViewById(R.id.login_mode_button);
@@ -74,7 +73,8 @@ public class LoginActivity extends BaseActivity {
         setButtonListeners();
         setTextWatcher(usernameField);
         setTextWatcher(passwordField);
-        setLoginViewModelListeners();
+        // TODO: enable this later
+        //        setLoginViewModelListeners();
 
         // auth triggers
         passwordField
@@ -88,7 +88,8 @@ public class LoginActivity extends BaseActivity {
                         });
 
         // disable login button initially as no data is entered
-        loginButton.setEnabled(false);
+        // TODO: change to disable once testing is done
+        loginButton.setEnabled(true);
 
         // set error messages visibility to gone by default
         usernameErrorMessage.setVisibility(View.GONE);
@@ -102,8 +103,8 @@ public class LoginActivity extends BaseActivity {
         switchView(AuthMode.LOGIN);
 
         // debug
-        UserModel bioUser = new UserModel("biometrics", "biometrics", true);
-        userTable.addUser(bioUser);
+//        UserModel bioUser = new UserModel("biometrics", "biometrics", true);
+//        userTable.addUser(bioUser);
 
         if (repo.isBiometricsEnabled()) {
             biometricsButton.setEnabled(true);
@@ -131,23 +132,28 @@ public class LoginActivity extends BaseActivity {
         String password = getFieldText(passwordField);
         authErrorMessage.setVisibility(View.GONE);
 
-        switch (currentAuthMode) {
-            case LOGIN:
-                loginViewModel.login(username, password);
-                break;
+        // only login on non-empty username and password, otherwise show error
+        if (!username.equals("") && !password.equals("")) {
+            switch (currentAuthMode) {
+                case LOGIN:
+                    loginViewModel.login(username, password);
+                    break;
 
-            case SIGNUP:
-                loginViewModel.signup(username, password, false);
-                break;
+                case SIGNUP:
+                    loginViewModel.signup(username, password, false);
+                    break;
+            }
+        } else {
+            showLoginFailed(R.string.login_incomplete);
         }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.P)
     private void authorizeViaBiometrics() {
-        LoggedInUser user = repo.getCurrentUser();
-        setupBiometrics(user.getUserId());
+        String currentUser = repo.getCurrentUser();
+        setupBiometrics(currentUser);
         biometricPrompt.authenticate(promptInfo);
-        usernameField.getEditText().setText(user.getUserId());
+        usernameField.getEditText().setText(currentUser);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.P)
@@ -204,6 +210,7 @@ public class LoginActivity extends BaseActivity {
 
                     @Override
                     public void afterTextChanged(Editable s) {
+                        authErrorMessage.setVisibility(View.GONE);
                         if (field == usernameField) {
                             usernameChanged = true;
                         } else {
@@ -247,15 +254,24 @@ public class LoginActivity extends BaseActivity {
                             loginButton.setEnabled(loginFormState.isDataValid());
 
                             // display error if invalid username or password
-                            setFieldState(
-                                    usernameChanged,
-                                    usernameErrorMessage,
-                                    loginFormState.getUsernameError());
+                            boolean usernameState =
+                                    setFieldState(
+                                            usernameChanged,
+                                            usernameErrorMessage,
+                                            loginFormState.getUsernameError());
 
-                            setFieldState(
-                                    passwordChanged,
-                                    passwordErrorMessage,
-                                    loginFormState.getPasswordError());
+                            boolean passwordState =
+                                    setFieldState(
+                                            passwordChanged,
+                                            passwordErrorMessage,
+                                            loginFormState.getPasswordError());
+
+                            // disable login button in case either of the fields is incorrect
+                            if (usernameState && passwordState) {
+                                loginButton.setEnabled(true);
+                            } else {
+                                loginButton.setEnabled(false);
+                            }
                         });
 
         loginViewModel
@@ -304,15 +320,22 @@ public class LoginActivity extends BaseActivity {
         return "";
     }
 
-    private void setFieldState(boolean fieldChanged, TextView errorView, Integer error) {
+    private boolean setFieldState(boolean fieldChanged, TextView errorView, Integer error) {
         if (fieldChanged && error != null) {
-            loginButton.setEnabled(false);
             errorView.setText(error);
             errorView.setTextColor(getResources().getColor(R.color.red, getTheme()));
             errorView.setVisibility(View.VISIBLE);
+            return false;
         } else {
             errorView.setVisibility(View.GONE);
-            loginButton.setEnabled(true);
+            return true;
         }
+    }
+
+    // TODO: remove after testing
+    private void authorizeTestLogin() {
+        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
     }
 }
