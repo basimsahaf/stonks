@@ -5,5 +5,6 @@ public enum DateRange {
     WEEK,
     MONTH,
     YEAR,
-    THREE_YEARS
+    THREE_YEARS,
+    ALL_TIME
 }

@@ -14,19 +14,26 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.stonks.android.adapter.StockChartAdapter;
 import com.stonks.android.adapter.StockListRecyclerViewAdapter;
 import com.stonks.android.manager.PortfolioManager;
+import com.stonks.android.model.BarData;
 import com.stonks.android.model.StockListItem;
+import com.stonks.android.model.alpaca.DateRange;
 import com.stonks.android.uicomponent.CustomSparkView;
 import com.stonks.android.utility.Formatters;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.stream.Collectors;
 
 public class HomePageFragment extends BaseFragment {
     private int currentInfoHeaderHeight = -1;
     private TextView accountValue;
+    private TextView moneyLeft;
+    private TextView priceUpdate;
     private TextView totalReturn;
     private static PortfolioManager portfolioManager;
     private static RecyclerView.Adapter portfolioListAdapter;
+    private static HashMap<DateRange, Float> profitsList;
+    private static StockChartAdapter dataAdapter;
 
     @Override
     public View onCreateView(
@@ -39,6 +46,7 @@ public class HomePageFragment extends BaseFragment {
         portfolioManager = PortfolioManager.getInstance(this.getContext(), this);
 
         this.accountValue = view.findViewById(R.id.current_value_price);
+        this.moneyLeft = view.findViewById(R.id.money_left);
         this.totalReturn = view.findViewById(R.id.total_return);
 
         RecyclerView.LayoutManager portfolioListManager =
@@ -57,7 +65,7 @@ public class HomePageFragment extends BaseFragment {
 
         getActionBar().setDisplayHomeAsUpEnabled(false);
         getMainActivity().setActionBarCustomViewAlpha(0);
-        //getMainActivity().setPortfolioValue(129.32f);
+        getMainActivity().setPortfolioValue(129.32f);
 
         scrollView.setOnScrollChangeListener(
                 (View.OnScrollChangeListener)
@@ -71,7 +79,7 @@ public class HomePageFragment extends BaseFragment {
         CustomSparkView sparkView = view.findViewById(R.id.stock_chart);
         sparkView.setScrubListener(
                 value -> scrollView.requestDisallowInterceptTouchEvent(value != null));
-        StockChartAdapter dataAdapter =
+        dataAdapter =
                 new StockChartAdapter(
                         StockFragment.getFakeStockPrices().stream()
                                 .map(p -> p.second)
@@ -80,16 +88,7 @@ public class HomePageFragment extends BaseFragment {
 
         sparkView.setAdapter(dataAdapter);
 
-        populateAccountInfo(view);
-    }
-
-    private void populateAccountInfo(View view) {
-        TextView currentValue = view.findViewById(R.id.current_value_price);
-        TextView moneyLeft = view.findViewById(R.id.money_left);
-
-        currentValue.setText(Formatters.formatPrice(portfolioManager.getAccountValue()));
-        getMainActivity().setPortfolioValue(portfolioManager.getAccountValue());
-        moneyLeft.setText(Formatters.formatPrice(portfolioManager.getAccountBalance()));
+        portfolioManager.fetchInitialData();
     }
 
     public static ArrayList<StockListItem> getMockItems() {
@@ -107,8 +106,17 @@ public class HomePageFragment extends BaseFragment {
     public void updateData() {
         ((StockListRecyclerViewAdapter) portfolioListAdapter).setNewStocks(portfolioManager.getStocks());
         portfolioListAdapter.notifyDataSetChanged();
-        this.accountValue.setText(Formatters.formatPrice(portfolioManager.getAccountValue()));
-        this.totalReturn.setText(Formatters.formatPrice(portfolioManager.calculateProfit()) + " since Mar 2019"); // TODO: get training period start form user table
+
         getMainActivity().setPortfolioValue(portfolioManager.getAccountValue());
+        this.accountValue.setText(Formatters.formatPrice(portfolioManager.getAccountValue()));
+        this.moneyLeft.setText(Formatters.formatPrice(portfolioManager.getAccountBalance()));
+        this.totalReturn.setText(Formatters.formatTotalReturn(portfolioManager.calculateProfit())); // TODO: get training period start form user table
+
+        ArrayList<Float> barData = portfolioManager.getBarData();
+        dataAdapter.setData(
+                barData.stream()
+                        .collect(Collectors.toList()));
+        dataAdapter.setBaseline(barData.get(0));
+        dataAdapter.notifyDataSetChanged();
     }
 }

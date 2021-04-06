@@ -41,4 +41,12 @@ public class Formatters {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.CANADA);
         return sdf.format(date);
     }
+
+    public static String formatTotalReturn(Float amount) {
+        if (amount < 0) {
+            return String.format(Locale.CANADA, "$%.2f loss made since Mar 2021", amount);
+        }
+
+        return String.format(Locale.CANADA, "$%.2f profit made since Mar 2021", amount);
+    }
 }
