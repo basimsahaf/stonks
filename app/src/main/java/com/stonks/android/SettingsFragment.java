@@ -9,7 +9,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.res.ResourcesCompat;
-
 import com.google.android.material.checkbox.MaterialCheckBox;
 import com.google.android.material.textfield.TextInputEditText;
 import com.stonks.android.manager.SettingsManager;
@@ -34,6 +33,7 @@ public class SettingsFragment extends BaseFragment {
     private TextInputEditText newPassword;
     private TextView currentUsername;
     private MaterialCheckBox biometricsCheckBox;
+    private TextView biometricsError;
 
     @Override
     public View onCreateView(
@@ -65,10 +65,18 @@ public class SettingsFragment extends BaseFragment {
         oldPassword = view.findViewById(R.id.old_password_text);
         newPassword = view.findViewById(R.id.new_password_text);
         biometricsCheckBox = view.findViewById(R.id.biometrics_checkbox);
+        biometricsError = view.findViewById(R.id.biometrics_error_message);
 
         usernameField.setText(settingsManager.getCurrentUsername());
         currentUsername.setText(settingsManager.getCurrentUsername());
+        biometricsError.setVisibility(View.VISIBLE);
 
+        if (!settingsManager.isCurrentUserBiometricsEnabled()) {
+            biometricsCheckBox.setEnabled(false);
+
+        } else {
+            biometricsCheckBox.setChecked(settingsManager.isCurrentUserBiometricsEnabled());
+        }
 
         usernameSetting.setOnClickListener(
                 v -> {
@@ -127,10 +135,6 @@ public class SettingsFragment extends BaseFragment {
                 status = changePassword();
                 break;
 
-            case BIOMETRICS:
-                status = toggleBiometrics();
-                break;
-
             case TRAINING_PERIOD:
                 //                status = changeTrainingPeriod();
                 break;
@@ -179,8 +183,11 @@ public class SettingsFragment extends BaseFragment {
         return status;
     }
 
-    private boolean toggleBiometrics() {
-
+    private void biometricsListener() {
+        biometricsCheckBox.setOnCheckedChangeListener(
+                (buttonView, isChecked) -> {
+                    if (isChecked) {}
+                });
     }
 
     //    private boolean changeTrainingPeriod() {

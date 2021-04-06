@@ -35,6 +35,11 @@ public class SettingsManager {
     public Result<LoggedInUser> changePassword(String newPassword) {
         return loginRepository.changePassword(newPassword);
     }
+
+    public boolean isCurrentUserBiometricsEnabled() {
+        return loginRepository.isCurrentUserBiometricsEnabled();
+    }
+
     //
     //    public boolean enableBiometrics() {
     //

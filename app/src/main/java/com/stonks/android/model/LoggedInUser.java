@@ -5,6 +5,8 @@ public class LoggedInUser {
 
     private String userId;
 
+    private boolean biometricsEnabled;
+
     public LoggedInUser(String userId) {
         this.userId = userId;
     }
@@ -15,5 +17,13 @@ public class LoggedInUser {
 
     public void setUserId(String newUserId) {
         this.userId = newUserId;
+    }
+
+    public boolean isBiometricsEnabled() {
+        return biometricsEnabled;
+    }
+
+    public void setBiometricsEnabled(boolean biometricsEnabled) {
+        this.biometricsEnabled = biometricsEnabled;
     }
 }

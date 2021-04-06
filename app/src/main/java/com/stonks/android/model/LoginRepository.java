@@ -1,6 +1,7 @@
 package com.stonks.android.model;
 
 import android.content.Context;
+import android.util.Log;
 import com.stonks.android.storage.UserTable;
 
 /**
@@ -36,6 +37,7 @@ public class LoginRepository {
     }
 
     private void setLoggedInUser(LoggedInUser user) {
+        Log.d("Tag", "Current user: " + user.getUserId());
         this.user = user;
     }
 
@@ -56,10 +58,19 @@ public class LoginRepository {
         return result;
     }
 
-    public boolean isBiometricsEnabled() {
+    public boolean initializeBiometricsUser() {
         Result<LoggedInUser> biometricsUser = dataSource.getBiometricsUser();
         if (biometricsUser instanceof Result.Success) {
             setLoggedInUser(((Result.Success<LoggedInUser>) biometricsUser).getData());
+            this.user.setBiometricsEnabled(true);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isBiometricsEnabled() {
+        Result<LoggedInUser> biometricsUser = dataSource.getBiometricsUser();
+        if (biometricsUser instanceof Result.Success) {
             return true;
         }
         return false;
@@ -87,5 +98,9 @@ public class LoginRepository {
             setLoggedInUser(((Result.Success<LoggedInUser>) result).getData());
         }
         return result;
+    }
+
+    public boolean isCurrentUserBiometricsEnabled() {
+        return this.user.isBiometricsEnabled();
     }
 }

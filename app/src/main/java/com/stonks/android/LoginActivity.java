@@ -87,10 +87,10 @@ public class LoginActivity extends BaseActivity {
         loginButton.setOnClickListener(
                 view -> {
                     // TODO: use this after testing is done
-//                    authorize();
+                    authorizeViaForm();
 
                     // this is just for testing purposes
-                    authorizeTestLogin();
+                    //                    authorizeTestLogin();
 
                     usernameChanged = false;
                     passwordChanged = false;
@@ -111,7 +111,7 @@ public class LoginActivity extends BaseActivity {
         // toggle login mode by default
         switchView(AuthMode.LOGIN);
 
-        if (repo.isBiometricsEnabled()) {
+        if (repo.initializeBiometricsUser()) {
             biometricsButton.setVisibility(View.VISIBLE);
             authorizeViaBiometrics();
         } else {
