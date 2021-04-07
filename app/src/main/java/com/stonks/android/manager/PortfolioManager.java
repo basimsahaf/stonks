@@ -124,11 +124,6 @@ public class PortfolioManager {
                             stocksList.clear();
                             barData = new ArrayList<Float>(Collections.nCopies(390, 0.0f));
 
-                            // TODO: Actually make bar data
-                            for (BarData data : map.get("SHOP")) {
-                                //barData.add(data.getClose());
-                            }
-
                             for (int i = 0; i < symbolList.size(); i++) {
                                 String symbol = symbolList.get(i);
                                 if (portfolio.getStockQuantity(symbol) == 0) {
