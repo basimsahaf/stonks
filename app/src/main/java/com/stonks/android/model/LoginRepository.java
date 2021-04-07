@@ -68,13 +68,7 @@ public class LoginRepository {
         return false;
     }
 
-    public boolean isBiometricsEnabled() {
-        Result<LoggedInUser> biometricsUser = dataSource.getBiometricsUser();
-        if (biometricsUser instanceof Result.Success) {
-            return true;
-        }
-        return false;
-    }
+    // TODO: everything below this goes into the new UserManager
 
     public String getCurrentUser() {
         return this.user.getUserId();
@@ -101,6 +95,27 @@ public class LoginRepository {
     }
 
     public boolean isCurrentUserBiometricsEnabled() {
-        return this.user.isBiometricsEnabled();
+        Result<LoggedInUser> biometricsUser = dataSource.getBiometricsUser();
+        if (biometricsUser instanceof Result.Success) {
+            return ((Result.Success<LoggedInUser>) biometricsUser)
+                    .getData()
+                    .getUserId()
+                    .equals(this.user.getUserId());
+        }
+        return false;
+    }
+
+    public boolean isBiometricsAvailableOnDevice() {
+        Result<LoggedInUser> biometricsUser = dataSource.getBiometricsUser();
+        return !(biometricsUser instanceof Result.Success);
+    }
+
+    public boolean toggleBiometrics(boolean status) {
+        Result<LoggedInUser> result = dataSource.toggleBiometrics(this.user.getUserId(), status);
+        return result instanceof Result.Success;
+    }
+
+    public Result<LoggedInUser> changeTrainingAmount(float amount) {
+        return dataSource.changeTrainingAmount(this.user.getUserId(), amount);
     }
 }

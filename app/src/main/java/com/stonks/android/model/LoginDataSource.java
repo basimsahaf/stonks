@@ -80,4 +80,20 @@ public class LoginDataSource {
             return new Result.Error(R.string.internal_server_error);
         }
     }
+
+    public Result<LoggedInUser> toggleBiometrics(String username, boolean status) {
+        try {
+            return userTable.toggleBiometrics(username, status);
+        } catch (Exception e) {
+            return new Result.Error(R.string.internal_server_error);
+        }
+    }
+
+    public Result<LoggedInUser> changeTrainingAmount(String username, float amount) {
+        try {
+            return userTable.changeTrainingAmount(username, amount);
+        } catch (Exception e) {
+            return new Result.Error(R.string.internal_server_error);
+        }
+    }
 }

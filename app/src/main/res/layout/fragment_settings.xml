@@ -144,17 +144,17 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:id="@+id/biometrics_error_message"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                style="@style/AppTheme.TextAppearance.SmallErrorLabel"
-                android:layout_margin="@dimen/section_margin"
-                android:textAlignment="center"
-                app:layout_constraintTop_toBottomOf="@id/biometrics_checkbox"
-                android:visibility="gone"/>
-
         </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <TextView
+            android:id="@+id/biometrics_error_message"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/AppTheme.TextAppearance.ExtraSmallErrorLabel"
+            android:textAlignment="textStart"
+            android:paddingHorizontal="@dimen/page_padding_horizontal"
+            app:layout_constraintTop_toBottomOf="@id/biometrics_setting"
+            android:visibility="gone"/>
 
         <TextView
             android:id="@+id/portfolio_subheading"
@@ -323,6 +323,7 @@
             tools:layout_editor_absoluteX="16dp">
 
             <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/amount_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 

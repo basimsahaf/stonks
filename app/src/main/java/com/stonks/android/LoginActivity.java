@@ -53,7 +53,7 @@ public class LoginActivity extends BaseActivity {
         setContentView(R.layout.activity_login);
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
 
-        LoginRepository repo = LoginRepository.getInstance(getApplicationContext());
+        repo = LoginRepository.getInstance(getApplicationContext());
         loginViewModel = new LoginViewModel(repo);
 
         loginModeButton = findViewById(R.id.login_mode_button);
@@ -188,11 +188,6 @@ public class LoginActivity extends BaseActivity {
                             public void onAuthenticationSucceeded(
                                     @NonNull BiometricPrompt.AuthenticationResult result) {
                                 super.onAuthenticationSucceeded(result);
-                                Toast.makeText(
-                                                getApplicationContext(),
-                                                R.string.welcome,
-                                                Toast.LENGTH_LONG)
-                                        .show();
                                 showLoginSucceeded();
                                 Log.d(TAG, "Fingerprint recognised successfully");
                             }

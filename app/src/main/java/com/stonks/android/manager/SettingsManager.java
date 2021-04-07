@@ -40,12 +40,15 @@ public class SettingsManager {
         return loginRepository.isCurrentUserBiometricsEnabled();
     }
 
-    //
-    //    public boolean enableBiometrics() {
-    //
-    //    }
-    //
-    //    public boolean updateTrainingAmount(float amount) {
-    //
-    //    }
+    public boolean isBiometricsAvailableOnDevice() {
+        return loginRepository.isBiometricsAvailableOnDevice();
+    }
+
+    public boolean toggleBiometrics(boolean status) {
+        return loginRepository.toggleBiometrics(status);
+    }
+
+    public Result<LoggedInUser> changeTrainingAmount(float amount) {
+        return loginRepository.changeTrainingAmount(amount);
+    }
 }

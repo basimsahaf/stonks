@@ -87,6 +87,11 @@
     <string name="invalid_current_password">Invalid password</string>
     <string name="username_update_failed">Username update failed, please try again!</string>
     <string name="password_update_error">Password could not be updated, please try again!</string>
+    <string name="biometrics_in_use">Biometrics already in use by another user.</string>
+    <string name="training_period_error">Training amount could not be changed</string>
+    <string name="training_period_updated">Training amount successfully updated</string>
+    <string name="invalid_training_input">Training amount can only include numbers</string>
+
 
 
     <!-- Search page strings -->

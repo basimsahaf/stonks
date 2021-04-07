@@ -31,6 +31,7 @@ public class SettingsFragment extends BaseFragment {
     private TextInputEditText usernameField;
     private TextInputEditText oldPassword;
     private TextInputEditText newPassword;
+    private TextInputEditText trainingAmount;
     private TextView currentUsername;
     private MaterialCheckBox biometricsCheckBox;
     private TextView biometricsError;
@@ -66,17 +67,22 @@ public class SettingsFragment extends BaseFragment {
         newPassword = view.findViewById(R.id.new_password_text);
         biometricsCheckBox = view.findViewById(R.id.biometrics_checkbox);
         biometricsError = view.findViewById(R.id.biometrics_error_message);
+        trainingAmount = view.findViewById(R.id.amount_text);
 
         usernameField.setText(settingsManager.getCurrentUsername());
         currentUsername.setText(settingsManager.getCurrentUsername());
-        biometricsError.setVisibility(View.VISIBLE);
+        biometricsError.setText(R.string.biometrics_in_use);
 
-        if (!settingsManager.isCurrentUserBiometricsEnabled()) {
-            biometricsCheckBox.setEnabled(false);
-
+        if (settingsManager.isCurrentUserBiometricsEnabled()) {
+            biometricsCheckBox.setChecked(true);
+        } else if (settingsManager.isBiometricsAvailableOnDevice()) {
+            biometricsCheckBox.setChecked(false);
         } else {
-            biometricsCheckBox.setChecked(settingsManager.isCurrentUserBiometricsEnabled());
+            biometricsCheckBox.setEnabled(false);
+            biometricsError.setVisibility(View.VISIBLE);
         }
+
+        setUpBiometricsListener();
 
         usernameSetting.setOnClickListener(
                 v -> {
@@ -136,7 +142,7 @@ public class SettingsFragment extends BaseFragment {
                 break;
 
             case TRAINING_PERIOD:
-                //                status = changeTrainingPeriod();
+                status = changeTrainingAmount();
                 break;
         }
         return status;
@@ -183,13 +189,32 @@ public class SettingsFragment extends BaseFragment {
         return status;
     }
 
-    private void biometricsListener() {
+    private void setUpBiometricsListener() {
         biometricsCheckBox.setOnCheckedChangeListener(
                 (buttonView, isChecked) -> {
-                    if (isChecked) {}
+                    settingsManager.toggleBiometrics(isChecked);
                 });
     }
 
-    //    private boolean changeTrainingPeriod() {
-    //    }
+    private boolean changeTrainingAmount() {
+        boolean status = false;
+        String newAmount = trainingAmount.getText().toString();
+
+        String toastText;
+        Result<LoggedInUser> result;
+        try {
+            result = settingsManager.changeTrainingAmount(Float.parseFloat(newAmount));
+            if (result instanceof Result.Success) {
+                toastText = getString(R.string.training_period_updated);
+                status = true;
+            } else {
+                toastText = getString(((Result.Error) result).getError());
+            }
+        } catch (Exception e) {
+            toastText = getString(R.string.invalid_training_input);
+        }
+
+        Toast.makeText(getContext(), toastText, Toast.LENGTH_LONG).show();
+        return status;
+    }
 }
