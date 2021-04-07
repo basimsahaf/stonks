@@ -17,11 +17,14 @@ import com.stonks.android.model.alpaca.AlpacaTimeframe;
 import com.stonks.android.storage.PortfolioTable;
 import com.stonks.android.storage.UserTable;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.temporal.TemporalAdjuster;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
@@ -127,7 +130,7 @@ public class PortfolioManager {
                                 barData.add(data.getClose());
                             }
 
-                            createGraphData();
+                            createGraphData(map.get("SHOP"));
 
                             for (String symbol : symbolList) {
                                 List<BarData> barData = map.get(symbol);
@@ -142,13 +145,63 @@ public class PortfolioManager {
                                 accountValue += (currentPrice * quantity);
                             }
 
-                            //portfolio.setAccountValue(accountValue);
+                            portfolio.setAccountValue(accountValue);
                             fragment.updateData();
                         },
                         err -> Log.e("PortfolioManager", err.toString()));
     }
 
-    public void createGraphData() {
+    // TODO: calculate for all transactions;
+    public void createGraphData(List<BarData> stockPrices) {
+        ArrayList<Float> graphData = new ArrayList<>();
+
+        //  TODO: Fetch from the TransactionManager
+        float profit = 0.0f;
+
+        ArrayList<Transaction> transactions = new ArrayList<>();
+        transactions.add(new Transaction("username", "SHOP", 2, 1000.0f, TransactionMode.BUY, java.time.LocalDateTime.now().withHour(12)));
+        transactions.add(new Transaction("username", "SHOP", 1, 1200.0f, TransactionMode.SELL, java.time.LocalDateTime.now().withHour(15)));
+        transactions.add(new Transaction("username", "SHOP", 2, 1300.0f, TransactionMode.BUY, java.time.LocalDateTime.now().withHour(16)));
+
+        while (graphData.size() < stockPrices.size()) {
+            graphData.add(0.0f);
+        }
+
+        int totalQuantity = 0;
+        float pricePerStock = 0.0f;
+        for (Transaction transaction : transactions) {
+            int quantity = transaction.getShares();
+            totalQuantity += transaction.getShares();
+
+            if (transaction.getTransactionType() == TransactionMode.BUY) {
+                pricePerStock = (pricePerStock + (transaction.getPrice() * transaction.getShares())) / totalQuantity;
+            } else if (transaction.getTransactionType() == TransactionMode.SELL) {
+                quantity *= -1;
+            }
+
+            LocalDateTime transactionDate = transaction.getCreatedAt();
+            for (int i = 0; i < graphData.size(); i++) {
+                Instant pointDate = new Date(stockPrices.get(i).getTimestamp() * 1000L).toInstant();
+                LocalDateTime localPointDate = LocalDateTime.ofInstant(pointDate, ZoneId.systemDefault());
+
+                if (transactionDate.isBefore(localPointDate)) {
+                    float newValue;
+
+                    if (transaction.getTransactionType() == TransactionMode.BUY) {
+                        newValue = graphData.get(i) + (quantity * transaction.getPrice());
+                    } else {
+                        newValue = graphData.get(i) + (quantity * pricePerStock);
+                    }
+
+                    graphData.set(i, newValue);
+
+                    continue;
+                }
+
+                float newValue = graphData.get(i) + (quantity * stockPrices.get(i).getClose());
+                graphData.set(i, newValue);
+            }
+        }
 
     }
 
