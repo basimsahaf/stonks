@@ -1,10 +1,8 @@
 package com.stonks.android.model;
 
-import android.graphics.drawable.Drawable;
-import com.github.mikephil.charting.data.CandleEntry;
 import com.google.gson.annotations.SerializedName;
 
-public class BarData extends CandleEntry {
+public class BarData {
     @SerializedName("t")
     private Integer timestamp;
 
@@ -25,27 +23,12 @@ public class BarData extends CandleEntry {
 
     private Integer endTimestamp;
 
-    public BarData(float x, float shadowH, float shadowL, float open, float close) {
-        super(x, shadowH, shadowL, open, close);
-    }
-
-    public BarData(float x, float shadowH, float shadowL, float open, float close, Object data) {
-        super(x, shadowH, shadowL, open, close, data);
-    }
-
-    public BarData(float x, float shadowH, float shadowL, float open, float close, Drawable icon) {
-        super(x, shadowH, shadowL, open, close, icon);
-    }
-
-    public BarData(
-            float x,
-            float shadowH,
-            float shadowL,
-            float open,
-            float close,
-            Drawable icon,
-            Object data) {
-        super(x, shadowH, shadowL, open, close, icon, data);
+    public BarData(int timestamp, float high, float low, float open, float close) {
+        this.timestamp = timestamp;
+        this.high = high;
+        this.low = low;
+        this.close = close;
+        this.open = open;
     }
 
     public Integer getVolume() {
@@ -72,7 +55,6 @@ public class BarData extends CandleEntry {
         this.endTimestamp = endTimestamp;
     }
 
-    @Override
     public float getOpen() {
         return open;
     }
@@ -81,7 +63,6 @@ public class BarData extends CandleEntry {
         this.open = open;
     }
 
-    @Override
     public float getClose() {
         return close;
     }
@@ -90,7 +71,6 @@ public class BarData extends CandleEntry {
         this.close = close;
     }
 
-    @Override
     public float getLow() {
         return low;
     }
@@ -99,7 +79,6 @@ public class BarData extends CandleEntry {
         this.low = low;
     }
 
-    @Override
     public float getHigh() {
         return high;
     }
@@ -108,11 +87,6 @@ public class BarData extends CandleEntry {
         this.high = high;
     }
 
-    public CandleEntry toCandleEntry(int x) {
-        return new CandleEntry(x, this.high, this.low, this.open, this.close);
-    }
-
-    @Override
     public String toString() {
         return "BarData{"
                 + "timestamp="

@@ -26,7 +26,7 @@ public class StockData extends BaseObservable implements Serializable, WebSocket
     private Double divYield;
     private String description;
     private List<BarData> graphData;
-    private Map<DateRange, List<BarData>> cachedGraphData;
+    private final Map<DateRange, List<BarData>> cachedGraphData;
 
     public StockData() {
         this.cachedGraphData = new HashMap<>();

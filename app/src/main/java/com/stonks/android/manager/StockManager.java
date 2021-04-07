@@ -16,8 +16,6 @@ import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -58,7 +56,8 @@ public class StockManager {
                             LocalDateTime.ofInstant(
                                     Instant.ofEpochSecond(bar.getEndTimestamp()),
                                     TimeZone.getDefault().toZoneId());
-                    DateTimeFormatter formatter = ChartHelpers.getMarkerDateFormatter(this.currentRange);
+                    DateTimeFormatter formatter =
+                            ChartHelpers.getMarkerDateFormatter(this.currentRange);
 
                     return String.format("%s - %s", formatter.format(start), formatter.format(end));
                 };
@@ -114,8 +113,18 @@ public class StockManager {
                 .subscribeOn(Schedulers.io())
                 .subscribe(
                         newStockData -> {
-                            List<BarData> barData = ChartHelpers.getSameDayBars(newStockData.getGraphData());
-                            this.stockData.updateStock(newStockData, this.currentRange, barData);
+                            List<BarData> barData =
+                                    ChartHelpers.getSameDayBars(newStockData.getGraphData());
+                            List<BarData> cleanedData = ChartHelpers.cleanData(barData, timeframe);
+
+                            Log.d(
+                                    TAG,
+                                    cleanedData.stream()
+                                            .map(BarData::getTimestamp)
+                                            .collect(Collectors.toList())
+                                            .toString());
+                            this.stockData.updateStock(
+                                    newStockData, this.currentRange, cleanedData);
                         },
                         err -> Log.e(TAG, "fetchInitialData: " + err.toString()));
     }
@@ -135,13 +144,16 @@ public class StockManager {
                 .subscribe(
                         stockBars -> {
                             List<BarData> bars = stockBars.get(symbol);
-                            Log.d(TAG, "newGraphData:" + bars);
 
                             if (this.currentRange == DateRange.DAY) {
                                 bars = ChartHelpers.getSameDayBars(bars);
                             }
 
-                            this.stockData.updateCachedGraphData(this.currentRange, bars);
+                            List<BarData> cleanedData = ChartHelpers.cleanData(bars, timeframe);
+                            Log.d(
+                                    TAG,
+                                    "rawBars: " + bars.size() + ", cleaned: " + cleanedData.size());
+                            this.stockData.updateCachedGraphData(this.currentRange, cleanedData);
                         },
                         err -> Log.d(TAG, "fetchGraphData: " + err.getMessage()));
     }
@@ -237,7 +249,7 @@ public class StockManager {
 
         return this.lineData.entrySet().stream()
                 .sorted(Comparator.comparingInt(Map.Entry::getKey))
-                .map(entry -> new Entry(entry.getKey(), entry.getValue().getClose()))
+                .map(entry -> new Entry(entry.getKey(), entry.getValue().getOpen()))
                 .collect(Collectors.toList());
     }
 }

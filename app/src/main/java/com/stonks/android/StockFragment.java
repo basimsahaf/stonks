@@ -36,12 +36,11 @@ import com.stonks.android.uicomponent.SpeedDialExtendedFab;
 import com.stonks.android.uicomponent.StockChart;
 import com.stonks.android.utility.Constants;
 import com.stonks.android.utility.Formatters;
-import java.time.LocalDateTime;
-import java.time.Month;
 import java.util.*;
 
 public class StockFragment extends BaseFragment {
-    private static String TAG = StockFragment.class.getCanonicalName();
+    public static final String SYMBOL_ARG = "symbol";
+    private static final String TAG = StockFragment.class.getCanonicalName();
 
     private String symbol;
     private RecyclerView transactionList;
@@ -59,12 +58,9 @@ public class StockFragment extends BaseFragment {
     private ImageView favIcon;
     private StockChart stockChart;
     private CandleChart candleChart;
-
-    private boolean favourited = false;
-    private DateRange currentDateRange;
-
-    private StockManager manager;
     private boolean isCandleVisible = true;
+    private boolean favourited = false;
+    private StockManager manager;
 
     @Nullable
     @Override
@@ -75,7 +71,7 @@ public class StockFragment extends BaseFragment {
         FragmentStockBinding binding =
                 DataBindingUtil.inflate(inflater, R.layout.fragment_stock, container, false);
 
-        this.symbol = getArguments().getString(getString(R.string.intent_extra_symbol));
+        this.symbol = getArguments().getString(SYMBOL_ARG);
         this.manager = new StockManager(this.symbol);
 
         // using the addOnPropertyChangedCallback method to update properties that
@@ -166,7 +162,8 @@ public class StockFragment extends BaseFragment {
         RecyclerView.LayoutManager transactionListManager = new LinearLayoutManager(getContext());
         this.transactionList.setLayoutManager(transactionListManager);
         this.transactionListAdapter =
-                new TransactionViewAdapter(this.getFakeTransactionsForStock());
+                new TransactionViewAdapter(
+                        RecentTransactionsFragment.getFakeTransactions(this.symbol));
         this.transactionList.setAdapter(this.transactionListAdapter);
 
         ChartMarker candleMarker =
@@ -272,34 +269,33 @@ public class StockFragment extends BaseFragment {
         rangeDayButton.setOnClickListener(
                 v -> {
                     this.manager.setCurrentRange(DateRange.DAY);
-                    switchDateRange(DateRange.DAY);
+                    this.rangeDayButton.setChecked(true);
                 });
         rangeWeekButton.setOnClickListener(
                 v -> {
-                    switchDateRange(DateRange.WEEK);
+                    this.rangeWeekButton.setChecked(true);
                     this.manager.setCurrentRange(DateRange.WEEK);
                 });
         rangeMonthButton.setOnClickListener(
                 v -> {
-                    switchDateRange(DateRange.MONTH);
                     this.manager.setCurrentRange(DateRange.MONTH);
+                    this.rangeMonthButton.setChecked(true);
                 });
         rangeYearButton.setOnClickListener(
                 v -> {
-                    switchDateRange(DateRange.YEAR);
                     this.manager.setCurrentRange(DateRange.YEAR);
+                    this.rangeYearButton.setChecked(true);
                 });
         rangeAllButton.setOnClickListener(
                 v -> {
-                    switchDateRange(DateRange.THREE_YEARS);
                     this.manager.setCurrentRange(DateRange.THREE_YEARS);
+                    this.rangeAllButton.setChecked(true);
                 });
 
         chartToggleButton.setOnClickListener(v -> this.toggleCandleVisible());
 
         // default date range is daily
         this.rangeDayButton.setChecked(true);
-        this.currentDateRange = DateRange.DAY;
 
         if (!this.doesUserPositionExist()) {
             positionContainer.setVisibility(View.GONE);
@@ -318,30 +314,6 @@ public class StockFragment extends BaseFragment {
         }
 
         this.isCandleVisible = !this.isCandleVisible;
-    }
-
-    private void switchDateRange(DateRange dateRange) {
-        switch (dateRange) {
-            case WEEK:
-                this.currentDateRange = DateRange.WEEK;
-                this.rangeWeekButton.setChecked(true);
-                break;
-            case MONTH:
-                this.currentDateRange = DateRange.MONTH;
-                this.rangeMonthButton.setChecked(true);
-                break;
-            case YEAR:
-                this.currentDateRange = DateRange.YEAR;
-                this.rangeYearButton.setChecked(true);
-                break;
-            case THREE_YEARS:
-                this.currentDateRange = DateRange.THREE_YEARS;
-                this.rangeAllButton.setChecked(true);
-                break;
-            default:
-                this.currentDateRange = DateRange.DAY;
-                this.rangeDayButton.setChecked(true);
-        }
     }
 
     public static ArrayList<Pair<Integer, Float>> getFakeStockPrices() {
@@ -400,57 +372,5 @@ public class StockFragment extends BaseFragment {
     // Hard coded to false for now
     private boolean doesUserPositionExist() {
         return false;
-    }
-
-    public ArrayList<TransactionsListRow> getFakeTransactionsForStock() {
-        ArrayList<TransactionsListRow> list = new ArrayList<>();
-
-        list.add(new TransactionsListRow(LocalDateTime.of(2020, Month.AUGUST, 19, 13, 14)));
-        list.add(
-                new TransactionsListRow(
-                        new Transaction(
-                                "username",
-                                this.symbol,
-                                100,
-                                56.92f,
-                                TransactionMode.BUY,
-                                LocalDateTime.of(2020, Month.AUGUST, 19, 13, 14))));
-        list.add(
-                new TransactionsListRow(
-                        new Transaction(
-                                "username",
-                                this.symbol,
-                                268,
-                                36.47f,
-                                TransactionMode.BUY,
-                                LocalDateTime.of(2020, Month.AUGUST, 1, 9, 52))));
-
-        return list;
-    }
-
-    public static ArrayList<TransactionsListRow> getFakeTransactions() {
-        ArrayList<TransactionsListRow> list = new ArrayList<>();
-
-        list.add(new TransactionsListRow(LocalDateTime.of(2020, Month.AUGUST, 19, 13, 14)));
-        list.add(
-                new TransactionsListRow(
-                        new Transaction(
-                                "username",
-                                "SHOP",
-                                100,
-                                56.92f,
-                                TransactionMode.BUY,
-                                LocalDateTime.of(2020, Month.AUGUST, 19, 13, 14))));
-        list.add(
-                new TransactionsListRow(
-                        new Transaction(
-                                "username",
-                                "SHOP",
-                                268,
-                                36.47f,
-                                TransactionMode.BUY,
-                                LocalDateTime.of(2020, Month.AUGUST, 1, 9, 52))));
-
-        return list;
     }
 }

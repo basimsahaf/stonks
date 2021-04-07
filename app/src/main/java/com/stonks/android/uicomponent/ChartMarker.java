@@ -2,7 +2,6 @@ package com.stonks.android.uicomponent;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.util.Log;
 import android.widget.TextView;
 import com.github.mikephil.charting.components.MarkerView;
 import com.github.mikephil.charting.data.Entry;
@@ -25,7 +24,6 @@ public class ChartMarker extends MarkerView {
 
     @Override
     public void refreshContent(Entry e, Highlight highlight) {
-        Log.d("marker", "x: " + (int) e.getX() + ", y: " + e.getY());
         markerText.setText(this.getMarkerText.apply((int) e.getX()));
 
         super.refreshContent(e, highlight);
