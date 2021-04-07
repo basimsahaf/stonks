@@ -32,11 +32,11 @@ public class HomePageFragment extends BaseFragment {
     private TextView moneyLeft;
     private TextView priceUpdate;
     private TextView totalReturn;
+    private TextView noStocksMsg;
     private ImageView priceUpdateArrow;
     private ImageView totalReturnArrow;
     private static PortfolioManager portfolioManager;
     private static RecyclerView.Adapter portfolioListAdapter;
-    private static HashMap<DateRange, Float> profitsList;
     private static StockChartAdapter dataAdapter;
 
     @Override
@@ -73,7 +73,7 @@ public class HomePageFragment extends BaseFragment {
 
         getActionBar().setDisplayHomeAsUpEnabled(false);
         getMainActivity().setActionBarCustomViewAlpha(0);
-        getMainActivity().setPortfolioValue(129.32f);
+        getMainActivity().setPortfolioValue(0.0f);
 
         scrollView.setOnScrollChangeListener(
                 (View.OnScrollChangeListener)
@@ -112,6 +112,9 @@ public class HomePageFragment extends BaseFragment {
     }
 
     public void updateData() {
+        if (!portfolioManager.getStocks().isEmpty()) {
+            noStocksMsg.setVisibility(View.GONE);
+        }
         ((StockListRecyclerViewAdapter) portfolioListAdapter).setNewStocks(portfolioManager.getStocks());
         portfolioListAdapter.notifyDataSetChanged();
 

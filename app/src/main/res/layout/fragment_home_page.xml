@@ -138,6 +138,16 @@
                     android:text="@string/your_portfolio"
                     style="@style/AppTheme.TextAppearance.XLLabel" />
 
+                <TextView
+                    android:id="@+id/no_stocks_msg"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="@dimen/page_padding_horizontal"
+                    android:paddingVertical="@dimen/row_margin"
+                    android:text="@string/no_stocks_msg"
+                    android:gravity="center"
+                    style="@style/AppTheme.TextAppearance.MediumLabel" />
+
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/portfolio_list"
                     android:layout_width="match_parent"
