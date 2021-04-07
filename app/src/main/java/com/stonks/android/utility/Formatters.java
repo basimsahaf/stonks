@@ -44,9 +44,11 @@ public class Formatters {
 
     public static String formatTotalReturn(Float amount) {
         if (amount < 0) {
-            return String.format(Locale.CANADA, "$%.2f loss made since Mar 2021", amount);
+            amount *= -1.0f;
+            return String.format(Locale.CANADA, "$%.2f loss made since Mar 2021\n(in stock transactions)", amount);
         }
 
-        return String.format(Locale.CANADA, "$%.2f profit made since Mar 2021", amount);
+        return String.format(Locale.CANADA, "$%.2f profit made since Mar 2021\n(in stocks transactions)", amount);
     }
+
 }

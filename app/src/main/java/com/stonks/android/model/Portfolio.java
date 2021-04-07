@@ -19,8 +19,7 @@ public class Portfolio {
 
         // TODO: Remove
         if (portfolioItems.isEmpty()) {
-            portfolioItems.add(new PortfolioItem("username", "SHOP", 10));
-            portfolioItems.add(new PortfolioItem("username", "UBER", 10));
+            portfolioItems.add(new PortfolioItem("username", "SHOP", 3));
         }
     }
 

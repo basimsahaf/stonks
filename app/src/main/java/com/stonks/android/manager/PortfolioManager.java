@@ -20,10 +20,7 @@ import com.stonks.android.storage.UserTable;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.temporal.TemporalAdjuster;
-import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -33,7 +30,9 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
 public class PortfolioManager {
     private static PortfolioManager portfolioManager = null;
 
-    private static HomePageFragment fragment;
+    private HomePageFragment fragment;
+
+    private static float profitFromTransactions = 0.0f;
 
     private static UserTable userTable;
     private static PortfolioTable portfolioTable;
@@ -41,17 +40,7 @@ public class PortfolioManager {
     private static Portfolio portfolio;
     private static ArrayList<StockListItem> stocksList;
     private static ArrayList<Float> barData;
-
-    static TemporalAdjuster YESTERDAY =
-            TemporalAdjusters.ofDateAdjuster(date -> date.minusDays(1));
-    static TemporalAdjuster LAST_WEEK =
-            TemporalAdjusters.ofDateAdjuster(date -> date.minusWeeks(1));
-    static TemporalAdjuster LAST_MONTH =
-            TemporalAdjusters.ofDateAdjuster(date -> date.minusMonths(1));
-    static TemporalAdjuster LAST_YEAR =
-            TemporalAdjusters.ofDateAdjuster(date -> date.minusYears(1));
-    static TemporalAdjuster THREE_YEARS_AGO =
-            TemporalAdjusters.ofDateAdjuster(date -> date.minusYears(3));
+    private static ArrayList<Transaction> transactions;
 
     private PortfolioManager(Context context, HomePageFragment f) {
         fragment = f;
@@ -64,11 +53,19 @@ public class PortfolioManager {
     public static PortfolioManager getInstance(Context context, HomePageFragment f) {
         if (portfolioManager == null) {
             portfolioManager = new PortfolioManager(context, f);
+
+            //  TODO: Fetch from the TransactionManager
+            transactions = new ArrayList<>();
+//            transactions.add(new Transaction("username", "SHOP", 1, 200.0f, TransactionMode.BUY, java.time.LocalDateTime.now().minusDays(3)));
+//            transactions.add(new Transaction("username", "SHOP", 1, 2000.0f, TransactionMode.SELL, java.time.LocalDateTime.now().minusDays(2)));
+            transactions.add(new Transaction("username", "SHOP", 2, 1000.0f, TransactionMode.BUY, java.time.LocalDateTime.now().minusDays(6)));
+            transactions.add(new Transaction("username", "SHOP", 1, 1200.0f, TransactionMode.SELL, java.time.LocalDateTime.now().minusDays(2)));
+            transactions.add(new Transaction("username", "SHOP", 2, 1300.0f, TransactionMode.BUY, java.time.LocalDateTime.now().withHour(12)));
         }
 
         //String username = LoginRepository.getInstance(new LoginDataSource(userTable)).getCurrentUser();
         portfolio = new Portfolio(0.0f, 0.0f, portfolioTable.getPortfolioItems("username"), portfolioManager); // TODO: get user from table
-        fragment = f;
+        portfolioManager.fragment = f;
 
         portfolioManager.subscribePortfolioItems();
 
@@ -127,7 +124,7 @@ public class PortfolioManager {
 
                             // TODO: Actually make bar data
                             for (BarData data : map.get("SHOP")) {
-                                barData.add(data.getClose());
+                                //barData.add(data.getClose());
                             }
 
                             createGraphData(map.get("SHOP"));
@@ -145,6 +142,7 @@ public class PortfolioManager {
                                 accountValue += (currentPrice * quantity);
                             }
 
+                            calculateProfit();
                             portfolio.setAccountValue(accountValue);
                             fragment.updateData();
                         },
@@ -155,14 +153,6 @@ public class PortfolioManager {
     public void createGraphData(List<BarData> stockPrices) {
         ArrayList<Float> graphData = new ArrayList<>();
 
-        //  TODO: Fetch from the TransactionManager
-        float profit = 0.0f;
-
-        ArrayList<Transaction> transactions = new ArrayList<>();
-        transactions.add(new Transaction("username", "SHOP", 2, 1000.0f, TransactionMode.BUY, java.time.LocalDateTime.now().withHour(12)));
-        transactions.add(new Transaction("username", "SHOP", 1, 1200.0f, TransactionMode.SELL, java.time.LocalDateTime.now().withHour(15)));
-        transactions.add(new Transaction("username", "SHOP", 2, 1300.0f, TransactionMode.BUY, java.time.LocalDateTime.now().withHour(16)));
-
         while (graphData.size() < stockPrices.size()) {
             graphData.add(0.0f);
         }
@@ -171,11 +161,16 @@ public class PortfolioManager {
         float pricePerStock = 0.0f;
         for (Transaction transaction : transactions) {
             int quantity = transaction.getShares();
-            totalQuantity += transaction.getShares();
 
             if (transaction.getTransactionType() == TransactionMode.BUY) {
+                if (totalQuantity == 0.0f) {
+                    pricePerStock = 0.0f;
+                }
+
+                totalQuantity += transaction.getShares();
                 pricePerStock = (pricePerStock + (transaction.getPrice() * transaction.getShares())) / totalQuantity;
             } else if (transaction.getTransactionType() == TransactionMode.SELL) {
+                totalQuantity -= transaction.getShares();
                 quantity *= -1;
             }
 
@@ -184,7 +179,7 @@ public class PortfolioManager {
                 Instant pointDate = new Date(stockPrices.get(i).getTimestamp() * 1000L).toInstant();
                 LocalDateTime localPointDate = LocalDateTime.ofInstant(pointDate, ZoneId.systemDefault());
 
-                if (transactionDate.isBefore(localPointDate)) {
+                if (localPointDate.isBefore(transactionDate)) {
                     float newValue;
 
                     if (transaction.getTransactionType() == TransactionMode.BUY) {
@@ -193,50 +188,42 @@ public class PortfolioManager {
                         newValue = graphData.get(i) + (quantity * pricePerStock);
                     }
 
-                    graphData.set(i, newValue);
+                    graphData.set(i, totalQuantity == 0.0f ? 0.0f : newValue);
 
                     continue;
                 }
 
                 float newValue = graphData.get(i) + (quantity * stockPrices.get(i).getClose());
-                graphData.set(i, newValue);
+                graphData.set(i, totalQuantity == 0.0f ? 0.0f : newValue);
             }
         }
 
+        barData = graphData;
     }
 
     public float calculateProfit() {
         //  TODO: Fetch from the TransactionManager
-        float profit = 0.0f;
-
-        ArrayList<Transaction> transactions = new ArrayList<>();
-        transactions.add(new Transaction("username", "SHOP", 2, 10.0f, TransactionMode.BUY, java.time.LocalDateTime.now()));
-        transactions.add(new Transaction("username", "SHOP", 1, 12.0f, TransactionMode.SELL, java.time.LocalDateTime.now()));
-        transactions.add(new Transaction("username", "SHOP", 2, 13.0f, TransactionMode.BUY, java.time.LocalDateTime.now()));
-        transactions.add(new Transaction("username", "SHOP", 3, 50.0f, TransactionMode.SELL, java.time.LocalDateTime.now()));
-
-        Calendar calendar = Calendar.getInstance();
-        LocalDateTime now = java.time.LocalDateTime.now();
-        LocalDateTime yesterday = now.with(YESTERDAY);
-        LocalDateTime lastWeek = now.with(LAST_WEEK);
-        LocalDateTime lastMonth = now.with(LAST_MONTH);
-        LocalDateTime lastYear = now.with(LAST_YEAR);
-        LocalDateTime threeYearsAgo = now.with(THREE_YEARS_AGO);
+        profitFromTransactions = 0.0f;
 
         for (Transaction transaction : transactions) {
             if (transaction.getTransactionType() == TransactionMode.BUY) {
-                profit -= (transaction.getPrice() * transaction.getShares());
+                profitFromTransactions -= (transaction.getPrice() * transaction.getShares());
                 continue;
             }
 
-            profit += (transaction.getPrice() * transaction.getShares());
+            profitFromTransactions += (transaction.getPrice() * transaction.getShares());
         }
 
-        return profit;
+        return profitFromTransactions;
     }
 
     public void updateData() {
-        portfolio.setAccountValue(9999.0f);
         fragment.updateData();
+    }
+
+    public float graphChange() {
+        float heldStocksReturn = barData.get(barData.size() - 1) - barData.get(0);
+
+        return heldStocksReturn;
     }
 }

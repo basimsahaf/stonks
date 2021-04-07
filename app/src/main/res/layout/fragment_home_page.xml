@@ -78,6 +78,7 @@
                             android:layout_height="wrap_content"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@id/price_update_arrow"
+                            android:layout_marginTop="@dimen/row_margin"
                             android:paddingRight="@dimen/label_margin"
                             android:src="@drawable/ic_baseline_arrow_drop_up_24" />
 

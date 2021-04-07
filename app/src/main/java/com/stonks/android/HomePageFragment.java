@@ -1,12 +1,15 @@
 package com.stonks.android;
 
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
 import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -14,7 +17,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.stonks.android.adapter.StockChartAdapter;
 import com.stonks.android.adapter.StockListRecyclerViewAdapter;
 import com.stonks.android.manager.PortfolioManager;
-import com.stonks.android.model.BarData;
 import com.stonks.android.model.StockListItem;
 import com.stonks.android.model.alpaca.DateRange;
 import com.stonks.android.uicomponent.CustomSparkView;
@@ -30,6 +32,8 @@ public class HomePageFragment extends BaseFragment {
     private TextView moneyLeft;
     private TextView priceUpdate;
     private TextView totalReturn;
+    private ImageView priceUpdateArrow;
+    private ImageView totalReturnArrow;
     private static PortfolioManager portfolioManager;
     private static RecyclerView.Adapter portfolioListAdapter;
     private static HashMap<DateRange, Float> profitsList;
@@ -46,8 +50,12 @@ public class HomePageFragment extends BaseFragment {
         portfolioManager = PortfolioManager.getInstance(this.getContext(), this);
 
         this.accountValue = view.findViewById(R.id.current_value_price);
+        this.priceUpdate = view.findViewById(R.id.price_update);
         this.moneyLeft = view.findViewById(R.id.money_left);
         this.totalReturn = view.findViewById(R.id.total_return);
+
+        this.priceUpdateArrow = view.findViewById(R.id.price_update_arrow);
+        this.totalReturnArrow = view.findViewById(R.id.total_return_arrow);
 
         RecyclerView.LayoutManager portfolioListManager =
                 new LinearLayoutManager(this.getContext());
@@ -107,16 +115,34 @@ public class HomePageFragment extends BaseFragment {
         ((StockListRecyclerViewAdapter) portfolioListAdapter).setNewStocks(portfolioManager.getStocks());
         portfolioListAdapter.notifyDataSetChanged();
 
-        getMainActivity().setPortfolioValue(portfolioManager.getAccountValue());
-        this.accountValue.setText(Formatters.formatPrice(portfolioManager.getAccountValue()));
-        this.moneyLeft.setText(Formatters.formatPrice(portfolioManager.getAccountBalance()));
-        this.totalReturn.setText(Formatters.formatTotalReturn(portfolioManager.calculateProfit())); // TODO: get training period start form user table
-
         ArrayList<Float> barData = portfolioManager.getBarData();
         dataAdapter.setData(
                 barData.stream()
                         .collect(Collectors.toList()));
         dataAdapter.setBaseline(barData.get(0));
         dataAdapter.notifyDataSetChanged();
+
+        getMainActivity().setPortfolioValue(portfolioManager.getAccountValue());
+        this.accountValue.setText(Formatters.formatPrice(portfolioManager.getAccountValue()));
+        this.moneyLeft.setText(Formatters.formatPrice(portfolioManager.getAccountBalance()));
+
+        float valueChange = portfolioManager.graphChange();
+        float valueChangePercent = barData.get(0) == 0.0f ? 0.0f : valueChange / barData.get(0);
+        this.priceUpdate.setText(Formatters.formatPriceChange(valueChange, valueChangePercent));
+        this.priceUpdateArrow.setImageDrawable(getIndicatorDrawable(valueChange));
+
+        float soldProfit = portfolioManager.calculateProfit();
+        this.totalReturn.setText(Formatters.formatTotalReturn(soldProfit)); // TODO: get training period start form user table
+        this.totalReturnArrow.setImageDrawable(getIndicatorDrawable(soldProfit));
+    }
+
+    Drawable getIndicatorDrawable(float change) {
+        if (change >= 0) {
+            return ContextCompat.getDrawable(
+                    this.getContext(), R.drawable.ic_baseline_arrow_drop_up_24);
+        } else {
+            return ContextCompat.getDrawable(
+                    this.getContext(), R.drawable.ic_baseline_arrow_drop_down_24);
+        }
     }
 }
