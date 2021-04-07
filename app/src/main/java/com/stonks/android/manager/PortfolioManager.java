@@ -21,6 +21,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -59,6 +60,7 @@ public class PortfolioManager {
 //            transactions.add(new Transaction("username", "SHOP", 1, 200.0f, TransactionMode.BUY, java.time.LocalDateTime.now().minusDays(3)));
 //            transactions.add(new Transaction("username", "SHOP", 1, 2000.0f, TransactionMode.SELL, java.time.LocalDateTime.now().minusDays(2)));
             transactions.add(new Transaction("username", "SHOP", 2, 1000.0f, TransactionMode.BUY, java.time.LocalDateTime.now().minusDays(6)));
+            transactions.add(new Transaction("username", "UBER", 2, 20.0f, TransactionMode.BUY, java.time.LocalDateTime.now().minusDays(6)));
             transactions.add(new Transaction("username", "SHOP", 1, 1200.0f, TransactionMode.SELL, java.time.LocalDateTime.now().minusDays(2)));
             transactions.add(new Transaction("username", "SHOP", 2, 1300.0f, TransactionMode.BUY, java.time.LocalDateTime.now().withHour(12)));
         }
@@ -120,15 +122,27 @@ public class PortfolioManager {
                         map -> {
                             float accountValue = 0.0f;
                             stocksList.clear();
-                            barData.clear();
+                            barData = new ArrayList<Float>(Collections.nCopies(390, 0.0f));
 
                             // TODO: Actually make bar data
                             for (BarData data : map.get("SHOP")) {
                                 //barData.add(data.getClose());
                             }
 
-                            createGraphData(map.get("SHOP"));
+                            for (int i = 0; i < symbolList.size(); i++) {
+                                String symbol = symbolList.get(i);
+                                if (portfolio.getStockQuantity(symbol) == 0) {
+                                    continue;
+                                }
 
+                                ArrayList<Float> currStockData = createGraphData(symbol, map.get(symbol));
+
+                                for (int j = 0; j < currStockData.size(); j++) {
+                                    barData.set(j, barData.get(j) + currStockData.get(j));
+                                }
+                            }
+
+                            // Calculates account value
                             for (String symbol : symbolList) {
                                 List<BarData> barData = map.get(symbol);
                                 float currentPrice = barData.get(barData.size() - 1).getClose();
@@ -150,7 +164,7 @@ public class PortfolioManager {
     }
 
     // TODO: calculate for all transactions;
-    public void createGraphData(List<BarData> stockPrices) {
+    public ArrayList<Float> createGraphData(String symbol, List<BarData> stockPrices) {
         ArrayList<Float> graphData = new ArrayList<>();
 
         while (graphData.size() < stockPrices.size()) {
@@ -160,6 +174,10 @@ public class PortfolioManager {
         int totalQuantity = 0;
         float pricePerStock = 0.0f;
         for (Transaction transaction : transactions) {
+            if (!transaction.getSymbol().equalsIgnoreCase(symbol)) {
+                continue;
+            }
+
             int quantity = transaction.getShares();
 
             if (transaction.getTransactionType() == TransactionMode.BUY) {
@@ -198,7 +216,7 @@ public class PortfolioManager {
             }
         }
 
-        barData = graphData;
+        return graphData;
     }
 
     public float calculateProfit() {
