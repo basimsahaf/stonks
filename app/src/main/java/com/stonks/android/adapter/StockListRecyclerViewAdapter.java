@@ -76,6 +76,8 @@ public class StockListRecyclerViewAdapter
 
         if (this.isSavedStocksList) {
             holder.price.setText(Formatters.formatPrice(item.getPrice()));
+            holder.priceChange.setVisibility(View.INVISIBLE);
+            holder.arrowIndicator.setVisibility(View.INVISIBLE);
         } else {
             holder.price.setText(
                     Formatters.formatStockQuantity(item.getPrice(), item.getQuantity()));
