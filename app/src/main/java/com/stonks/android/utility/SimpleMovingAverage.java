@@ -1,6 +1,5 @@
 package com.stonks.android.utility;
 
-import android.util.Log;
 import com.github.mikephil.charting.data.Entry;
 import com.stonks.android.model.BarData;
 import java.util.ArrayList;

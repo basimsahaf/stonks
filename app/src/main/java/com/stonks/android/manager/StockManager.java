@@ -139,7 +139,8 @@ public class StockManager {
                         stockBars -> {
                             List<BarData> bars = stockBars.get(symbol);
 
-                            this.stockData.updateCachedGraphData(this.currentRange, ChartHelpers.cleanData(bars, timeframe));
+                            this.stockData.updateCachedGraphData(
+                                    this.currentRange, ChartHelpers.cleanData(bars, timeframe));
                         },
                         err -> Log.d(TAG, "fetchGraphData: " + err.getMessage()));
     }
