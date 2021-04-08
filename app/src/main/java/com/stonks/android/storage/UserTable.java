@@ -119,6 +119,17 @@ public class UserTable extends SQLiteOpenHelper {
         return -1.0f;
     }
 
+    public boolean updateFunds(String username, float newFunds) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        String whereClause = String.format(COLUMN_USERNAME + " = ? ");
+        ContentValues cv = new ContentValues();
+        cv.put(COLUMN_USERNAME, username);
+        cv.put(COLUMN_TOTAL_AMOUNT, newFunds);
+
+        long update = db.update(USER_TABLE, cv, whereClause, new String[] {username});
+        return update >= 0;
+    }
+
     public LocalDateTime getTrainingStartDate(String username) {
         SQLiteDatabase db = this.getReadableDatabase();
         String queryString = "SELECT * FROM " + USER_TABLE + " WHERE username = '" + username + "'";
@@ -135,5 +146,16 @@ public class UserTable extends SQLiteOpenHelper {
 
         cursor.close();
         return null;
+    }
+
+    public boolean updateTrainingStartDate(String username) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        String whereClause = String.format(COLUMN_USERNAME + " = ? ");
+        ContentValues cv = new ContentValues();
+        cv.put(COLUMN_USERNAME, username);
+        cv.put(COLUMN_TRAINING_START_DATE, LocalDateTime.now().toString());
+
+        long update = db.update(USER_TABLE, cv, whereClause, new String[] {username});
+        return update >= 0;
     }
 }
