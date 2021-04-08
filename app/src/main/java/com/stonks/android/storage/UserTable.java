@@ -21,7 +21,7 @@ public class UserTable extends SQLiteOpenHelper {
     public static final String COLUMN_TOTAL_AMOUNT = "total_amount";
 
     private UserTable(@Nullable Context context) {
-        super(context, BuildConfig.DATABASE_NAME, null, 1);
+        super(context, BuildConfig.DATABASE_NAME, null, 15);
     }
 
     public static UserTable getInstance(Context context) {

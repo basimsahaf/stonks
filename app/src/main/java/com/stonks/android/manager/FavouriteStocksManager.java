@@ -13,7 +13,7 @@ public class FavouriteStocksManager {
     private String username;
 
     private FavouriteStocksManager(Context context) {
-        this.favouritesTable = favouritesTable.getInstance(context);
+        this.favouritesTable = FavouritesTable.getInstance(context);
         this.username = LoginRepository.getInstance(context).getCurrentUser();
     }
 
