@@ -67,7 +67,7 @@ public class LoginActivity extends BaseActivity {
         setTextWatcher(usernameField);
         setTextWatcher(passwordField);
         // TODO: enable this later
-        //        setLoginViewModelListeners();
+        setLoginViewModelListeners();
 
         // auth triggers
         passwordField
@@ -83,10 +83,10 @@ public class LoginActivity extends BaseActivity {
         loginButton.setOnClickListener(
                 view -> {
                     // TODO: use this after testing is done
-                    //                    authorize();
+                    authorize();
 
                     // this is just for testing purposes
-                    authorizeTestLogin();
+                    //                    authorizeTestLogin();
 
                     usernameChanged = false;
                     passwordChanged = false;
@@ -94,7 +94,7 @@ public class LoginActivity extends BaseActivity {
 
         // disable login button initially as no data is entered
         // TODO: change to disable once testing is done
-        loginButton.setEnabled(true);
+        loginButton.setEnabled(false);
 
         // set error messages visibility to gone by default
         usernameErrorMessage.setVisibility(View.GONE);

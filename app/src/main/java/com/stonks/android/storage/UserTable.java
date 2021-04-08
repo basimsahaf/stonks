@@ -3,8 +3,10 @@ package com.stonks.android.storage;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 import androidx.annotation.Nullable;
 import com.stonks.android.BuildConfig;
 import com.stonks.android.model.UserModel;
@@ -98,20 +100,47 @@ public class UserTable extends SQLiteOpenHelper {
 
     public float getTotalAmountAvailable(String username) {
         SQLiteDatabase db = this.getReadableDatabase();
-        String queryString =
-                "SELECT * FROM "
-                        + USER_TABLE
-                        + " WHERE username = '"
-                        + username
-                        + "'";
+        String queryString = "SELECT * FROM " + USER_TABLE + " WHERE username = '" + username + "'";
 
         Cursor cursor = db.rawQuery(queryString, null);
         float amountAvailableToTrade = 0f;
 
         if (cursor.moveToFirst()) {
-            amountAvailableToTrade = Float.parseFloat(cursor.getString(cursor.getColumnIndex(COLUMN_TOTAL_AMOUNT)));
+            amountAvailableToTrade =
+                    Float.parseFloat(cursor.getString(cursor.getColumnIndex(COLUMN_TOTAL_AMOUNT)));
         }
 
         return amountAvailableToTrade;
+    }
+
+    // TODO: once UserManager is written,this function can be refactored
+    public boolean updateTotalAmount(String username, float newAmount) {
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query =
+                String.format(
+                        "SELECT * FROM %s WHERE %s = '%s'", USER_TABLE, COLUMN_USERNAME, username);
+        Cursor cursor = db.rawQuery(query, null);
+        String whereClause = String.format("%s = '%s'", COLUMN_USERNAME, username);
+
+        if (cursor.moveToFirst()) {
+            String password = cursor.getString(cursor.getColumnIndex(COLUMN_PASSWORD));
+            String biometrics = cursor.getString(cursor.getColumnIndex(COLUMN_BIOMETRICS));
+
+            ContentValues cv = new ContentValues();
+            cv.put(COLUMN_USERNAME, username);
+            cv.put(COLUMN_PASSWORD, password);
+            cv.put(COLUMN_BIOMETRICS, biometrics);
+            cv.put(COLUMN_TOTAL_AMOUNT, newAmount);
+
+            try {
+                db.update(USER_TABLE, cv, whereClause, null);
+                cursor.close();
+                return true;
+            } catch (SQLiteConstraintException e) {
+                Log.d(TAG, e.toString());
+            }
+        }
+        return false;
     }
 }

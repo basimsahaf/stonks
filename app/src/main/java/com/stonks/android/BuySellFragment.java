@@ -6,23 +6,25 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import com.google.android.material.button.MaterialButton;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
+import com.stonks.android.databinding.FragmentBuySellBinding;
 import com.stonks.android.manager.BuySellManager;
+import com.stonks.android.manager.StockManager;
 import com.stonks.android.model.LoginRepository;
 import com.stonks.android.model.PickerLiveDataModel;
 import com.stonks.android.model.StockData;
 import com.stonks.android.model.TransactionMode;
 import com.stonks.android.uicomponent.HorizontalNumberPicker;
 import com.stonks.android.utility.Formatters;
-
 import java.time.LocalDateTime;
 import java.util.Locale;
 
@@ -37,15 +39,23 @@ public class BuySellFragment extends Fragment {
     private final String TAG = getClass().getCanonicalName();
     private HorizontalNumberPicker numberPicker;
     private MaterialButton buyBtn, sellBtn, tradeBtn;
-    private TextView stock_symbol, companyName, costValueLabel, availableLabel, costPrice, price, available;
+    private TextView stock_symbol,
+            companyName,
+            costValueLabel,
+            availableLabel,
+            costPrice,
+            price,
+            available;
     private TransactionMode mode;
-    private float currentPrice, availableToTrade;
+    private float currentPrice;
+    private MutableLiveData<Float> availableToTrade;
+    private MutableLiveData<Integer> numSharesOwned;
     private PickerLiveDataModel viewModel;
-    private int numSharesOwned;
     private SlidingUpPanelLayout slidingUpPanel;
     private LoginRepository repo;
     private StockData stockData;
     private BuySellManager buySellManager;
+    private StockManager stockManager;
 
     @Nullable
     @Override
@@ -55,27 +65,28 @@ public class BuySellFragment extends Fragment {
             @Nullable Bundle savedInstanceState) {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES); // force dark mode
 
-        // for now; we would get this info from the screen that triggers this
+        FragmentBuySellBinding binding =
+                DataBindingUtil.inflate(inflater, R.layout.fragment_buy_sell, container, false);
+
         Bundle arg = getArguments();
         mode = (TransactionMode) arg.getSerializable(TRANSACTION_MODE_ARG);
         stockData = (StockData) arg.getSerializable(STOCK_DATA_ARG);
         currentPrice = stockData.getCurrentPrice();
+        stockManager = StockManager.getInstance(getContext());
+        binding.setStock(this.stockManager.getStockData());
 
-        // TODO: get these variables from Bundle
-        numSharesOwned = 103;
-        availableToTrade = (float) 19032.23;
-
-        return inflater.inflate(R.layout.fragment_buy_sell, container, false);
+        return binding.getRoot();
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         MainActivity mainActivity = (MainActivity) getActivity();
-        repo = LoginRepository.getInstance(getContext());
-        this.slidingUpPanel = mainActivity.getSlidingUpPanel();
+
+        slidingUpPanel = mainActivity.getSlidingUpPanel();
         // TODO: Set custom sliding drawer height
         slidingUpPanel.setPanelState(SlidingUpPanelLayout.PanelState.ANCHORED);
+
         buyBtn = getView().findViewById(R.id.buy_mode_button);
         sellBtn = getView().findViewById(R.id.sell_mode_button);
         MaterialButton cancelBtn = getView().findViewById(R.id.cancel_btn);
@@ -102,18 +113,39 @@ public class BuySellFragment extends Fragment {
         stock_symbol.setText(stockData.getSymbol());
         companyName.setText(stockData.getCompanyName());
         price.setText(Formatters.formatPrice(currentPrice));
-        availableToTrade = repo.getTotalAmountAvailable();
-
+        repo = LoginRepository.getInstance(getContext());
+        buySellManager = BuySellManager.getInstance(getContext());
+        availableToTrade = new MutableLiveData<>(repo.getTotalAmountAvailable());
+        numSharesOwned =
+                new MutableLiveData<>(
+                        buySellManager.getStocksOwnedBySymbol(
+                                repo.getCurrentUser(), stockData.getSymbol()));
 
         viewModel = ViewModelProviders.of(this).get(PickerLiveDataModel.class);
-        final Observer<Integer> observer =
+        final Observer<Integer> numStocksPicked =
                 newValue -> {
                     float newEstimatedCost = newValue * currentPrice;
                     costPrice.setText(String.format(Locale.CANADA, "$%.2f", newEstimatedCost));
                 };
 
-        viewModel.getNumberOfStocks().observe(getViewLifecycleOwner(), observer);
+        viewModel.getNumberOfStocks().observe(getViewLifecycleOwner(), numStocksPicked);
         this.numberPicker.setModel(viewModel);
+
+        // setting observers for the number of shares owned and total amount available as its not in
+        // data binding
+        final Observer<Float> totalAmountAvailable =
+                newValue -> {
+                    available.setText(Formatters.formatPrice(newValue));
+                };
+
+        availableToTrade.observe(getViewLifecycleOwner(), totalAmountAvailable);
+
+        final Observer<Integer> numStocksAvailable =
+                newValue -> {
+                    available.setText(String.format("%s", newValue));
+                };
+
+        numSharesOwned.observe(getViewLifecycleOwner(), numStocksAvailable);
 
         tradeBtn.setOnClickListener(
                 myView -> {
@@ -134,14 +166,14 @@ public class BuySellFragment extends Fragment {
             sellBtn.setChecked(false);
             costValueLabel.setText(getString(R.string.estimated_cost_label));
             availableLabel.setText(getString(R.string.available_to_trade_label));
-            available.setText(String.format(Locale.CANADA, "$%.2f", availableToTrade));
+            available.setText(Formatters.formatPrice(availableToTrade.getValue()));
             tradeBtn.setText(getString(R.string.buy_button_label));
         } else {
             sellBtn.setChecked(true);
             buyBtn.setChecked(false);
             costValueLabel.setText(getString(R.string.estimated_value_label));
             availableLabel.setText(getString(R.string.available_to_sell_label));
-            available.setText(Integer.toString(numSharesOwned));
+            available.setText(String.format("%s", numSharesOwned.getValue()));
             tradeBtn.setText(getString(R.string.sell_button_label));
         }
     }
@@ -152,25 +184,47 @@ public class BuySellFragment extends Fragment {
         int numberOfShares = numberPicker.getValue();
         float price = stockData.getCurrentPrice();
         final LocalDateTime createdAt = LocalDateTime.now();
-        if (buySellManager.isTransactionValid(username, stockSymbol, repo.getTotalAmountAvailable(), numberOfShares, price, mode)) {
-            boolean result = buySellManager.commitTransaction(username, stockSymbol, numberOfShares, price, mode, createdAt);
-            String toastText;
+        String toastText;
+        if (buySellManager.isTransactionValid(
+                username,
+                stockSymbol,
+                repo.getTotalAmountAvailable(),
+                numberOfShares,
+                price,
+                mode)) {
+            boolean result =
+                    buySellManager.commitTransaction(
+                            username,
+                            stockSymbol,
+                            numberOfShares,
+                            price,
+                            mode,
+                            createdAt,
+                            availableToTrade.getValue());
             if (result) {
-                toastText = getString(mode == TransactionMode.BUY ? R.string.buy_successful: R.string.sell_successful);
+                if (mode == TransactionMode.BUY) {
+                    availableToTrade.setValue(availableToTrade.getValue() - numberOfShares * price);
+                    toastText = getString(R.string.buy_successful);
+                } else {
+                    numSharesOwned.setValue(numSharesOwned.getValue() + numberOfShares);
+                    toastText = getString(R.string.sell_successful);
+                }
+
             } else {
-                toastText = getString(mode == TransactionMode.BUY ? R.string.buy_unsuccessful: R.string.sell_unsuccessful);
+                toastText =
+                        getString(
+                                mode == TransactionMode.BUY
+                                        ? R.string.buy_unsuccessful
+                                        : R.string.sell_unsuccessful);
             }
-            Toast.makeText(getContext(), toastText, Toast.LENGTH_LONG).show();
         } else {
-
+            toastText =
+                    getString(
+                            mode == TransactionMode.BUY
+                                    ? R.string.insufficient_funds
+                                    : R.string.insufficent_stocks);
         }
-    }
 
-    private void buyShare() {
-
-    }
-
-    private void sellShare() {
-
+        Toast.makeText(getContext(), toastText, Toast.LENGTH_LONG).show();
     }
 }
