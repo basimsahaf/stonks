@@ -67,24 +67,29 @@ public class StockListRecyclerViewAdapter
         holder.stockSymbol.setText(item.getStockSymbol());
         holder.companyName.setText(item.getCompanyName());
 
-        if (this.isSavedStocksList) {
-            holder.price.setText(Formatters.formatPrice(item.getPrice()));
-        } else {
+        if(this.isSavedStocksList) {
+            // just showing stock symbol and company name if favourite stocks list
+            holder.price.setText("");
+            holder.priceChange.setText("");
+            holder.arrowIndicator.setVisibility(View.GONE);
+        }
+        else {
             holder.price.setText(
                     Formatters.formatStockQuantity(item.getPrice(), item.getQuantity()));
+
+            if (item.getPriceChange() < 0) {
+                holder.priceChange.setText(
+                        Formatters.formatPriceChange(
+                                item.getPriceChange() * -1.0f, item.getChangePercent() * -1.0f));
+                holder.priceChange.setTextColor(
+                        ContextCompat.getColor(holder.priceChange.getContext(), R.color.red));
+                holder.arrowIndicator.setImageResource(R.drawable.ic_baseline_arrow_drop_down_24);
+            } else {
+                holder.priceChange.setText(
+                        Formatters.formatPriceChange(item.getPriceChange(), item.getChangePercent()));
+            }
         }
 
-        if (item.getPriceChange() < 0) {
-            holder.priceChange.setText(
-                    Formatters.formatPriceChange(
-                            item.getPriceChange() * -1.0f, item.getChangePercent() * -1.0f));
-            holder.priceChange.setTextColor(
-                    ContextCompat.getColor(holder.priceChange.getContext(), R.color.red));
-            holder.arrowIndicator.setImageResource(R.drawable.ic_baseline_arrow_drop_down_24);
-        } else {
-            holder.priceChange.setText(
-                    Formatters.formatPriceChange(item.getPriceChange(), item.getChangePercent()));
-        }
     }
 
     @Override
