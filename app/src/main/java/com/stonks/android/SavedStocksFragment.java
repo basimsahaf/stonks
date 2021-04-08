@@ -10,13 +10,11 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.stonks.android.adapter.StockListRecyclerViewAdapter;
 import com.stonks.android.manager.FavouriteStocksManager;
-import com.stonks.android.model.FavouriteStock;
 import com.stonks.android.model.StockListItem;
 import java.util.ArrayList;
 
 public class SavedStocksFragment extends BaseFragment {
     private FavouriteStocksManager favouriteStocksManager;
-
 
     @Override
     public View onCreateView(

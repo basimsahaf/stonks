@@ -67,13 +67,12 @@ public class StockListRecyclerViewAdapter
         holder.stockSymbol.setText(item.getStockSymbol());
         holder.companyName.setText(item.getCompanyName());
 
-        if(this.isSavedStocksList) {
+        if (this.isSavedStocksList) {
             // just showing stock symbol and company name if favourite stocks list
             holder.price.setText("");
             holder.priceChange.setText("");
             holder.arrowIndicator.setVisibility(View.GONE);
-        }
-        else {
+        } else {
             holder.price.setText(
                     Formatters.formatStockQuantity(item.getPrice(), item.getQuantity()));
 
@@ -86,10 +85,10 @@ public class StockListRecyclerViewAdapter
                 holder.arrowIndicator.setImageResource(R.drawable.ic_baseline_arrow_drop_down_24);
             } else {
                 holder.priceChange.setText(
-                        Formatters.formatPriceChange(item.getPriceChange(), item.getChangePercent()));
+                        Formatters.formatPriceChange(
+                                item.getPriceChange(), item.getChangePercent()));
             }
         }
-
     }
 
     @Override
