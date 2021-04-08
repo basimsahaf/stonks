@@ -4,6 +4,7 @@
                                                    android:layout_height="wrap_content"
                                                    xmlns:app="http://schemas.android.com/apk/res-auto">
     <TextView
+            android:paddingHorizontal="@dimen/page_padding_horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/title_margin"
