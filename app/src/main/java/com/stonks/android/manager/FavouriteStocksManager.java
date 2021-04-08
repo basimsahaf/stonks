@@ -42,7 +42,7 @@ public class FavouriteStocksManager {
                         faveStocksList.add(
                                 new StockListItem(
                                         faveStock.getSymbol(), "CompanyName", 0, 0, 0, 0)));
-                                                                        // ^^ TODO: use getcompanyname here
+        // ^^ TODO: use getcompanyname here
         return faveStocksList;
     }
 }
