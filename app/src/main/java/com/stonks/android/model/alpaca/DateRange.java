@@ -6,5 +6,4 @@ public enum DateRange {
     MONTH,
     YEAR,
     THREE_YEARS,
-    ALL_TIME
 }
