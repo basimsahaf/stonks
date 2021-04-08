@@ -84,6 +84,8 @@ public class StockChart extends LineChart {
         this.getXAxis().setDrawLabels(false);
         this.getXAxis().setDrawAxisLine(false);
 
+        this.getDescription().setEnabled(false);
+
         this.setHapticFeedbackEnabled(true);
         this.setHorizontalScrollBarEnabled(false);
         this.setOnChartValueSelectedListener(
