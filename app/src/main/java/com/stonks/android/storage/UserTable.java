@@ -86,4 +86,23 @@ public class UserTable extends SQLiteOpenHelper {
         cursor.close();
         return exists;
     }
+
+    public float getTotalAmountAvailable(String username) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String queryString =
+                "SELECT * FROM "
+                        + USER_TABLE
+                        + " WHERE username = '"
+                        + username
+                        + "'";
+
+        Cursor cursor = db.rawQuery(queryString, null);
+        float amountAvailableToTrade = 0f;
+
+        if (cursor.moveToFirst()) {
+            amountAvailableToTrade = Float.parseFloat(cursor.getString(cursor.getColumnIndex(COLUMN_TOTAL_AMOUNT)));
+        }
+
+        return amountAvailableToTrade;
+    }
 }

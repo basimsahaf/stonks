@@ -60,4 +60,8 @@ public class LoginDataSource {
     public void logout() {
         // TODO: revoke authentication
     }
+
+    public float getTotalAmountAvailable(String username) {
+        return userTable.getTotalAmountAvailable(username);
+    }
 }

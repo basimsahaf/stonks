@@ -59,4 +59,8 @@ public class LoginRepository {
     public String getCurrentUser() {
         return this.user.getUserId();
     }
+
+    public float getTotalAmountAvailable() {
+        return dataSource.getTotalAmountAvailable(this.user.getUserId());
+    }
 }
