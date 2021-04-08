@@ -26,7 +26,7 @@ public class SavedStocksFragment extends BaseFragment {
                 new LinearLayoutManager(this.getContext());
         ArrayList<StockListItem> savedStocks = HomePageFragment.getMockItems();
 
-        getActionBar().setDisplayHomeAsUpEnabled(false);
+        getActionBar().setDisplayHomeAsUpEnabled(true);
         getActionBar().setDisplayShowTitleEnabled(false);
         getMainActivity().hideActionBarCustomViews();
 

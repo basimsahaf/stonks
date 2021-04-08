@@ -26,7 +26,7 @@ public class TransactionTable extends SQLiteOpenHelper {
     public static final String COLUMN_COMPUTED_AMOUNT = COLUMN_PRICE + " * " + COLUMN_SHARES;
 
     private TransactionTable(@Nullable Context context) {
-        super(context, BuildConfig.DATABASE_NAME, null, 3);
+        super(context, BuildConfig.DATABASE_NAME, null, 5);
     }
 
     public static TransactionTable getInstance(Context context) {
