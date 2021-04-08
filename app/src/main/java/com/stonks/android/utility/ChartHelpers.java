@@ -40,12 +40,6 @@ public class ChartHelpers {
             int endIndex = Math.min(barIndex + windowSize, bars.size() - 1);
             if (barIndex == endIndex) break;
 
-            Log.d(
-                    "Merging",
-                    "from "
-                            + convertEpochToDateTime(bars.get(barIndex).getTimestamp()).toString()
-                            + " to "
-                            + convertEpochToDateTime(bars.get(endIndex).getTimestamp()).toString());
             BarData newBar = mergeBars(bars.subList(barIndex, endIndex));
             clubbedBars.add(newBar);
         }
@@ -147,25 +141,16 @@ public class ChartHelpers {
 
         long difference = second * multiplier;
 
-        Log.d("Cleaning Data", "expected difference: " + difference);
-
         List<BarData> cleanData = new ArrayList<>();
         BarData bar = data.get(0);
 
         if (timeframe == AlpacaTimeframe.MINUTE) {
-            Log.d("timeframe check", "is minute");
             LocalDateTime dateTime = convertEpochToDateTime(bar.getTimestamp());
             LocalDateTime expectedStart = dateTime.withHour(9).withMinute(30);
 
             long expectedTimestamp =
                     expectedStart.atZone(TimeZone.getDefault().toZoneId()).toEpochSecond();
 
-            Log.d(
-                    "clean up start",
-                    "expectedTimestamp: "
-                            + expectedTimestamp
-                            + ", barTimeStamp: "
-                            + bar.getTimestamp());
             while (bar.getTimestamp() > expectedTimestamp) {
                 BarData newBar =
                         new BarData(
@@ -186,29 +171,13 @@ public class ChartHelpers {
         while (i < data.size()) {
             BarData currentBar = data.get(i);
 
-            Log.d(
-                    "Cleaning data",
-                    "i="
-                            + i
-                            + ", lastTimeStamp="
-                            + lastTimeStamp
-                            + ", current="
-                            + currentBar.getTimestamp());
             if (currentBar.getTimestamp() - lastTimeStamp > difference) {
                 LocalDateTime dateTime = convertEpochToDateTime(lastTimeStamp);
 
                 if (timeframe != AlpacaTimeframe.DAY) {
                     // check if lastTimeStamp was around 4:00PM
                     LocalTime time = dateTime.toLocalTime();
-                    Log.d(
-                            "Cleaning data",
-                            "i="
-                                    + i
-                                    + ", checking if "
-                                    + lastTimeStamp
-                                    + " ("
-                                    + time.toString()
-                                    + ") is EOD");
+
                     if (isEndOfDayTime(time, timeframe)) {
                         Log.d("Cleaning data", "i=" + i + " was new day");
                         lastTimeStamp = currentBar.getTimestamp();
@@ -235,11 +204,9 @@ public class ChartHelpers {
                                 currentBar.getLow(),
                                 currentBar.getOpen(),
                                 currentBar.getClose());
-                Log.d("Cleaning data", "i=" + i + ", adding entry with timestamp=" + lastTimeStamp);
                 cleanData.add(newBar);
             } else {
                 if (currentBar.getTimestamp() - lastTimeStamp != difference) {
-                    Log.d("Cleaning data", "entry timestamp less than expected difference");
                     currentBar.setTimestamp((int) (lastTimeStamp + difference));
                 }
 
@@ -255,17 +222,8 @@ public class ChartHelpers {
         for (i = 0; i < cleanData.size(); ++i) {
             bar = cleanData.get(i);
             bar.setEndTimestamp((int) (bar.getTimestamp() + difference));
-            Log.d(
-                    "Correct data",
-                    convertEpochToDateTime(bar.getTimestamp()).toString()
-                            + " - "
-                            + convertEpochToDateTime(bar.getEndTimestamp()).toString());
             correctedData.add(bar);
         }
-
-        Log.d(
-                "Cleaning data",
-                "timeframe: " + timeframe.toString() + ", data points: " + correctedData.size());
 
         return correctedData;
     }

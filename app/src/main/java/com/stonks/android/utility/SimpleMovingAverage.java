@@ -41,13 +41,11 @@ public class SimpleMovingAverage {
         chartData.offer(bar);
 
         if (index < size) {
-            Log.d("SMA", "add: " + chartData.size() + ", " + this.sum / chartData.size());
             movingAverage.add(new Entry(chartData.size(), sum / chartData.size()));
             return;
         }
 
         sum -= chartData.poll().getClose();
-        Log.d("SMA", "add: " + index + ", " + this.sum / this.size);
         movingAverage.add(new Entry(index, sum / size));
     }
 
@@ -62,19 +60,10 @@ public class SimpleMovingAverage {
                     this.sum += bar.getOpen();
 
                     if (tempSize.incrementAndGet() <= size) {
-                        Log.d(
-                                "SMA",
-                                "recalculate add: "
-                                        + tempSize.get()
-                                        + ", "
-                                        + this.sum / tempSize.get());
                         this.movingAverage.add(
                                 new Entry(tempSize.get(), this.sum / tempSize.get()));
                     } else {
                         this.sum -= this.chartData.getFirst().getOpen();
-                        Log.d(
-                                "SMA",
-                                "recalculate add: " + tempSize.get() + ", " + this.sum / this.size);
                         this.movingAverage.add(new Entry(tempSize.get(), this.sum / this.size));
                     }
                 });
