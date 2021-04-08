@@ -1,5 +1,6 @@
 package com.stonks.android.external;
 
+import com.stonks.android.model.BarData;
 import com.stonks.android.model.WebSocketObserver;
 import com.stonks.android.model.alpaca.WebSocketRequest;
 import java.util.*;
@@ -35,11 +36,11 @@ public class AlpacaWebSocket {
         this.subscribedSymbols.remove(symbol);
     }
 
-    public void updateCurrentPrice(String symbol, Float price) {
+    public void updateCurrentPrice(String symbol, BarData newBar) {
         WebSocketObserver observer = subscribedSymbols.get(symbol);
 
         if (observer != null) {
-            observer.updateCurrentPrice(price);
+            observer.updateCurrentPrice(newBar);
         }
     }
 

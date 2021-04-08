@@ -75,10 +75,13 @@ public class StockManager {
                     if (bar == null) {
                         return "";
                     }
+                    
+                    long timeStamp =
+                            x == this.lineData.size() ? bar.getEndTimestamp() : bar.getTimestamp();
 
                     LocalDateTime date =
                             LocalDateTime.ofInstant(
-                                    Instant.ofEpochSecond(bar.getTimestamp()),
+                                    Instant.ofEpochSecond(timeStamp),
                                     TimeZone.getDefault().toZoneId());
 
                     return ChartHelpers.getMarkerDateFormatter(this.currentRange).format(date);

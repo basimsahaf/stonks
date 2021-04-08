@@ -29,6 +29,7 @@ import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.stonks.android.adapter.TransactionViewAdapter;
 import com.stonks.android.databinding.FragmentStockBinding;
+import com.stonks.android.manager.RecentTransactionsManager;
 import com.stonks.android.manager.StockManager;
 import com.stonks.android.model.*;
 import com.stonks.android.model.alpaca.DateRange;
@@ -64,7 +65,8 @@ public class StockFragment extends BaseFragment {
     private LineDataSet lineDataSet;
     private boolean isCandleVisible = true;
     private boolean favourited = false;
-    private StockManager manager;
+    private StockManager stockManager;
+    private RecentTransactionsManager transactionsManager;
 
     @Nullable
     @Override
@@ -76,21 +78,22 @@ public class StockFragment extends BaseFragment {
                 DataBindingUtil.inflate(inflater, R.layout.fragment_stock, container, false);
 
         this.symbol = getArguments().getString(SYMBOL_ARG);
-        this.manager = StockManager.getInstance(getMainActivity());
-        this.manager.setSymbol(this.symbol);
+        this.stockManager = StockManager.getInstance(getMainActivity());
+        this.transactionsManager = RecentTransactionsManager.getInstance(getMainActivity());
+        this.stockManager.setSymbol(this.symbol);
 
         // using the addOnPropertyChangedCallback method to update properties that
         // aren't compatible with the @Binding annotation
         // updates the change string, the indicator drawable, and the graphs
-        this.manager
+        this.stockManager
                 .getStockData()
                 .addOnPropertyChangedCallback(
                         new androidx.databinding.Observable.OnPropertyChangedCallback() {
                             @Override
                             public void onPropertyChanged(
                                     androidx.databinding.Observable observable, int i) {
-                                List<CandleEntry> newCandleData = manager.getCandleStickData();
-                                LineData lineChartData = manager.getLineChartData();
+                                List<CandleEntry> newCandleData = stockManager.getCandleStickData();
+                                LineData lineChartData = stockManager.getLineChartData();
 
                                 priceChange.setText(generateChangeString());
                                 changeIndicator.setImageDrawable(getIndicatorDrawable());
@@ -98,13 +101,13 @@ public class StockFragment extends BaseFragment {
                                 if (newCandleData != null && newCandleData.size() > 0) {
                                     candleChart.setData(newCandleData);
                                     candleChart.setVisibleXRangeMinimum(
-                                            manager.getMaxCandlePoints(newCandleData.size()));
+                                            stockManager.getMaxCandlePoints(newCandleData.size()));
                                     candleChart.invalidate();
                                 }
 
                                 stockChart.setData(lineChartData);
                                 stockChart.setVisibleXRangeMinimum(
-                                        manager.getMaxLinePoints(
+                                        stockManager.getMaxLinePoints(
                                                 lineChartData.getDataSets().stream()
                                                         .map(IDataSet::getEntryCount)
                                                         .max(Comparator.naturalOrder())
@@ -113,7 +116,7 @@ public class StockFragment extends BaseFragment {
                             }
                         });
 
-        binding.setStock(this.manager.getStockData());
+        binding.setStock(this.stockManager.getStockData());
 
         return binding.getRoot();
     }
@@ -130,7 +133,7 @@ public class StockFragment extends BaseFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        getMainActivity().subscribe(symbol, this.manager.getStockData());
+        getMainActivity().subscribe(symbol, this.stockManager.getStockData());
         getActionBar().setDisplayHomeAsUpEnabled(true);
         getMainActivity().setGlobalTitle(this.symbol);
 
@@ -173,10 +176,11 @@ public class StockFragment extends BaseFragment {
 
         ChartMarker candleMarker =
                 new ChartMarker(
-                        getContext(), R.layout.chart_marker, this.manager.getCandleMarker());
+                        getContext(), R.layout.chart_marker, this.stockManager.getCandleMarker());
         candleMarker.setChartView(this.candleChart);
         ChartMarker lineMarker =
-                new ChartMarker(getContext(), R.layout.chart_marker, this.manager.getLineMarker());
+                new ChartMarker(
+                        getContext(), R.layout.chart_marker, this.stockManager.getLineMarker());
         lineMarker.setChartView(this.stockChart);
         StockChart.CustomGestureListener lineChartGestureListener =
                 new StockChart.CustomGestureListener(this.stockChart, this.scrollView);
@@ -185,7 +189,8 @@ public class StockFragment extends BaseFragment {
         lineChartGestureListener.setOnGestureEnded(
                 () -> {
                     this.currentPrice.setText(
-                            Formatters.formatPrice(this.manager.getStockData().getCurrentPrice()));
+                            Formatters.formatPrice(
+                                    this.stockManager.getStockData().getCurrentPrice()));
                     this.priceChange.setText(this.generateChangeString());
                     this.changeIndicator.setImageDrawable(getIndicatorDrawable());
                 });
@@ -217,7 +222,7 @@ public class StockFragment extends BaseFragment {
                     Bundle bundle = new Bundle();
                     bundle.putFloat(
                             HypotheticalFragment.CURRENT_PRICE_ARG,
-                            this.manager.getStockData().getCurrentPrice());
+                            this.stockManager.getStockData().getCurrentPrice());
                     hypotheticalFragment.setArguments(bundle);
                     getActivity()
                             .getSupportFragmentManager()
@@ -230,7 +235,7 @@ public class StockFragment extends BaseFragment {
                 v -> {
                     Bundle bundle = new Bundle();
                     bundle.putSerializable(
-                            BuySellFragment.STOCK_DATA_ARG, this.manager.getStockData());
+                            BuySellFragment.STOCK_DATA_ARG, this.stockManager.getStockData());
                     bundle.putSerializable(
                             BuySellFragment.TRANSACTION_MODE_ARG, TransactionMode.BUY);
                     Fragment buyFrag = new BuySellFragment();
@@ -245,7 +250,7 @@ public class StockFragment extends BaseFragment {
                 v -> {
                     Bundle bundle = new Bundle();
                     bundle.putSerializable(
-                            BuySellFragment.STOCK_DATA_ARG, this.manager.getStockData());
+                            BuySellFragment.STOCK_DATA_ARG, this.stockManager.getStockData());
                     bundle.putSerializable(
                             BuySellFragment.TRANSACTION_MODE_ARG, TransactionMode.BUY);
                     Fragment sellFrag = new BuySellFragment();
@@ -273,27 +278,27 @@ public class StockFragment extends BaseFragment {
 
         rangeDayButton.setOnClickListener(
                 v -> {
-                    this.manager.setCurrentRange(DateRange.DAY);
+                    this.stockManager.setCurrentRange(DateRange.DAY);
                     this.rangeDayButton.setChecked(true);
                 });
         rangeWeekButton.setOnClickListener(
                 v -> {
                     this.rangeWeekButton.setChecked(true);
-                    this.manager.setCurrentRange(DateRange.WEEK);
+                    this.stockManager.setCurrentRange(DateRange.WEEK);
                 });
         rangeMonthButton.setOnClickListener(
                 v -> {
-                    this.manager.setCurrentRange(DateRange.MONTH);
+                    this.stockManager.setCurrentRange(DateRange.MONTH);
                     this.rangeMonthButton.setChecked(true);
                 });
         rangeYearButton.setOnClickListener(
                 v -> {
-                    this.manager.setCurrentRange(DateRange.YEAR);
+                    this.stockManager.setCurrentRange(DateRange.YEAR);
                     this.rangeYearButton.setChecked(true);
                 });
         rangeAllButton.setOnClickListener(
                 v -> {
-                    this.manager.setCurrentRange(DateRange.THREE_YEARS);
+                    this.stockManager.setCurrentRange(DateRange.THREE_YEARS);
                     this.rangeAllButton.setChecked(true);
                 });
 
@@ -306,7 +311,7 @@ public class StockFragment extends BaseFragment {
             positionContainer.setVisibility(View.GONE);
         }
 
-        this.manager.fetchInitialData();
+        this.stockManager.fetchInitialData();
     }
 
     private void toggleCandleVisible() {
@@ -333,11 +338,11 @@ public class StockFragment extends BaseFragment {
     }
 
     SpannableString generateChangeString() {
-        return generateChangeString(this.manager.getStockData().getCurrentPrice());
+        return generateChangeString(this.stockManager.getStockData().getCurrentPrice());
     }
 
     SpannableString generateChangeString(Float price) {
-        Pair<Float, Float> changePair = this.manager.getChange(price);
+        Pair<Float, Float> changePair = this.stockManager.getChange(price);
         float change = changePair.first;
         float changePercentage = changePair.second;
 
@@ -359,11 +364,11 @@ public class StockFragment extends BaseFragment {
     }
 
     Drawable getIndicatorDrawable() {
-        return getIndicatorDrawable(this.manager.getStockData().getCurrentPrice());
+        return getIndicatorDrawable(this.stockManager.getStockData().getCurrentPrice());
     }
 
     Drawable getIndicatorDrawable(float value) {
-        float change = value - this.manager.getStockData().getOpen();
+        float change = value - this.stockManager.getStockData().getOpen();
 
         if (change >= 0) {
             return ContextCompat.getDrawable(
