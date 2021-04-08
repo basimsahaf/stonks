@@ -11,13 +11,23 @@ import com.stonks.android.model.FavouriteStock;
 import java.util.ArrayList;
 
 public class FavouritesTable extends SQLiteOpenHelper {
+    private static FavouritesTable favouritesTable;
+
     public static final String FAVOURITES_TABLE = "FAVOURITES_TABLE";
     public static final String COLUMN_ID = "id";
     public static final String COLUMN_USERNAME = "username";
     public static final String COLUMN_SYMBOL = "symbol";
 
-    public FavouritesTable(@Nullable Context context) {
+    private FavouritesTable(@Nullable Context context) {
         super(context, BuildConfig.DATABASE_NAME, null, 1);
+    }
+
+    public static FavouritesTable getInstance(Context context) {
+        if (favouritesTable == null) {
+            favouritesTable = new FavouritesTable(context);
+        }
+
+        return favouritesTable;
     }
 
     @Override

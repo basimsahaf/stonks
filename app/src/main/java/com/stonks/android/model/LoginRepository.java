@@ -20,7 +20,7 @@ public class LoginRepository {
 
     public static LoginRepository getInstance(Context context) {
         if (instance == null) {
-            UserTable userTable = new UserTable(context);
+            UserTable userTable = UserTable.getInstance(context);
             instance = new LoginRepository(new LoginDataSource(userTable));
         }
         return instance;
