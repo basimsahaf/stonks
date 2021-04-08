@@ -12,8 +12,7 @@ public class FavouriteStocksManager {
     private String username;
 
     private FavouriteStocksManager(Context context) {
-        this.favouritesTable = new FavouritesTable(context);
-        this.username = "ce";
+        this.favouritesTable = favouritesTable.getInstance(context);
     }
 
     public static FavouriteStocksManager getInstance(Context context) {
@@ -21,10 +20,6 @@ public class FavouriteStocksManager {
             favouriteStocksManager = new FavouriteStocksManager(context);
         }
         return favouriteStocksManager;
-    }
-
-    public boolean isStockFavourited(String symbol) {
-        return favouritesTable.checkIfFavouriteExists(this.username, symbol);
     }
 
     public void addFavouriteStock(String symbol) {
@@ -37,8 +32,9 @@ public class FavouriteStocksManager {
 
     public ArrayList<StockListItem> getAllFavouriteStocks() {
         ArrayList<FavouriteStock> faveStocks = favouritesTable.getUserFavourites(this.username);
-        ArrayList<StockListItem> faveStocksList = new ArrayList<StockListItem>();
+        ArrayList<StockListItem> faveStocksList = new ArrayList<>();
 
+        // necessary bc the saved stocks page expects a list of StockListItems
         faveStocks.forEach(
                 (faveStock) ->
                         faveStocksList.add(

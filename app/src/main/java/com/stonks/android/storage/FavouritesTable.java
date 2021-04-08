@@ -99,7 +99,7 @@ public class FavouritesTable extends SQLiteOpenHelper {
                 String username = cursor.getString(cursor.getColumnIndex(COLUMN_USERNAME));
                 String symbol = cursor.getString(cursor.getColumnIndex(COLUMN_SYMBOL));
 
-                favouriteStocksList.add(new FavouriteStock(id, username, symbol));
+                favouriteStocksList.add(new FavouriteStock(username, symbol));
 
             } while (cursor.moveToNext());
         }
