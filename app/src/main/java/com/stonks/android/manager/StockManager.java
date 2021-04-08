@@ -1,5 +1,6 @@
 package com.stonks.android.manager;
 
+import android.content.Context;
 import android.util.Log;
 import com.github.mikephil.charting.data.CandleEntry;
 import com.github.mikephil.charting.data.Entry;
@@ -27,8 +28,9 @@ import java.util.stream.Collectors;
 
 public class StockManager {
     private static final String TAG = StockManager.class.getCanonicalName();
-    private final String symbol;
-    private final StockData stockData;
+    private static StockManager stockManager;
+    private String symbol;
+    private StockData stockData;
     private final MarketDataService marketDataService;
     private DateRange currentRange;
     private final SimpleMovingAverage simpleMovingAverage;
@@ -37,8 +39,7 @@ public class StockManager {
     private final Function<Integer, String> candleMarker;
     private final Function<Integer, String> lineMarker;
 
-    public StockManager(String symbol) {
-        this.symbol = symbol;
+    private StockManager(Context context) {
         this.stockData = new StockData();
         // TODO: use singleton
         this.marketDataService = new MarketDataService();
@@ -81,6 +82,22 @@ public class StockManager {
                     return ChartHelpers.getMarkerDateFormatter(this.currentRange).format(date);
                 };
         simpleMovingAverage = new SimpleMovingAverage(5);
+    }
+
+    public static StockManager getInstance(Context context) {
+        if (stockManager == null) {
+            stockManager = new StockManager(context);
+        }
+
+        return stockManager;
+    }
+
+    public void setSymbol(String symbol) {
+        this.symbol = symbol;
+        this.stockData = new StockData();
+        this.currentRange = DateRange.DAY;
+        this.candleData.clear();
+        this.lineData.clear();
     }
 
     public Function<Integer, String> getCandleMarker() {

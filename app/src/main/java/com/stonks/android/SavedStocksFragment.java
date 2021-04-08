@@ -31,7 +31,7 @@ public class SavedStocksFragment extends BaseFragment {
                 new LinearLayoutManager(this.getContext());
         ArrayList<StockListItem> savedStocks = favouriteStocksManager.getAllFavouriteStocks();
 
-        getActionBar().setDisplayHomeAsUpEnabled(false);
+        getActionBar().setDisplayHomeAsUpEnabled(true);
         getActionBar().setDisplayShowTitleEnabled(false);
         getMainActivity().hideActionBarCustomViews();
 
