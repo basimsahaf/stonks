@@ -14,6 +14,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class TransactionTable extends SQLiteOpenHelper {
+    private static TransactionTable transactionTable;
+
     public static final String TRANSACTION_TABLE = "TRANSACTION_TABLE";
     public static final String COLUMN_USERNAME = "username";
     public static final String COLUMN_SYMBOL = "symbol";
@@ -23,8 +25,16 @@ public class TransactionTable extends SQLiteOpenHelper {
     public static final String COLUMN_CREATED_AT = "transaction_date";
     public static final String COLUMN_COMPUTED_AMOUNT = COLUMN_PRICE + " * " + COLUMN_SHARES;
 
-    public TransactionTable(@Nullable Context context) {
+    private TransactionTable(@Nullable Context context) {
         super(context, BuildConfig.DATABASE_NAME, null, 3);
+    }
+
+    public static TransactionTable getInstance(Context context) {
+        if (transactionTable == null) {
+            transactionTable = new TransactionTable(context);
+        }
+
+        return transactionTable;
     }
 
     @Override
