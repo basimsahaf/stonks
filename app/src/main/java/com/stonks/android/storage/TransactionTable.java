@@ -49,7 +49,7 @@ public class TransactionTable extends SQLiteOpenHelper {
                     + "))";
 
     private TransactionTable(@Nullable Context context) {
-        super(context, BuildConfig.DATABASE_NAME, null, 5);
+        super(context, BuildConfig.DATABASE_NAME, null, 6);
     }
 
     public static TransactionTable getInstance(Context context) {
