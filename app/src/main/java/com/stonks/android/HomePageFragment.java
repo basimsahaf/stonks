@@ -14,15 +14,16 @@ import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.button.MaterialButton;
 import com.stonks.android.adapter.StockChartAdapter;
 import com.stonks.android.adapter.StockListRecyclerViewAdapter;
 import com.stonks.android.manager.PortfolioManager;
 import com.stonks.android.model.StockListItem;
-import com.stonks.android.uicomponent.CustomSparkView;
+import com.stonks.android.model.alpaca.DateRange;
+import com.stonks.android.uicomponent.StockChart;
 import com.stonks.android.utility.Formatters;
 
 import java.util.ArrayList;
-import java.util.stream.Collectors;
 
 public class HomePageFragment extends BaseFragment {
     private int currentInfoHeaderHeight = -1;
@@ -33,6 +34,12 @@ public class HomePageFragment extends BaseFragment {
     private TextView noStocksMsg;
     private ImageView priceUpdateArrow;
     private ImageView totalReturnArrow;
+    private StockChart stockChart;
+    private MaterialButton rangeDayButton;
+    private MaterialButton rangeWeekButton;
+    private MaterialButton rangeMonthButton;
+    private MaterialButton rangeYearButton;
+    private MaterialButton rangeAllButton;
     private static PortfolioManager portfolioManager;
     private static RecyclerView.Adapter portfolioListAdapter;
     private static StockChartAdapter dataAdapter;
@@ -53,8 +60,20 @@ public class HomePageFragment extends BaseFragment {
         this.totalReturn = view.findViewById(R.id.total_return);
         this.noStocksMsg = view.findViewById(R.id.no_stocks_msg);
 
+        this.rangeDayButton = view.findViewById(R.id.range_day);
+        this.rangeWeekButton = view.findViewById(R.id.range_week);
+        this.rangeMonthButton = view.findViewById(R.id.range_month);
+        this.rangeYearButton = view.findViewById(R.id.range_year);
+        this.rangeAllButton = view.findViewById(R.id.range_all);
+
+        this.stockChart = view.findViewById(R.id.new_stock_chart);
+
         this.priceUpdateArrow = view.findViewById(R.id.price_update_arrow);
         this.totalReturnArrow = view.findViewById(R.id.total_return_arrow);
+
+        rangeDayButton.setChecked(true);
+
+        view.findViewById(R.id.chart_toggle).setVisibility(View.GONE);
 
         RecyclerView.LayoutManager portfolioListManager =
                 new LinearLayoutManager(this.getContext());
@@ -83,19 +102,45 @@ public class HomePageFragment extends BaseFragment {
                             getMainActivity().setActionBarCustomViewAlpha(alpha);
                         });
 
-        CustomSparkView sparkView = view.findViewById(R.id.stock_chart);
-        sparkView.setScrubListener(
-                value -> scrollView.requestDisallowInterceptTouchEvent(value != null));
-        dataAdapter =
-                new StockChartAdapter(
-                        StockFragment.getFakeStockPrices().stream()
-                                .map(p -> p.second)
-                                .collect(Collectors.toList()));
-        dataAdapter.setBaseline(121.08f);
+        rangeDayButton.setOnClickListener(
+                v -> {
+                    portfolioManager.setCurrentRange(DateRange.DAY);
+                    this.rangeDayButton.setChecked(true);
+                });
+        rangeWeekButton.setOnClickListener(
+                v -> {
+                    portfolioManager.setCurrentRange(DateRange.WEEK);
+                    this.rangeWeekButton.setChecked(true);
+                });
+        rangeMonthButton.setOnClickListener(
+                v -> {
+                    this.rangeMonthButton.setChecked(true);
+                    portfolioManager.setCurrentRange(DateRange.MONTH);
+                });
+        rangeYearButton.setOnClickListener(
+                v -> {
+                    portfolioManager.setCurrentRange(DateRange.YEAR);
+                    this.rangeYearButton.setChecked(true);
+                });
+        rangeAllButton.setOnClickListener(
+                v -> {
+                    this.rangeAllButton.setChecked(true);
+                    portfolioManager.setCurrentRange(DateRange.THREE_YEARS);
+                });
 
-        sparkView.setAdapter(dataAdapter);
+//        CustomSparkView sparkView = view.findViewById(R.id.stock_chart);
+//        sparkView.setScrubListener(
+//                value -> scrollView.requestDisallowInterceptTouchEvent(value != null));
+//        dataAdapter =
+//                new StockChartAdapter(
+//                        StockFragment.getFakeStockPrices().stream()
+//                                .map(p -> p.second)
+//                                .collect(Collectors.toList()));
+//        dataAdapter.setBaseline(121.08f);
+//
+//        sparkView.setAdapter(dataAdapter);
 
-        portfolioManager.calculateData();
+        portfolioManager.calculateData(false);
     }
 
     public static ArrayList<StockListItem> getMockItems() {
@@ -117,25 +162,32 @@ public class HomePageFragment extends BaseFragment {
         ((StockListRecyclerViewAdapter) portfolioListAdapter).setNewStocks(portfolioManager.getStocksList());
         portfolioListAdapter.notifyDataSetChanged();
 
-        ArrayList<Float> barData = portfolioManager.getGraphData();
-        dataAdapter.setData(
-                barData.stream()
-                        .collect(Collectors.toList()));
-        dataAdapter.setBaseline(barData.get(0));
-        dataAdapter.notifyDataSetChanged();
+//        dataAdapter.setData(
+//                barData.stream()
+//                        .collect(Collectors.toList()));
+//        dataAdapter.setBaseline(barData.get(0));
+//        dataAdapter.notifyDataSetChanged();
 
         getMainActivity().setPortfolioValue(portfolioManager.getAccountValue());
         this.accountValue.setText(Formatters.formatPrice(portfolioManager.getAccountValue()));
         this.moneyLeft.setText(Formatters.formatPrice(portfolioManager.getAccountBalance()));
 
+        float soldProfit = portfolioManager.getTransactionProfits();
+        this.totalReturn.setText(Formatters.formatTotalReturn(soldProfit)); // TODO: get training period start form user table
+        this.totalReturnArrow.setImageDrawable(getIndicatorDrawable(soldProfit));
+
+        updateGraph();
+    }
+
+    public void updateGraph() {
+        ArrayList<Float> barData = portfolioManager.getGraphData();
         float valueChange = portfolioManager.getGraphChange();
         float valueChangePercent = barData.get(0) == 0.0f ? 0.0f : valueChange / barData.get(0);
         this.priceUpdate.setText(Formatters.formatPriceChange(valueChange, valueChangePercent));
         this.priceUpdateArrow.setImageDrawable(getIndicatorDrawable(valueChange));
 
-        float soldProfit = portfolioManager.getTransactionProfits();
-        this.totalReturn.setText(Formatters.formatTotalReturn(soldProfit)); // TODO: get training period start form user table
-        this.totalReturnArrow.setImageDrawable(getIndicatorDrawable(soldProfit));
+        this.stockChart.setData(portfolioManager.getStockChartData());
+        this.stockChart.invalidate();
     }
 
     Drawable getIndicatorDrawable(float change) {

@@ -22,6 +22,9 @@ public class Formatters {
     }
 
     public static String formatPriceChange(Float priceChange, Float changePercent) {
+        if (priceChange < 0) {
+            priceChange *= -1.0f;
+        }
         return String.format(Locale.CANADA, "$%.2f (%.2f%%)", priceChange, changePercent);
     }
 

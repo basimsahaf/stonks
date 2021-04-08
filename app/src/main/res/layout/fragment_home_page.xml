@@ -118,16 +118,41 @@
                     android:id="@+id/chart_container"
                     android:layout_width="match_parent"
                     android:layout_height="300dp"
-                    android:paddingHorizontal="@dimen/page_padding_horizontal"
-                    android:layout_marginBottom="@dimen/section_margin">
+                    android:paddingHorizontal="@dimen/page_padding_horizontal">
 
-                    <com.stonks.android.uicomponent.CustomSparkView
+                    <!--com.stonks.android.uicomponent.CustomSparkView
                         android:id="@+id/stock_chart"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        style="@style/AppTheme.ChartStyle" />
+                        style="@style/AppTheme.ChartStyle"
+                        android:visibility="gone"/-->
+
+                    <com.stonks.android.uicomponent.StockChart
+                        android:id="@+id/new_stock_chart"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:visibility="visible" />
 
                 </RelativeLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/date_range_container"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="@dimen/page_padding_horizontal"
+                    android:layout_marginTop="@dimen/btn_margin"
+                    app:layout_constraintTop_toBottomOf="@id/chart_container"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    android:layout_marginBottom="@dimen/section_margin">
+
+                    <include
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        layout="@layout/stock_date_range" />
+
+                </LinearLayout>
 
                 <TextView
                     android:id="@+id/your_portfolio_label"

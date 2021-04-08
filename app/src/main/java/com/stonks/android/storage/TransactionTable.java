@@ -5,11 +5,14 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+
 import androidx.annotation.Nullable;
+
 import com.stonks.android.BuildConfig;
 import com.stonks.android.model.Transaction;
 import com.stonks.android.model.TransactionFilters;
 import com.stonks.android.model.TransactionMode;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
@@ -26,7 +29,7 @@ public class TransactionTable extends SQLiteOpenHelper {
     public static final String COLUMN_COMPUTED_AMOUNT = COLUMN_PRICE + " * " + COLUMN_SHARES;
 
     private TransactionTable(@Nullable Context context) {
-        super(context, BuildConfig.DATABASE_NAME, null, 3);
+        super(context, BuildConfig.DATABASE_NAME, null, 4);
     }
 
     public static TransactionTable getInstance(Context context) {
