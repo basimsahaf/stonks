@@ -18,12 +18,10 @@ import com.stonks.android.adapter.StockChartAdapter;
 import com.stonks.android.adapter.StockListRecyclerViewAdapter;
 import com.stonks.android.manager.PortfolioManager;
 import com.stonks.android.model.StockListItem;
-import com.stonks.android.model.alpaca.DateRange;
 import com.stonks.android.uicomponent.CustomSparkView;
 import com.stonks.android.utility.Formatters;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.stream.Collectors;
 
 public class HomePageFragment extends BaseFragment {
@@ -96,7 +94,7 @@ public class HomePageFragment extends BaseFragment {
 
         sparkView.setAdapter(dataAdapter);
 
-        portfolioManager.fetchInitialData();
+        portfolioManager.calculateData();
     }
 
     public static ArrayList<StockListItem> getMockItems() {
@@ -112,13 +110,13 @@ public class HomePageFragment extends BaseFragment {
     }
 
     public void updateData() {
-        if (!portfolioManager.getStocks().isEmpty()) {
+        if (!portfolioManager.getStocksList().isEmpty()) {
             noStocksMsg.setVisibility(View.GONE);
         }
-        ((StockListRecyclerViewAdapter) portfolioListAdapter).setNewStocks(portfolioManager.getStocks());
+        ((StockListRecyclerViewAdapter) portfolioListAdapter).setNewStocks(portfolioManager.getStocksList());
         portfolioListAdapter.notifyDataSetChanged();
 
-        ArrayList<Float> barData = portfolioManager.getBarData();
+        ArrayList<Float> barData = portfolioManager.getGraphData();
         dataAdapter.setData(
                 barData.stream()
                         .collect(Collectors.toList()));
@@ -129,12 +127,12 @@ public class HomePageFragment extends BaseFragment {
         this.accountValue.setText(Formatters.formatPrice(portfolioManager.getAccountValue()));
         this.moneyLeft.setText(Formatters.formatPrice(portfolioManager.getAccountBalance()));
 
-        float valueChange = portfolioManager.graphChange();
+        float valueChange = portfolioManager.getGraphChange();
         float valueChangePercent = barData.get(0) == 0.0f ? 0.0f : valueChange / barData.get(0);
         this.priceUpdate.setText(Formatters.formatPriceChange(valueChange, valueChangePercent));
         this.priceUpdateArrow.setImageDrawable(getIndicatorDrawable(valueChange));
 
-        float soldProfit = portfolioManager.calculateProfit();
+        float soldProfit = portfolioManager.getTransactionProfits();
         this.totalReturn.setText(Formatters.formatTotalReturn(soldProfit)); // TODO: get training period start form user table
         this.totalReturnArrow.setImageDrawable(getIndicatorDrawable(soldProfit));
     }
