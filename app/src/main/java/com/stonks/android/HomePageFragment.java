@@ -15,7 +15,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.button.MaterialButton;
-import com.stonks.android.adapter.StockChartAdapter;
 import com.stonks.android.adapter.StockListRecyclerViewAdapter;
 import com.stonks.android.manager.PortfolioManager;
 import com.stonks.android.model.StockListItem;
@@ -27,6 +26,7 @@ import java.util.ArrayList;
 
 public class HomePageFragment extends BaseFragment {
     private int currentInfoHeaderHeight = -1;
+
     private TextView accountValue;
     private TextView moneyLeft;
     private TextView priceUpdate;
@@ -40,9 +40,9 @@ public class HomePageFragment extends BaseFragment {
     private MaterialButton rangeMonthButton;
     private MaterialButton rangeYearButton;
     private MaterialButton rangeAllButton;
+
     private static PortfolioManager portfolioManager;
     private static RecyclerView.Adapter portfolioListAdapter;
-    private static StockChartAdapter dataAdapter;
 
     @Override
     public View onCreateView(
@@ -59,19 +59,15 @@ public class HomePageFragment extends BaseFragment {
         this.moneyLeft = view.findViewById(R.id.money_left);
         this.totalReturn = view.findViewById(R.id.total_return);
         this.noStocksMsg = view.findViewById(R.id.no_stocks_msg);
+        this.stockChart = view.findViewById(R.id.new_stock_chart);
+        this.priceUpdateArrow = view.findViewById(R.id.price_update_arrow);
+        this.totalReturnArrow = view.findViewById(R.id.total_return_arrow);
 
         this.rangeDayButton = view.findViewById(R.id.range_day);
         this.rangeWeekButton = view.findViewById(R.id.range_week);
         this.rangeMonthButton = view.findViewById(R.id.range_month);
         this.rangeYearButton = view.findViewById(R.id.range_year);
         this.rangeAllButton = view.findViewById(R.id.range_all);
-
-        this.stockChart = view.findViewById(R.id.new_stock_chart);
-
-        this.priceUpdateArrow = view.findViewById(R.id.price_update_arrow);
-        this.totalReturnArrow = view.findViewById(R.id.total_return_arrow);
-
-        rangeDayButton.setChecked(true);
 
         view.findViewById(R.id.chart_toggle).setVisibility(View.GONE);
 
@@ -102,6 +98,7 @@ public class HomePageFragment extends BaseFragment {
                             getMainActivity().setActionBarCustomViewAlpha(alpha);
                         });
 
+        rangeDayButton.setChecked(true);
         rangeDayButton.setOnClickListener(
                 v -> {
                     portfolioManager.setCurrentRange(DateRange.DAY);
@@ -114,8 +111,8 @@ public class HomePageFragment extends BaseFragment {
                 });
         rangeMonthButton.setOnClickListener(
                 v -> {
-                    this.rangeMonthButton.setChecked(true);
                     portfolioManager.setCurrentRange(DateRange.MONTH);
+                    this.rangeMonthButton.setChecked(true);
                 });
         rangeYearButton.setOnClickListener(
                 v -> {
@@ -169,7 +166,6 @@ public class HomePageFragment extends BaseFragment {
 //        dataAdapter.notifyDataSetChanged();
 
         getMainActivity().setPortfolioValue(portfolioManager.getAccountValue());
-        this.accountValue.setText(Formatters.formatPrice(portfolioManager.getAccountValue()));
         this.moneyLeft.setText(Formatters.formatPrice(portfolioManager.getAccountBalance()));
 
         float soldProfit = portfolioManager.getTransactionProfits();
@@ -180,6 +176,8 @@ public class HomePageFragment extends BaseFragment {
     }
 
     public void updateGraph() {
+        this.accountValue.setText(Formatters.formatPrice(portfolioManager.getAccountValue()));
+
         ArrayList<Float> barData = portfolioManager.getGraphData();
         float valueChange = portfolioManager.getGraphChange();
         float valueChangePercent = barData.get(0) == 0.0f ? 0.0f : valueChange / barData.get(0);

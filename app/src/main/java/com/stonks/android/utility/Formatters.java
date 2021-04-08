@@ -25,6 +25,10 @@ public class Formatters {
         if (priceChange < 0) {
             priceChange *= -1.0f;
         }
+
+        if (changePercent < 0.01) {
+            return String.format(Locale.CANADA, "$%.2f (<0.01%%)", priceChange);
+        }
         return String.format(Locale.CANADA, "$%.2f (%.2f%%)", priceChange, changePercent);
     }
 

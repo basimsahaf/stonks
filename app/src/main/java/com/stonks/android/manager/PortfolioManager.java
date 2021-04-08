@@ -28,7 +28,9 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -38,19 +40,18 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
 public class PortfolioManager {
     private static PortfolioManager portfolioManager = null;
 
-    private HomePageFragment fragment;
+    final int limit = 1000;
     private DateRange currentRange;
-
-    private static float transactionProfits = 0.0f;
+    private HomePageFragment fragment;
 
     private final UserTable userTable;
     private final PortfolioTable portfolioTable;
     private final TransactionTable transactionTable;
 
     private static Portfolio portfolio;
-    private static ArrayList<StockListItem> stocksList;
-    private static ArrayList<Float> graphData;
     private static LineDataSet stockChartData;
+    private static ArrayList<Float> graphData;
+    private static ArrayList<StockListItem> stocksList;
     private static ArrayList<Transaction> transactions;
     private static ArrayList<String> symbolList;
 
@@ -59,19 +60,17 @@ public class PortfolioManager {
         userTable = UserTable.getInstance(context);
         portfolioTable = PortfolioTable.getInstance(context);
         transactionTable = TransactionTable.getInstance(context);
-        stocksList = new ArrayList<>();
-        graphData = new ArrayList<>();
     }
 
     public static PortfolioManager getInstance(Context context, HomePageFragment f) {
         if (portfolioManager == null) {
             portfolioManager = new PortfolioManager(context, f);
 
-            //  TODO: Fetch from the TransactionManager
             transactions = new ArrayList<>();
             transactions = portfolioManager.transactionTable.getTransactions("username");
             symbolList = portfolioManager.transactionTable.getSymbols("username");
 
+            //  TODO: Remove after testing
             if (transactions.isEmpty()) {
 //                transactions.add(new Transaction("username", "SHOP", 1, 200.0f, TransactionMode.BUY, java.time.LocalDateTime.now().minusDays(3)));
 //                transactions.add(new Transaction("username", "SHOP", 1, 2000.0f, TransactionMode.SELL, java.time.LocalDateTime.now().minusDays(2)));
@@ -192,8 +191,7 @@ public class PortfolioManager {
     }
 
     public float getTransactionProfits() {
-        //  TODO: Fetch from the TransactionManager
-        transactionProfits = 0.0f;
+        float transactionProfits = 0.0f;
 
         for (Transaction transaction : transactions) {
             if (transaction.getTransactionType() == TransactionMode.BUY) {
@@ -208,9 +206,27 @@ public class PortfolioManager {
     }
 
     public float getGraphChange() {
-        float heldStocksReturn = graphData.get(graphData.size() - 1) - graphData.get(0);
+        return graphData.get(graphData.size() - 1) - graphData.get(0);
+    }
 
-        return heldStocksReturn;
+    public void calculateAccountValue(Map<String, List<Float>> stocksData) {
+        float accountValue = 0.0f;
+        stocksList = new ArrayList<>();
+
+        for (String symbol : symbolList) {
+            List<Float> priceList = stocksData.get(symbol);
+            float currentPrice = priceList.get(priceList.size() - 1);
+            float change = currentPrice - priceList.get(0);
+            float changePercentage = change * 100 / priceList.get(0);
+            int quantity = portfolio.getStockQuantity(symbol);
+
+            //portfolio.setPrice(symbol, currentPrice);
+            stocksList.add(new StockListItem(symbol, currentPrice, quantity, change, changePercentage));
+
+            accountValue += (currentPrice * quantity);
+        }
+
+        portfolio.setAccountValue(accountValue);
     }
 
     public void calculateData(boolean graphOnly) {
@@ -219,10 +235,9 @@ public class PortfolioManager {
 //            symbolList.add(item.getSymbol());
 //        }
 
-        final int limit = 1000;
+        // Information for graph data
         Symbols symbols = new Symbols(symbolList);
         AlpacaTimeframe timeframe = ChartHelpers.getDataPointTimeframe(this.currentRange);
-
         int windowSize = 1;
         switch (currentRange) {
             case DAY:
@@ -240,11 +255,9 @@ public class PortfolioManager {
                 .subscribeOn(Schedulers.io())
                 .subscribe(
                         map -> {
-                            float accountValue = 0.0f;
-                            stocksList.clear();
                             graphData = new ArrayList<>();
+                            Map<String, List<Float>> stockData = new HashMap<>();
 
-                            // Calculate graph data
                             for (int i = 0; i < symbolList.size(); i++) {
                                 String symbol = symbolList.get(i);
                                 if (portfolio.getStockQuantity(symbol) == 0) {
@@ -265,7 +278,6 @@ public class PortfolioManager {
 
                                 ArrayList<Float> currStockData = createGraphData(symbol, clubbedBars);
 
-
                                 while (graphData.size() < currStockData.size()) {
                                     graphData.add(0.0f);
                                 }
@@ -273,34 +285,21 @@ public class PortfolioManager {
                                 for (int j = 0; j < currStockData.size(); j++) {
                                     graphData.set(j, graphData.get(j) + currStockData.get(j));
                                 }
+
+                                stockData.put(symbol, currStockData);
                             }
 
                             AtomicInteger x = new AtomicInteger(1);
                             List<Entry> lineData = graphData.stream().map(floatVal -> new Entry(x.getAndIncrement(), floatVal)).collect(Collectors.toList());
                             stockChartData = StockChart.buildDataSet(lineData);
 
+                            calculateAccountValue(stockData);
+
                             if (graphOnly) {
                                 fragment.updateGraph();
-                                return;
+                            } else {
+                                fragment.updateData();
                             }
-
-                            // Calculates account value
-                            for (String symbol : symbolList) {
-                                List<BarData> barData = map.get(symbol);
-                                float currentPrice = barData.get(barData.size() - 1).getClose();
-                                float change = currentPrice - barData.get(0).getOpen();
-                                float changePercentage = change * 100 / barData.get(0).getOpen();
-                                int quantity = portfolio.getStockQuantity(symbol);
-
-                                //portfolio.setPrice(symbol, currentPrice);
-                                stocksList.add(new StockListItem(symbol, currentPrice, quantity, change, changePercentage));
-
-                                accountValue += (currentPrice * quantity);
-                            }
-
-                            getTransactionProfits();
-                            portfolio.setAccountValue(accountValue);
-                            fragment.updateData();
                         },
                         err -> Log.e("PortfolioManager", err.toString()));
     }
