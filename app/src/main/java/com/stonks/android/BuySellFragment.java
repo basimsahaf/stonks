@@ -5,6 +5,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatDelegate;
@@ -21,7 +23,6 @@ import com.stonks.android.model.TransactionMode;
 import com.stonks.android.uicomponent.HorizontalNumberPicker;
 import com.stonks.android.utility.Formatters;
 
-import java.sql.Time;
 import java.time.LocalDateTime;
 import java.util.Locale;
 
@@ -116,11 +117,7 @@ public class BuySellFragment extends Fragment {
 
         tradeBtn.setOnClickListener(
                 myView -> {
-                    String username = repo.getCurrentUser();
-                    int numberOfShares = numberPicker.getValue();
-                    float price = stockData.getCurrentPrice();
-                    final LocalDateTime createdAt = LocalDateTime.now();
-                    buySellManager.handleTransaction(username, numberOfShares, price, createdAt, mode);
+                    handleTransaction();
                 });
 
         cancelBtn.setOnClickListener(
@@ -150,9 +147,23 @@ public class BuySellFragment extends Fragment {
     }
 
     private void handleTransaction() {
+        String username = repo.getCurrentUser();
+        String stockSymbol = stockData.getSymbol();
+        int numberOfShares = numberPicker.getValue();
+        float price = stockData.getCurrentPrice();
+        final LocalDateTime createdAt = LocalDateTime.now();
+        if (buySellManager.isTransactionValid(username, stockSymbol, repo.getTotalAmountAvailable(), numberOfShares, price, mode)) {
+            boolean result = buySellManager.commitTransaction(username, stockSymbol, numberOfShares, price, mode, createdAt);
+            String toastText;
+            if (result) {
+                toastText = getString(mode == TransactionMode.BUY ? R.string.buy_successful: R.string.sell_successful);
+            } else {
+                toastText = getString(mode == TransactionMode.BUY ? R.string.buy_unsuccessful: R.string.sell_unsuccessful);
+            }
+            Toast.makeText(getContext(), toastText, Toast.LENGTH_LONG).show();
+        } else {
 
-
-
+        }
     }
 
     private void buyShare() {

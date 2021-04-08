@@ -48,6 +48,12 @@
     <string name="small_dollar_placeholder">$12.20</string>
     <string name="zero_dollar_placeholder">$0.00</string>
     <string name="big_dollar_placeholder">$10,103.20</string>
+    <string name="buy_successful">Stocks successfully purchased</string>
+    <string name="buy_unsuccessful">Stock purchase failed, try again!</string>
+    <string name="sell_successful">Stocks successfully sold</string>
+    <string name="sell_unsuccessful">Stocks could not be sold, try again!</string>
+    <string name="insufficient_funds">Not enough funds</string>
+    <string name="insufficent_stocks">Not enough stocks to sell</string>
 
     <!-- Home Page Strings -->
     <string name="title_activity_home_page">ScrollingActivity</string>
