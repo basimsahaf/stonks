@@ -22,7 +22,9 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.github.mikephil.charting.data.CandleEntry;
-import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.interfaces.datasets.IDataSet;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.stonks.android.adapter.TransactionViewAdapter;
@@ -58,6 +60,8 @@ public class StockFragment extends BaseFragment {
     private ImageView favIcon;
     private StockChart stockChart;
     private CandleChart candleChart;
+    private LineData lineData;
+    private LineDataSet lineDataSet;
     private boolean isCandleVisible = true;
     private boolean favourited = false;
     private StockManager manager;
@@ -90,7 +94,7 @@ public class StockFragment extends BaseFragment {
                                 changeIndicator.setImageDrawable(getIndicatorDrawable());
 
                                 List<CandleEntry> newCandleData = manager.getCandleStickData();
-                                List<Entry> newLineData = manager.getLineData();
+                                LineData lineChartData = manager.getLineChartData();
 
                                 if (newCandleData != null && newCandleData.size() > 0) {
                                     candleChart.setData(newCandleData);
@@ -99,12 +103,14 @@ public class StockFragment extends BaseFragment {
                                     candleChart.invalidate();
                                 }
 
-                                if (newLineData != null && newLineData.size() > 0) {
-                                    stockChart.setData(newLineData);
-                                    stockChart.setVisibleXRangeMinimum(
-                                            manager.getMaxLinePoints(newLineData.size()));
-                                    stockChart.invalidate();
-                                }
+                                stockChart.setData(lineChartData);
+                                stockChart.setVisibleXRangeMinimum(
+                                        manager.getMaxLinePoints(
+                                                lineChartData.getDataSets().stream()
+                                                        .map(IDataSet::getEntryCount)
+                                                        .max(Comparator.naturalOrder())
+                                                        .orElse(78)));
+                                stockChart.invalidate();
                             }
                         });
 
@@ -191,10 +197,13 @@ public class StockFragment extends BaseFragment {
                     this.changeIndicator.setImageDrawable(getIndicatorDrawable(y));
                 });
 
+        this.lineDataSet = new LineDataSet(Collections.emptyList(), "");
+        this.lineData = new LineData(lineDataSet);
+
         this.stockChart.addValueListener(currentPrice);
         this.stockChart.setOnChartGestureListener(lineChartGestureListener);
         this.stockChart.setMarker(lineMarker);
-        this.stockChart.setData(Collections.emptyList());
+        this.stockChart.setData(this.lineData);
 
         this.candleChart.setOnChartGestureListener(candleChartGestureListener);
         this.candleChart.setMarker(candleMarker);

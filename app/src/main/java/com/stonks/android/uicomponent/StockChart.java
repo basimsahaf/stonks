@@ -13,16 +13,20 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.highlight.Highlight;
+import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.listener.ChartTouchListener;
 import com.github.mikephil.charting.listener.OnChartGestureListener;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.stonks.android.utility.Constants;
 import com.stonks.android.utility.Formatters;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class StockChart extends LineChart {
     private ArrayList<TextView> priceListeners;
+    private LineDataSet mainDataSet;
+    private LineData mainData;
     private OnScrub onScrub;
 
     public StockChart(Context context) {
@@ -40,6 +44,9 @@ public class StockChart extends LineChart {
     @Override
     protected void init() {
         super.init();
+
+        this.mainDataSet = buildDataSet(Collections.singletonList(new Entry(1, 1)));
+        this.mainData = new LineData(this.mainDataSet);
 
         this.priceListeners = new ArrayList<>();
         onScrub = (x, y) -> {};
@@ -90,10 +97,15 @@ public class StockChart extends LineChart {
                     @Override
                     public void onNothingSelected() {}
                 });
+        this.setData(this.mainData);
     }
 
-    public void setData(List<Entry> data) {
-        this.setData(new LineData(buildDataSet(data)));
+    public void setData(LineDataSet... data) {
+        this.setData(new LineData(data));
+    }
+
+    public void setData(List<ILineDataSet> datasets) {
+        this.setData(new LineData(datasets));
     }
 
     public void setLimitLine(float limit) {
@@ -101,7 +113,7 @@ public class StockChart extends LineChart {
         this.getAxisLeft().addLimitLine(getLimitLine(limit));
     }
 
-    private static LineDataSet buildDataSet(List<Entry> data) {
+    public static LineDataSet buildDataSet(List<Entry> data) {
         LineDataSet dataSet = new LineDataSet(data, "");
 
         dataSet.setLineWidth(3f);
@@ -116,6 +128,26 @@ public class StockChart extends LineChart {
         dataSet.setHighLightColor(Color.WHITE);
         dataSet.setDrawHorizontalHighlightIndicator(false);
         dataSet.setHighlightLineWidth(2f);
+
+        // smoothen graph
+        dataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
+        dataSet.setCubicIntensity(0.1f);
+
+        return dataSet;
+    }
+
+    public static LineDataSet buildIndicatorDataSet(List<Entry> data) {
+        LineDataSet dataSet = new LineDataSet(data, "");
+
+        dataSet.setLineWidth(2f);
+        dataSet.setDrawValues(false);
+        dataSet.setColor(Color.GREEN);
+
+        // No indicators for individual data points
+        dataSet.setDrawCircles(false);
+        dataSet.setDrawCircleHole(false);
+
+        dataSet.setHighlightEnabled(false);
 
         // smoothen graph
         dataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);

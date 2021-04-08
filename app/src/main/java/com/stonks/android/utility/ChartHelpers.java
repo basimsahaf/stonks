@@ -15,21 +15,6 @@ public class ChartHelpers {
     public static LocalTime startOfDayTime = LocalTime.of(9, 30, 0, 0);
     public static LocalTime endOfDayTime = LocalTime.of(16, 0, 0, 0);
 
-    public static int getDataPointLimit(DateRange range) {
-        switch (range) {
-            case MONTH:
-                return 1000;
-            case YEAR:
-                return 365;
-            case THREE_YEARS:
-                return 1000;
-            case DAY:
-            case WEEK:
-            default:
-                return 390;
-        }
-    }
-
     public static AlpacaTimeframe getDataPointTimeframe(DateRange range) {
         switch (range) {
             case WEEK:
@@ -83,27 +68,6 @@ public class ChartHelpers {
         return barData;
     }
 
-    public static List<BarData> getSameDayBars(List<BarData> bars) {
-        BarData lastBar = bars.get(bars.size() - 1);
-        LocalDateTime day =
-                LocalDateTime.ofInstant(
-                        Instant.ofEpochSecond(lastBar.getTimestamp()),
-                        TimeZone.getDefault().toZoneId());
-
-        LocalDateTime firstEntry = day.withHour(9).withMinute(30).withSecond(0);
-        long firstTimeStamp = firstEntry.atZone(TimeZone.getDefault().toZoneId()).toEpochSecond();
-
-        List<BarData> sameDayBars = new ArrayList<>();
-
-        for (BarData bar : bars) {
-            if (bar.getTimestamp() < firstTimeStamp) continue;
-
-            sameDayBars.add(bar);
-        }
-
-        return sameDayBars;
-    }
-
     public static LocalDateTime convertEpochToDateTime(long time) {
         return LocalDateTime.ofInstant(
                 Instant.ofEpochSecond(time), TimeZone.getDefault().toZoneId());
@@ -123,48 +87,43 @@ public class ChartHelpers {
         }
     }
 
-    public static String getIsoStartDate(DateRange range) {
-        if (range == DateRange.DAY) {
-            // for a single day chart, we fetch 390 data points then filter
-            // this is to account for holidays since there is
-            // no stock data available when markets are closed
-            return "";
-        }
+    public static long getEpochTimestamp(DateRange range, long timestamp) {
+        LocalDateTime mostRecentDateTime =
+                LocalDateTime.ofInstant(
+                        Instant.ofEpochSecond(timestamp), TimeZone.getDefault().toZoneId());
 
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime firstDateTime = LocalDateTime.now();
 
         switch (range) {
+            case DAY:
+                firstDateTime = mostRecentDateTime.withHour(9).withMinute(30);
+                break;
             case WEEK:
-                now = now.minusDays(7).withHour(9).withMinute(30);
+                firstDateTime = mostRecentDateTime.minusDays(7).withHour(9).withMinute(30);
                 break;
             case MONTH:
-                now = now.minusMonths(1).withHour(9).withMinute(30);
+                firstDateTime = mostRecentDateTime.minusMonths(1).withHour(9).withMinute(30);
                 break;
             case YEAR:
-                now = now.minusYears(1).withHour(9).withMinute(30);
+                firstDateTime = mostRecentDateTime.minusYears(1).withHour(9).withMinute(30);
                 break;
             case THREE_YEARS:
-                now = now.minusYears(3).withHour(9).withMinute(30);
+                firstDateTime = mostRecentDateTime.minusYears(3).withHour(9).withMinute(30);
                 break;
         }
 
-        ZonedDateTime dateTime =
-                ZonedDateTime.ofInstant(
-                        now.atZone(TimeZone.getDefault().toZoneId()).toInstant(),
-                        ZoneId.systemDefault());
-        DateTimeFormatter df = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
-
-        return df.format(dateTime);
+        return firstDateTime.atZone(TimeZone.getDefault().toZoneId()).toEpochSecond();
     }
 
-    private static boolean isEndOfDayTime(LocalTime time) {
+    private static boolean isEndOfDayTime(LocalTime time, AlpacaTimeframe timeframe) {
         if (time.getHour() == endOfDayTime.getHour()
                 && time.getMinute() == endOfDayTime.getMinute()) {
             return true;
         }
 
         return (endOfDayTime.getHour() - time.getHour() == 1)
-                && (endOfDayTime.getMinute() - time.getMinute() <= 30);
+                && (time.getMinute() != 0)
+                && (endOfDayTime.getMinute() - time.getMinute() <= 2 * timeframe.toInt());
     }
 
     public static List<BarData> cleanData(List<BarData> data, AlpacaTimeframe timeframe) {
@@ -192,6 +151,34 @@ public class ChartHelpers {
 
         List<BarData> cleanData = new ArrayList<>();
         BarData bar = data.get(0);
+
+        if (timeframe == AlpacaTimeframe.MINUTE) {
+            Log.d("timeframe check", "is minute");
+            LocalDateTime dateTime = convertEpochToDateTime(bar.getTimestamp());
+            LocalDateTime expectedStart = dateTime.withHour(9).withMinute(30);
+
+            long expectedTimestamp =
+                    expectedStart.atZone(TimeZone.getDefault().toZoneId()).toEpochSecond();
+
+            Log.d(
+                    "clean up start",
+                    "expectedTimestamp: "
+                            + expectedTimestamp
+                            + ", barTimeStamp: "
+                            + bar.getTimestamp());
+            while (bar.getTimestamp() > expectedTimestamp) {
+                BarData newBar =
+                        new BarData(
+                                (int) expectedTimestamp,
+                                bar.getHigh(),
+                                bar.getLow(),
+                                bar.getOpen(),
+                                bar.getClose());
+                cleanData.add(newBar);
+                expectedTimestamp += difference;
+            }
+        }
+
         cleanData.add(bar);
         long lastTimeStamp = data.get(0).getTimestamp();
         int i = 1;
@@ -210,7 +197,7 @@ public class ChartHelpers {
             if (currentBar.getTimestamp() - lastTimeStamp > difference) {
                 LocalDateTime dateTime = convertEpochToDateTime(lastTimeStamp);
 
-                if (timeframe == AlpacaTimeframe.MINUTES_15) {
+                if (timeframe != AlpacaTimeframe.DAY) {
                     // check if lastTimeStamp was around 4:00PM
                     LocalTime time = dateTime.toLocalTime();
                     Log.d(
@@ -222,14 +209,14 @@ public class ChartHelpers {
                                     + " ("
                                     + time.toString()
                                     + ") is EOD");
-                    if (isEndOfDayTime(time)) {
+                    if (isEndOfDayTime(time, timeframe)) {
                         Log.d("Cleaning data", "i=" + i + " was new day");
                         lastTimeStamp = currentBar.getTimestamp();
                         cleanData.add(currentBar);
                         i++;
                         continue;
                     }
-                } else if (timeframe == AlpacaTimeframe.DAY) {
+                } else {
                     // Check if lastTimeStamp was Friday
                     if (dateTime.getDayOfWeek() == DayOfWeek.FRIDAY) {
                         lastTimeStamp = currentBar.getTimestamp();

@@ -3,6 +3,7 @@ package com.stonks.android.manager;
 import android.util.Log;
 import com.github.mikephil.charting.data.CandleEntry;
 import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
 import com.stonks.android.external.MarketDataService;
 import com.stonks.android.model.BarData;
 import com.stonks.android.model.QuoteData;
@@ -10,7 +11,9 @@ import com.stonks.android.model.StockData;
 import com.stonks.android.model.Symbols;
 import com.stonks.android.model.alpaca.AlpacaTimeframe;
 import com.stonks.android.model.alpaca.DateRange;
+import com.stonks.android.uicomponent.StockChart;
 import com.stonks.android.utility.ChartHelpers;
+import com.stonks.android.utility.SimpleMovingAverage;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
@@ -28,6 +31,7 @@ public class StockManager {
     private final StockData stockData;
     private final MarketDataService marketDataService;
     private DateRange currentRange;
+    private final SimpleMovingAverage simpleMovingAverage;
     private final HashMap<Integer, BarData> candleData;
     private final HashMap<Integer, BarData> lineData;
     private final Function<Integer, String> candleMarker;
@@ -76,6 +80,7 @@ public class StockManager {
 
                     return ChartHelpers.getMarkerDateFormatter(this.currentRange).format(date);
                 };
+        simpleMovingAverage = new SimpleMovingAverage(5);
     }
 
     public Function<Integer, String> getCandleMarker() {
@@ -96,8 +101,8 @@ public class StockManager {
     }
 
     public void fetchInitialData() {
+        final int limit = 1000;
         final Symbols symbols = new Symbols(Collections.singletonList(this.symbol));
-        final int limit = ChartHelpers.getDataPointLimit(this.currentRange);
         final AlpacaTimeframe timeframe = ChartHelpers.getDataPointTimeframe(this.currentRange);
 
         Observable.zip(
@@ -113,16 +118,9 @@ public class StockManager {
                 .subscribeOn(Schedulers.io())
                 .subscribe(
                         newStockData -> {
-                            List<BarData> barData =
-                                    ChartHelpers.getSameDayBars(newStockData.getGraphData());
-                            List<BarData> cleanedData = ChartHelpers.cleanData(barData, timeframe);
+                            List<BarData> cleanedData =
+                                    ChartHelpers.cleanData(newStockData.getGraphData(), timeframe);
 
-                            Log.d(
-                                    TAG,
-                                    cleanedData.stream()
-                                            .map(BarData::getTimestamp)
-                                            .collect(Collectors.toList())
-                                            .toString());
                             this.stockData.updateStock(
                                     newStockData, this.currentRange, cleanedData);
                         },
@@ -130,26 +128,19 @@ public class StockManager {
     }
 
     private void fetchGraphData() {
-        final int limit = ChartHelpers.getDataPointLimit(this.currentRange);
+        final int limit = 1000;
         final AlpacaTimeframe timeframe = ChartHelpers.getDataPointTimeframe(this.currentRange);
 
         marketDataService
-                .getBars(
-                        new Symbols(Collections.singletonList(symbol)),
-                        timeframe,
-                        limit,
-                        ChartHelpers.getIsoStartDate(this.currentRange))
+                .getBars(new Symbols(Collections.singletonList(symbol)), timeframe, limit)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(
                         stockBars -> {
                             List<BarData> bars = stockBars.get(symbol);
 
-                            if (this.currentRange == DateRange.DAY) {
-                                bars = ChartHelpers.getSameDayBars(bars);
-                            }
-
                             List<BarData> cleanedData = ChartHelpers.cleanData(bars, timeframe);
+
                             Log.d(
                                     TAG,
                                     "rawBars: " + bars.size() + ", cleaned: " + cleanedData.size());
@@ -185,7 +176,16 @@ public class StockManager {
     }
 
     public List<CandleEntry> getCandleStickData() {
-        List<BarData> bars = this.stockData.getCachedGraphData(this.currentRange);
+        List<BarData> cachedBars = this.stockData.getCachedGraphData(this.currentRange);
+        long firstTimeStamp =
+                ChartHelpers.getEpochTimestamp(
+                        this.currentRange, cachedBars.get(cachedBars.size() - 1).getTimestamp());
+
+        List<BarData> bars =
+                cachedBars.stream()
+                        .filter(bar -> bar.getTimestamp() >= firstTimeStamp)
+                        .collect(Collectors.toList());
+
         int windowSize = 1;
 
         switch (this.currentRange) {
@@ -223,8 +223,17 @@ public class StockManager {
                 .collect(Collectors.toList());
     }
 
-    public List<Entry> getLineData() {
-        List<BarData> bars = this.stockData.getCachedGraphData(this.currentRange);
+    private List<Entry> getLineData() {
+        List<BarData> cachedBars = this.stockData.getCachedGraphData(this.currentRange);
+        long firstTimeStamp =
+                ChartHelpers.getEpochTimestamp(
+                        this.currentRange, cachedBars.get(cachedBars.size() - 1).getTimestamp());
+
+        List<BarData> bars =
+                cachedBars.stream()
+                        .filter(bar -> bar.getTimestamp() >= firstTimeStamp)
+                        .collect(Collectors.toList());
+
         int windowSize = 1;
 
         switch (this.currentRange) {
@@ -251,5 +260,40 @@ public class StockManager {
                 .sorted(Comparator.comparingInt(Map.Entry::getKey))
                 .map(entry -> new Entry(entry.getKey(), entry.getValue().getOpen()))
                 .collect(Collectors.toList());
+    }
+
+    private List<Entry> getSimpleMovingAverage() {
+        this.simpleMovingAverage.setData(
+                this.lineData.entrySet().stream()
+                        .sorted(Comparator.comparingInt(Map.Entry::getKey))
+                        .map(Map.Entry::getValue)
+                        .collect(Collectors.toList()));
+        List<Entry> movingAverage = this.simpleMovingAverage.getMovingAverage();
+        List<Entry> average =
+                movingAverage.subList(
+                        Math.max(movingAverage.size() - this.lineData.size(), 0),
+                        movingAverage.size());
+
+        AtomicInteger index = new AtomicInteger(1);
+        return average.stream()
+                .map(entry -> new Entry(index.getAndIncrement(), entry.getY()))
+                .collect(Collectors.toList());
+    }
+
+    public LineData getLineChartData() {
+        List<Entry> stockPrices = getLineData();
+        List<Entry> simpleMovingAverage = getSimpleMovingAverage();
+
+        LineData lineData = new LineData();
+
+        if (stockPrices.size() > 0) {
+            lineData.addDataSet(StockChart.buildDataSet(stockPrices));
+        }
+
+        if (simpleMovingAverage.size() > 0) {
+            lineData.addDataSet(StockChart.buildIndicatorDataSet(simpleMovingAverage));
+        }
+
+        return lineData;
     }
 }
