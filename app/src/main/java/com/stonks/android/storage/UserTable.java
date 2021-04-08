@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import androidx.annotation.Nullable;
 import com.stonks.android.BuildConfig;
 import com.stonks.android.model.UserModel;
+import java.time.LocalDateTime;
 
 public class UserTable extends SQLiteOpenHelper {
     private static UserTable userTable;
@@ -19,9 +20,10 @@ public class UserTable extends SQLiteOpenHelper {
     public static final String COLUMN_PASSWORD = "password";
     public static final String COLUMN_BIOMETRICS = "biometrics_enabled";
     public static final String COLUMN_TOTAL_AMOUNT = "total_amount";
+    public static final String COLUMN_TRAINING_START_DATE = "training_start_date";
 
     private UserTable(@Nullable Context context) {
-        super(context, BuildConfig.DATABASE_NAME, null, 1);
+        super(context, BuildConfig.DATABASE_NAME, null, 2);
     }
 
     public static UserTable getInstance(Context context) {
@@ -45,7 +47,9 @@ public class UserTable extends SQLiteOpenHelper {
                         + COLUMN_BIOMETRICS
                         + " INT,"
                         + COLUMN_TOTAL_AMOUNT
-                        + " REAL"
+                        + " REAL,"
+                        + COLUMN_TRAINING_START_DATE
+                        + " STRING"
                         + ")";
 
         db.execSQL(createUserTable);
@@ -65,6 +69,7 @@ public class UserTable extends SQLiteOpenHelper {
         cv.put(COLUMN_PASSWORD, userModel.getPassword());
         cv.put(COLUMN_BIOMETRICS, userModel.getBiometricsEnabled());
         cv.put(COLUMN_TOTAL_AMOUNT, INITIAL_AMOUNT);
+        cv.put(COLUMN_TRAINING_START_DATE, LocalDateTime.now().toString());
 
         long insert = db.insert(USER_TABLE, null, cv);
         return insert >= 0;
@@ -94,5 +99,41 @@ public class UserTable extends SQLiteOpenHelper {
         boolean exists = cursor.moveToFirst();
         cursor.close();
         return exists;
+    }
+
+    public float getFunds(String username) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String queryString = "SELECT * FROM " + USER_TABLE + " WHERE username = '" + username + "'";
+
+        Cursor cursor = db.rawQuery(queryString, null);
+        boolean exists = cursor.moveToFirst();
+
+        if (exists) {
+            float funds = cursor.getFloat(cursor.getColumnIndex(COLUMN_TOTAL_AMOUNT));
+            cursor.close();
+
+            return funds;
+        }
+
+        cursor.close();
+        return -1.0f;
+    }
+
+    public LocalDateTime getTrainingStartDate(String username) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String queryString = "SELECT * FROM " + USER_TABLE + " WHERE username = '" + username + "'";
+
+        Cursor cursor = db.rawQuery(queryString, null);
+        boolean exists = cursor.moveToFirst();
+
+        if (exists) {
+            String date = cursor.getString(cursor.getColumnIndex(COLUMN_TRAINING_START_DATE));
+            cursor.close();
+
+            return LocalDateTime.parse(date);
+        }
+
+        cursor.close();
+        return null;
     }
 }
