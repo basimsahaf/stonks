@@ -10,10 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.stonks.android.adapter.StockChartAdapter;
 import com.stonks.android.adapter.StockListRecyclerViewAdapter;
-import com.stonks.android.manager.FavouriteStocksManager;
-import com.stonks.android.model.FavouriteStock;
 import com.stonks.android.model.StockListItem;
-import com.stonks.android.storage.FavouritesTable;
 import com.stonks.android.uicomponent.CustomSparkView;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
@@ -29,11 +26,6 @@ public class HomePageFragment extends BaseFragment {
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-
-        // debug
-        FavouriteStocksManager fm = FavouriteStocksManager.getInstance(getContext());
-        fm.addFavouriteStock("uber");
-        
         RecyclerView.LayoutManager portfolioListManager =
                 new LinearLayoutManager(this.getContext());
         RecyclerView portfolioList = view.findViewById(R.id.portfolio_list);

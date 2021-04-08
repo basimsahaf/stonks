@@ -1,8 +1,6 @@
 package com.stonks.android.manager;
 
 import android.content.Context;
-import android.util.Log;
-
 import com.stonks.android.model.FavouriteStock;
 import com.stonks.android.model.LoginRepository;
 import com.stonks.android.model.StockListItem;
@@ -15,7 +13,7 @@ public class FavouriteStocksManager {
     private String username;
 
     private FavouriteStocksManager(Context context) {
-        this.favouritesTable = FavouritesTable.getInstance(context);
+        this.favouritesTable = favouritesTable.getInstance(context);
         this.username = LoginRepository.getInstance(context).getCurrentUser();
     }
 
@@ -27,7 +25,6 @@ public class FavouriteStocksManager {
     }
 
     public void addFavouriteStock(String symbol) {
-        Log.d("favourite stock manager", "added a stock");
         favouritesTable.addFavouritesRow(new FavouriteStock(this.username, symbol));
     }
 

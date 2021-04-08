@@ -14,6 +14,7 @@ public class FavouritesTable extends SQLiteOpenHelper {
     private static FavouritesTable favouritesTable;
 
     public static final String FAVOURITES_TABLE = "FAVOURITES_TABLE";
+    public static final String COLUMN_ID = "id";
     public static final String COLUMN_USERNAME = "username";
     public static final String COLUMN_SYMBOL = "symbol";
 
@@ -94,6 +95,7 @@ public class FavouritesTable extends SQLiteOpenHelper {
 
         if (cursor.moveToFirst()) {
             do {
+                int id = cursor.getInt(cursor.getColumnIndex(COLUMN_ID));
                 String username = cursor.getString(cursor.getColumnIndex(COLUMN_USERNAME));
                 String symbol = cursor.getString(cursor.getColumnIndex(COLUMN_SYMBOL));
 
