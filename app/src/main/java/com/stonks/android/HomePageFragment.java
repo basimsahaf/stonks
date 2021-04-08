@@ -51,6 +51,7 @@ public class HomePageFragment extends BaseFragment {
         this.priceUpdate = view.findViewById(R.id.price_update);
         this.moneyLeft = view.findViewById(R.id.money_left);
         this.totalReturn = view.findViewById(R.id.total_return);
+        this.noStocksMsg = view.findViewById(R.id.no_stocks_msg);
 
         this.priceUpdateArrow = view.findViewById(R.id.price_update_arrow);
         this.totalReturnArrow = view.findViewById(R.id.total_return_arrow);

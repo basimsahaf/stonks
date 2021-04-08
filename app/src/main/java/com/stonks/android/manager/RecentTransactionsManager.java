@@ -19,7 +19,8 @@ public class RecentTransactionsManager {
 
     private RecentTransactionsManager(Context context) {
         transactionTable = TransactionTable.getInstance(context);
-        username = LoginRepository.getInstance(context).getCurrentUser();
+        //username = LoginRepository.getInstance(context).getCurrentUser();
+        username = "username"; // TODO: Remove when done testing
         filters = new TransactionFilters(username);
     }
 

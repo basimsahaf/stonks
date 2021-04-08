@@ -15,6 +15,7 @@ import com.stonks.android.model.Transaction;
 import com.stonks.android.model.TransactionMode;
 import com.stonks.android.model.alpaca.AlpacaTimeframe;
 import com.stonks.android.storage.PortfolioTable;
+import com.stonks.android.storage.TransactionTable;
 import com.stonks.android.storage.UserTable;
 
 import java.time.Instant;
@@ -37,16 +38,19 @@ public class PortfolioManager {
 
     private static UserTable userTable;
     private static PortfolioTable portfolioTable;
+    private static TransactionTable transactionTable;
 
     private static Portfolio portfolio;
     private static ArrayList<StockListItem> stocksList;
     private static ArrayList<Float> graphData;
     private static ArrayList<Transaction> transactions;
+    private static ArrayList<String> symbolList;
 
     private PortfolioManager(Context context, HomePageFragment f) {
         fragment = f;
-        userTable = new UserTable(context);
-        portfolioTable = new PortfolioTable(context);
+        userTable = UserTable.getInstance(context);
+        portfolioTable = PortfolioTable.getInstance(context);
+        transactionTable = TransactionTable.getInstance(context);
         stocksList = new ArrayList<>();
         graphData = new ArrayList<>();
     }
@@ -57,12 +61,20 @@ public class PortfolioManager {
 
             //  TODO: Fetch from the TransactionManager
             transactions = new ArrayList<>();
-//            transactions.add(new Transaction("username", "SHOP", 1, 200.0f, TransactionMode.BUY, java.time.LocalDateTime.now().minusDays(3)));
-//            transactions.add(new Transaction("username", "SHOP", 1, 2000.0f, TransactionMode.SELL, java.time.LocalDateTime.now().minusDays(2)));
-            transactions.add(new Transaction("username", "SHOP", 2, 1000.0f, TransactionMode.BUY, java.time.LocalDateTime.now().minusDays(6)));
-            transactions.add(new Transaction("username", "UBER", 2, 20.0f, TransactionMode.BUY, java.time.LocalDateTime.now().minusDays(6)));
-            transactions.add(new Transaction("username", "SHOP", 1, 1200.0f, TransactionMode.SELL, java.time.LocalDateTime.now().minusDays(2)));
-            transactions.add(new Transaction("username", "SHOP", 2, 1300.0f, TransactionMode.BUY, java.time.LocalDateTime.now().withHour(12)));
+            transactions = transactionTable.getTransactions("username");
+            symbolList = transactionTable.getSymbols("username");
+
+            if (transactions.isEmpty()) {
+//                transactions.add(new Transaction("username", "SHOP", 1, 200.0f, TransactionMode.BUY, java.time.LocalDateTime.now().minusDays(3)));
+//                transactions.add(new Transaction("username", "SHOP", 1, 2000.0f, TransactionMode.SELL, java.time.LocalDateTime.now().minusDays(2)));
+                transactions.add(new Transaction("username", "SHOP", 2, 1000.0f, TransactionMode.BUY, java.time.LocalDateTime.now().minusDays(6)));
+                transactions.add(new Transaction("username", "UBER", 2, 20.0f, TransactionMode.BUY, java.time.LocalDateTime.now().minusDays(6)));
+                transactions.add(new Transaction("username", "SHOP", 1, 1200.0f, TransactionMode.SELL, java.time.LocalDateTime.now().minusDays(2)));
+                transactions.add(new Transaction("username", "SHOP", 2, 1300.0f, TransactionMode.BUY, java.time.LocalDateTime.now().withHour(12)));
+
+                symbolList.add("SHOP");
+                symbolList.add("UBER");
+            }
         }
 
         //String username = LoginRepository.getInstance(new LoginDataSource(userTable)).getCurrentUser();
@@ -184,10 +196,10 @@ public class PortfolioManager {
     }
 
     public void calculateData() {
-        ArrayList<String> symbolList = new ArrayList<>();
-        for (PortfolioItem item : portfolio.getPortfolioItems()) {
-            symbolList.add(item.getSymbol());
-        }
+//        ArrayList<String> symbolList = new ArrayList<>();
+//        for (PortfolioItem item : portfolio.getPortfolioItems()) {
+//            symbolList.add(item.getSymbol());
+//        }
 
         Symbols symbols = new Symbols(symbolList);
 
@@ -223,7 +235,7 @@ public class PortfolioManager {
                                 float changePercentage = change * 100 / barData.get(0).getOpen();
                                 int quantity = portfolio.getStockQuantity(symbol);
 
-                                portfolio.setPrice(symbol, currentPrice);
+                                //portfolio.setPrice(symbol, currentPrice);
                                 stocksList.add(new StockListItem(symbol, currentPrice, quantity, change, changePercentage));
 
                                 accountValue += (currentPrice * quantity);
