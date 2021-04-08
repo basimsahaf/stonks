@@ -89,13 +89,11 @@ public class StockFragment extends BaseFragment {
                             @Override
                             public void onPropertyChanged(
                                     androidx.databinding.Observable observable, int i) {
-                                priceChange.setText(
-                                        generateChangeString(
-                                                manager.getStockData().getCurrentPrice()));
-                                changeIndicator.setImageDrawable(getIndicatorDrawable());
-
                                 List<CandleEntry> newCandleData = manager.getCandleStickData();
                                 LineData lineChartData = manager.getLineChartData();
+
+                                priceChange.setText(generateChangeString());
+                                changeIndicator.setImageDrawable(getIndicatorDrawable());
 
                                 if (newCandleData != null && newCandleData.size() > 0) {
                                     candleChart.setData(newCandleData);
@@ -225,7 +223,6 @@ public class StockFragment extends BaseFragment {
                             .getSupportFragmentManager()
                             .beginTransaction()
                             .replace(R.id.sliding_drawer, hypotheticalFragment, null)
-                            .addToBackStack(null)
                             .commit();
                 });
 
@@ -242,7 +239,6 @@ public class StockFragment extends BaseFragment {
                             .getSupportFragmentManager()
                             .beginTransaction()
                             .replace(R.id.sliding_drawer, buyFrag, null)
-                            .addToBackStack(null)
                             .commit();
                 });
         sellButton.setOnClickListener(
@@ -258,7 +254,6 @@ public class StockFragment extends BaseFragment {
                             .getSupportFragmentManager()
                             .beginTransaction()
                             .replace(R.id.sliding_drawer, sellFrag, null)
-                            .addToBackStack(null)
                             .commit();
                 });
         this.favIcon.setOnClickListener(
@@ -338,12 +333,13 @@ public class StockFragment extends BaseFragment {
     }
 
     SpannableString generateChangeString() {
-        return this.generateChangeString(this.manager.getStockData().getCurrentPrice());
+        return generateChangeString(this.manager.getStockData().getCurrentPrice());
     }
 
     SpannableString generateChangeString(Float price) {
-        float change = price - this.manager.getStockData().getOpen();
-        float changePercentage = change * 100 / this.manager.getStockData().getOpen();
+        Pair<Float, Float> changePair = this.manager.getChange(price);
+        float change = changePair.first;
+        float changePercentage = changePair.second;
 
         String formattedPrice = Formatters.formatPrice(Math.abs(change));
         String changeString =
