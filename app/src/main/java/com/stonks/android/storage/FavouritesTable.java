@@ -19,7 +19,7 @@ public class FavouritesTable extends SQLiteOpenHelper {
     public static final String COLUMN_SYMBOL = "symbol";
 
     private FavouritesTable(@Nullable Context context) {
-        super(context, BuildConfig.DATABASE_NAME, null, 1);
+        super(context, BuildConfig.DATABASE_NAME, null, 6);
     }
 
     public static FavouritesTable getInstance(Context context) {
@@ -88,6 +88,18 @@ public class FavouritesTable extends SQLiteOpenHelper {
         return queryFavouritesRows(query, new String[] {username});
     }
 
+    public Boolean doesFavouriteStockExist(String username, String symbol) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String queryString =
+                String.format(
+                        "SELECT * FROM %s WHERE %s = ? AND %S = ?",
+                        FAVOURITES_TABLE, COLUMN_USERNAME, COLUMN_SYMBOL);
+        Cursor cursor = db.rawQuery(queryString, new String[] {username, symbol});
+        boolean exists = cursor.moveToFirst();
+        cursor.close();
+        return exists;
+    }
+
     private ArrayList<FavouriteStock> queryFavouritesRows(String query, String[] selectionArgs) {
         SQLiteDatabase db = this.getReadableDatabase();
         ArrayList<FavouriteStock> favouriteStocksList = new ArrayList<>();
@@ -95,11 +107,10 @@ public class FavouritesTable extends SQLiteOpenHelper {
 
         if (cursor.moveToFirst()) {
             do {
-                int id = cursor.getInt(cursor.getColumnIndex(COLUMN_ID));
                 String username = cursor.getString(cursor.getColumnIndex(COLUMN_USERNAME));
                 String symbol = cursor.getString(cursor.getColumnIndex(COLUMN_SYMBOL));
 
-                favouriteStocksList.add(new FavouriteStock(id, username, symbol));
+                favouriteStocksList.add(new FavouriteStock(username, symbol));
 
             } while (cursor.moveToNext());
         }

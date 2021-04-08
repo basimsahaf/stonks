@@ -76,7 +76,8 @@ public class StockFragment extends BaseFragment {
                 DataBindingUtil.inflate(inflater, R.layout.fragment_stock, container, false);
 
         this.symbol = getArguments().getString(SYMBOL_ARG);
-        this.manager = new StockManager(this.symbol);
+        this.manager = StockManager.getInstance(getMainActivity());
+        this.manager.setSymbol(this.symbol);
 
         // using the addOnPropertyChangedCallback method to update properties that
         // aren't compatible with the @Binding annotation

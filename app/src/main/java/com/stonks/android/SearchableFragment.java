@@ -26,7 +26,7 @@ public class SearchableFragment extends BaseFragment implements SearchView.OnQue
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        getActionBar().setDisplayHomeAsUpEnabled(false);
+        getActionBar().setDisplayHomeAsUpEnabled(true);
         getActionBar().setDisplayShowTitleEnabled(false);
         getMainActivity().hideActionBarCustomViews();
 
