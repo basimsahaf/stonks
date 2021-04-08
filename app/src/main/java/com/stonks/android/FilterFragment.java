@@ -39,9 +39,8 @@ public class FilterFragment extends BaseFragment
     public void onViewCreated(View view, Bundle savedInstanceState) {
         RecyclerView companiesFilterList;
 
-        getActionBar().setDisplayHomeAsUpEnabled(false);
-        getActionBar().setDisplayShowTitleEnabled(false);
-        getMainActivity().hideActionBarCustomViews();
+        getActionBar().setDisplayHomeAsUpEnabled(true);
+        getMainActivity().setGlobalTitle(getString(R.string.filters));
 
         RecyclerView.LayoutManager companiesFilterListManager =
                 new LinearLayoutManager(this.getContext());
