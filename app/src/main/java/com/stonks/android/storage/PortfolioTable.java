@@ -11,13 +11,23 @@ import com.stonks.android.model.PortfolioItem;
 import java.util.ArrayList;
 
 public class PortfolioTable extends SQLiteOpenHelper {
+    private static PortfolioTable portfolioTable;
+
     public static final String PORTFOLIO_TABLE = "PORTFOLIO_TABLE";
     public static final String COLUMN_USERNAME = "username";
     public static final String COLUMN_QUANTITY = "quantity";
     public static final String COLUMN_SYMBOL = "symbol";
 
-    public PortfolioTable(@Nullable Context context) {
+    private PortfolioTable(@Nullable Context context) {
         super(context, BuildConfig.DATABASE_NAME, null, 2);
+    }
+
+    public static PortfolioTable getInstance(Context context) {
+        if (portfolioTable == null) {
+            portfolioTable = new PortfolioTable(context);
+        }
+
+        return portfolioTable;
     }
 
     @Override
