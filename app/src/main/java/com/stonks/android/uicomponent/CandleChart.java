@@ -56,6 +56,8 @@ public class CandleChart extends CandleStickChart {
         this.getAxisRight().setDrawLabels(false);
         this.getAxisRight().setDrawAxisLine(false);
 
+        this.getDescription().setEnabled(false);
+
         this.getXAxis().setDrawGridLines(false);
         this.getXAxis().setDrawLabels(false);
         this.getXAxis().setDrawAxisLine(false);
