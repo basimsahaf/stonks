@@ -131,6 +131,7 @@
                 app:layout_constraintTop_toBottomOf="@id/amount_header">
 
                 <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/min_input"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="numberDecimal" />
@@ -147,6 +148,7 @@
                 app:layout_constraintTop_toBottomOf="@id/min_field">
 
                 <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/max_input"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="numberDecimal" />

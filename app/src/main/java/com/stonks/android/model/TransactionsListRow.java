@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class TransactionsListRow {
+    // TransactionListRow is either a date or a transaction
     private final LocalDateTime date;
     private final Transaction transaction;
 
