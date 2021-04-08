@@ -15,15 +15,30 @@ public class UserTable extends SQLiteOpenHelper {
     private final String TAG = UserTable.class.getCanonicalName();
     private final float INITIAL_AMOUNT = 100000f;
 
-    public static final String USER_TABLE = "USER_TABLE";
+    public static final String TABLE_NAME = "USER_TABLE";
     public static final String COLUMN_USERNAME = "username";
     public static final String COLUMN_PASSWORD = "password";
     public static final String COLUMN_BIOMETRICS = "biometrics_enabled";
     public static final String COLUMN_TOTAL_AMOUNT = "total_amount";
     public static final String COLUMN_TRAINING_START_DATE = "training_start_date";
+    public static final String CREATE_STRING =
+            "CREATE TABLE "
+                    + USER_TABLE
+                    + " ("
+                    + COLUMN_USERNAME
+                    + " TEXT PRIMARY KEY, "
+                    + COLUMN_PASSWORD
+                    + " TEXT,"
+                    + COLUMN_BIOMETRICS
+                    + " INT,"
+                    + COLUMN_TOTAL_AMOUNT
+                    + " REAL,"
+                    + COLUMN_TRAINING_START_DATE
+                    + " STRING"
+                    + ")";
 
     private UserTable(@Nullable Context context) {
-        super(context, BuildConfig.DATABASE_NAME, null, 2);
+        super(context, BuildConfig.DATABASE_NAME, null, 5);
     }
 
     public static UserTable getInstance(Context context) {
@@ -36,30 +51,18 @@ public class UserTable extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String createUserTable =
-                "CREATE TABLE "
-                        + USER_TABLE
-                        + " ("
-                        + COLUMN_USERNAME
-                        + " TEXT PRIMARY KEY, "
-                        + COLUMN_PASSWORD
-                        + " TEXT,"
-                        + COLUMN_BIOMETRICS
-                        + " INT,"
-                        + COLUMN_TOTAL_AMOUNT
-                        + " REAL,"
-                        + COLUMN_TRAINING_START_DATE
-                        + " STRING"
-                        + ")";
-
-        db.execSQL(createUserTable);
+        db.execSQL(CREATE_STRING);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        String dropStatement = "DROP TABLE IF EXISTS " + USER_TABLE;
-        db.execSQL(dropStatement);
-        onCreate(db);
+        if (oldVersion < newVersion) {
+            //            String dropStatement = "DROP TABLE IF EXISTS " + TABLE_NAME;
+            //            db.execSQL(dropStatement);
+            //            onCreate(db);
+            DatabaseHelper.removeAllTables(db);
+            DatabaseHelper.createAllTables(db);
+        }
     }
 
     public boolean addUser(UserModel userModel) {
@@ -71,13 +74,13 @@ public class UserTable extends SQLiteOpenHelper {
         cv.put(COLUMN_TOTAL_AMOUNT, INITIAL_AMOUNT);
         cv.put(COLUMN_TRAINING_START_DATE, LocalDateTime.now().toString());
 
-        long insert = db.insert(USER_TABLE, null, cv);
+        long insert = db.insert(TABLE_NAME, null, cv);
         return insert >= 0;
     }
 
     public boolean checkIfUserExists(String username) {
         SQLiteDatabase db = this.getReadableDatabase();
-        String queryString = "SELECT * FROM " + USER_TABLE + " WHERE username = '" + username + "'";
+        String queryString = "SELECT * FROM " + TABLE_NAME + " WHERE username = '" + username + "'";
         Cursor cursor = db.rawQuery(queryString, null);
         boolean exists = cursor.moveToFirst();
         cursor.close();
@@ -88,7 +91,7 @@ public class UserTable extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
         String queryString =
                 "SELECT * FROM "
-                        + USER_TABLE
+                        + TABLE_NAME
                         + " WHERE username = '"
                         + username
                         + "' AND password = '"

@@ -75,7 +75,7 @@ public class StockManager {
                     if (bar == null) {
                         return "";
                     }
-                    
+
                     long timeStamp =
                             x == this.lineData.size() ? bar.getEndTimestamp() : bar.getTimestamp();
 
@@ -137,6 +137,11 @@ public class StockManager {
 
         // TODO: get username from LoginRepository
         List<Transaction> transactions = this.transactionTable.getTransactions("tmp");
+
+        if (transactions.size() == 0) {
+            return Collections.emptyList();
+        }
+
         LocalDateTime lastTransactionDate = transactions.get(0).getCreatedAt();
 
         for (Transaction transaction : transactions) {

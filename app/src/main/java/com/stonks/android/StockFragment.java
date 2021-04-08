@@ -167,6 +167,9 @@ public class StockFragment extends BaseFragment {
         this.tradeButton.addToSpeedDial(sellButtonContainer);
         this.tradeButton.addToSpeedDial(tryButtonContainer);
 
+        this.stockManager.getPosition();
+        this.stockManager.getTransactions();
+
         RecyclerView.LayoutManager transactionListManager = new LinearLayoutManager(getContext());
         this.transactionList.setLayoutManager(transactionListManager);
         this.transactionListAdapter =
