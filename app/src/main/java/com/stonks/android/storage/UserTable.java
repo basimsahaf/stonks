@@ -10,6 +10,7 @@ import com.stonks.android.BuildConfig;
 import com.stonks.android.model.UserModel;
 
 public class UserTable extends SQLiteOpenHelper {
+    private static UserTable userTable;
     private final String TAG = UserTable.class.getCanonicalName();
     private final float INITIAL_AMOUNT = 100000f;
 
@@ -19,8 +20,16 @@ public class UserTable extends SQLiteOpenHelper {
     public static final String COLUMN_BIOMETRICS = "biometrics_enabled";
     public static final String COLUMN_TOTAL_AMOUNT = "total_amount";
 
-    public UserTable(@Nullable Context context) {
+    private UserTable(@Nullable Context context) {
         super(context, BuildConfig.DATABASE_NAME, null, 1);
+    }
+
+    public static UserTable getInstance(Context context) {
+        if (userTable == null) {
+            userTable = new UserTable(context);
+        }
+
+        return userTable;
     }
 
     @Override
