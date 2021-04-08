@@ -8,6 +8,7 @@ import android.widget.ListView;
 import android.widget.SearchView;
 import androidx.fragment.app.Fragment;
 import com.stonks.android.adapter.SearchResultAdapter;
+import com.stonks.android.manager.SearchManager;
 import com.stonks.android.model.SearchResult;
 import java.util.ArrayList;
 
@@ -15,6 +16,7 @@ public class SearchableFragment extends BaseFragment implements SearchView.OnQue
     private ListView searchResultList;
     private SearchResultAdapter searchResultAdapter;
     private SearchView searchView;
+    private SearchManager searchManager;
 
     @Override
     public View onCreateView(
@@ -24,6 +26,7 @@ public class SearchableFragment extends BaseFragment implements SearchView.OnQue
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
+        searchManager = SearchManager.getInstance(this.getContext());
         super.onViewCreated(view, savedInstanceState);
 
         getActionBar().setDisplayHomeAsUpEnabled(false);
@@ -31,7 +34,7 @@ public class SearchableFragment extends BaseFragment implements SearchView.OnQue
         getMainActivity().hideActionBarCustomViews();
 
         searchResultList = view.findViewById(R.id.list_view);
-        searchResultAdapter = new SearchResultAdapter(getActivity(), getFakeSearchResults());
+        searchResultAdapter = new SearchResultAdapter(getActivity());
         searchResultList.setAdapter(searchResultAdapter);
 
         searchView = view.findViewById(R.id.search_view);
@@ -64,23 +67,9 @@ public class SearchableFragment extends BaseFragment implements SearchView.OnQue
     @Override
     public boolean onQueryTextChange(String newText) {
         String query = newText;
-        searchResultAdapter.filterQuery(query);
+        ArrayList<SearchResult> searchResults = searchManager.getOrderedSearchResults(query);
+        searchResultAdapter.updateSearchResultList(searchResults);
         // Let SearchView handle showing suggestions
         return false;
-    }
-
-    public static ArrayList<SearchResult> getFakeSearchResults() {
-        ArrayList<SearchResult> list = new ArrayList<>();
-
-        list.add(new SearchResult("Google", "GOOGL"));
-        list.add(new SearchResult("Shopify", "SHOP"));
-        list.add(new SearchResult("Facebook", "FB"));
-        list.add(new SearchResult("Salesforce", "CRM"));
-        list.add(new SearchResult("Survey Monkey", "SVMK"));
-        list.add(new SearchResult("Instacart", "ICART"));
-        list.add(new SearchResult("Uber", "UBER"));
-        list.add(new SearchResult("The Weather Network", "WNET"));
-
-        return list;
     }
 }
