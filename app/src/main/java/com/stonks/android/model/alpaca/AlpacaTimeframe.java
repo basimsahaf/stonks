@@ -16,4 +16,18 @@ public enum AlpacaTimeframe {
     public String toString() {
         return this.timeframe;
     }
+
+    public int toInt() {
+        switch (timeframe) {
+            default:
+            case "minute":
+                return 1;
+            case "5Min":
+                return 5;
+            case "15Min":
+                return 15;
+            case "day":
+                return 24 * 60;
+        }
+    }
 }

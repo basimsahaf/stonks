@@ -44,7 +44,7 @@ public class SearchableFragment extends BaseFragment implements SearchView.OnQue
 
                     Fragment stockFragment = new StockFragment();
                     Bundle bundle = new Bundle();
-                    bundle.putString(getString(R.string.intent_extra_symbol), item.getSymbol());
+                    bundle.putString(StockFragment.SYMBOL_ARG, item.getSymbol());
                     stockFragment.setArguments(bundle);
                     getActivity()
                             .getSupportFragmentManager()

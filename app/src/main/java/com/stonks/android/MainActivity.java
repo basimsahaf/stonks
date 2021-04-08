@@ -83,6 +83,10 @@ public class MainActivity extends AppCompatActivity {
         this.socket.subscribe(symbol, observer);
     }
 
+    public void unsubscribe(String symbol) {
+        this.socket.unsubscribe(symbol);
+    }
+
     public void setPortfolioValue(float value) {
         globalTitle.setVisibility(View.GONE);
         portfolioTitle.setVisibility(View.VISIBLE);

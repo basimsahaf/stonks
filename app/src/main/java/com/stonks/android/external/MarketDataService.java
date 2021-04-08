@@ -39,9 +39,19 @@ public class MarketDataService {
 
     public Observable<Map<String, List<BarData>>> getBars(
             Symbols symbols, AlpacaTimeframe timeframe, int limit) {
-        HashMap<String, String> params = new HashMap();
+        HashMap<String, String> params = new HashMap<>();
         params.put("symbols", symbols.toString());
         params.put("limit", String.valueOf(limit));
+
+        return alpacaMarketDataApi.getBars(timeframe, params);
+    }
+
+    public Observable<Map<String, List<BarData>>> getBars(
+            Symbols symbols, AlpacaTimeframe timeframe, int limit, String start) {
+        HashMap<String, String> params = new HashMap<>();
+        params.put("symbols", symbols.toString());
+        params.put("limit", String.valueOf(limit));
+        params.put("start", start);
 
         return alpacaMarketDataApi.getBars(timeframe, params);
     }

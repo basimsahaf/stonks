@@ -11,6 +11,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.stonks.android.adapter.TransactionViewAdapter;
 import com.stonks.android.manager.RecentTransactionsManager;
+import com.stonks.android.model.Transaction;
+import com.stonks.android.model.TransactionMode;
+import com.stonks.android.model.TransactionsListRow;
+import java.time.LocalDateTime;
+import java.time.Month;
+import java.util.ArrayList;
 
 public class RecentTransactionsFragment extends BaseFragment {
     private RecentTransactionsManager recentTransactionsManager;
@@ -57,5 +63,31 @@ public class RecentTransactionsFragment extends BaseFragment {
                     ft.addToBackStack(null);
                     ft.commit();
                 });
+    }
+
+    public static ArrayList<TransactionsListRow> getFakeTransactions(String symbol) {
+        ArrayList<TransactionsListRow> list = new ArrayList<>();
+
+        list.add(new TransactionsListRow(LocalDateTime.of(2020, Month.AUGUST, 19, 13, 14)));
+        list.add(
+                new TransactionsListRow(
+                        new Transaction(
+                                "username",
+                                symbol,
+                                100,
+                                56.92f,
+                                TransactionMode.BUY,
+                                LocalDateTime.of(2020, Month.AUGUST, 19, 13, 14))));
+        list.add(
+                new TransactionsListRow(
+                        new Transaction(
+                                "username",
+                                symbol,
+                                268,
+                                36.47f,
+                                TransactionMode.BUY,
+                                LocalDateTime.of(2020, Month.AUGUST, 1, 9, 52))));
+
+        return list;
     }
 }

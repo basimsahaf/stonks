@@ -1,5 +1,7 @@
 package com.stonks.android.external;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -85,8 +87,12 @@ public class AlpacaWebSocketListener extends WebSocketListener {
                         .forEach(alpacaWebSocket::confirmSubscription);
             } else {
                 // received a new price update
-                this.alpacaWebSocket.updateCurrentPrice(
-                        removeAlpacaPrefix(stream), message.getData().getClose());
+                // UI updates have to be made on the main (UI) thread
+                Handler h = new Handler(Looper.getMainLooper());
+                h.post(
+                        () ->
+                                this.alpacaWebSocket.updateCurrentPrice(
+                                        removeAlpacaPrefix(stream), message.getData().getClose()));
             }
         }
     }
