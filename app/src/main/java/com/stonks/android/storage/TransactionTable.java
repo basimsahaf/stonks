@@ -68,9 +68,6 @@ public class TransactionTable extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         if (oldVersion < newVersion) {
-            //            String dropStatement = "DROP TABLE IF EXISTS " + TABLE_NAME;
-            //            db.execSQL(dropStatement);
-            //            onCreate(db);
             DatabaseHelper.removeAllTables(db);
             DatabaseHelper.createAllTables(db);
         }

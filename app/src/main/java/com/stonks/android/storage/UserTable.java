@@ -23,7 +23,7 @@ public class UserTable extends SQLiteOpenHelper {
     public static final String COLUMN_TRAINING_START_DATE = "training_start_date";
     public static final String CREATE_STRING =
             "CREATE TABLE "
-                    + USER_TABLE
+                    + TABLE_NAME
                     + " ("
                     + COLUMN_USERNAME
                     + " TEXT PRIMARY KEY, "
@@ -57,9 +57,6 @@ public class UserTable extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         if (oldVersion < newVersion) {
-            //            String dropStatement = "DROP TABLE IF EXISTS " + TABLE_NAME;
-            //            db.execSQL(dropStatement);
-            //            onCreate(db);
             DatabaseHelper.removeAllTables(db);
             DatabaseHelper.createAllTables(db);
         }
@@ -106,7 +103,7 @@ public class UserTable extends SQLiteOpenHelper {
 
     public float getFunds(String username) {
         SQLiteDatabase db = this.getReadableDatabase();
-        String queryString = "SELECT * FROM " + USER_TABLE + " WHERE username = '" + username + "'";
+        String queryString = "SELECT * FROM " + TABLE_NAME + " WHERE username = '" + username + "'";
 
         Cursor cursor = db.rawQuery(queryString, null);
         boolean exists = cursor.moveToFirst();
@@ -129,13 +126,13 @@ public class UserTable extends SQLiteOpenHelper {
         cv.put(COLUMN_USERNAME, username);
         cv.put(COLUMN_TOTAL_AMOUNT, newFunds);
 
-        long update = db.update(USER_TABLE, cv, whereClause, new String[] {username});
+        long update = db.update(TABLE_NAME, cv, whereClause, new String[] {username});
         return update >= 0;
     }
 
     public LocalDateTime getTrainingStartDate(String username) {
         SQLiteDatabase db = this.getReadableDatabase();
-        String queryString = "SELECT * FROM " + USER_TABLE + " WHERE username = '" + username + "'";
+        String queryString = "SELECT * FROM " + TABLE_NAME + " WHERE username = '" + username + "'";
 
         Cursor cursor = db.rawQuery(queryString, null);
         boolean exists = cursor.moveToFirst();
@@ -158,7 +155,7 @@ public class UserTable extends SQLiteOpenHelper {
         cv.put(COLUMN_USERNAME, username);
         cv.put(COLUMN_TRAINING_START_DATE, LocalDateTime.now().toString());
 
-        long update = db.update(USER_TABLE, cv, whereClause, new String[] {username});
+        long update = db.update(TABLE_NAME, cv, whereClause, new String[] {username});
         return update >= 0;
     }
 }

@@ -55,9 +55,6 @@ public class FavouritesTable extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         if (oldVersion < newVersion) {
-            //            String dropStatement = "DROP TABLE IF EXISTS " + TABLE_NAME;
-            //            db.execSQL(dropStatement);
-            //            onCreate(db);
             DatabaseHelper.removeAllTables(db);
             DatabaseHelper.createAllTables(db);
         }
@@ -92,7 +89,7 @@ public class FavouritesTable extends SQLiteOpenHelper {
         String queryString =
                 String.format(
                         "SELECT * FROM %s WHERE %s = ? AND %S = ?",
-                        FAVOURITES_TABLE, COLUMN_USERNAME, COLUMN_SYMBOL);
+                        TABLE_NAME, COLUMN_USERNAME, COLUMN_SYMBOL);
         Cursor cursor = db.rawQuery(queryString, new String[] {username, symbol});
         boolean exists = cursor.moveToFirst();
         cursor.close();
