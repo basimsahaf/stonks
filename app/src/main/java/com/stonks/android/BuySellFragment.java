@@ -244,6 +244,7 @@ public class BuySellFragment extends Fragment {
                     numSharesOwned.setValue(numSharesOwned.getValue() + numberOfShares);
                     toastText = getString(R.string.sell_successful);
                 }
+                slidingUpPanel.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
 
             } else {
                 toastText =

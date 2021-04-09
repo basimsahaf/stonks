@@ -181,7 +181,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             style="@style/AppTheme.TextAppearance.SmallErrorLabel"
-            android:text="@string/amount_exceeded"
+            android:text="@string/insufficient_funds"
             android:gravity="end"
             app:layout_constraintTop_toBottomOf="@id/available_info"
             android:visibility="gone"/>

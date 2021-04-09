@@ -255,7 +255,7 @@ public class StockFragment extends BaseFragment {
                     bundle.putSerializable(
                             BuySellFragment.STOCK_DATA_ARG, this.stockManager.getStockData());
                     bundle.putSerializable(
-                            BuySellFragment.TRANSACTION_MODE_ARG, TransactionMode.BUY);
+                            BuySellFragment.TRANSACTION_MODE_ARG, TransactionMode.SELL);
                     Fragment sellFrag = new BuySellFragment();
                     sellFrag.setArguments(bundle);
                     getActivity()
