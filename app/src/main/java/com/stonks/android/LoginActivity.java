@@ -290,8 +290,8 @@ public class LoginActivity extends BaseActivity {
 
         loginButton.setOnClickListener(
                 view -> {
-                    //                                        authorizeViaForm();
-                    authorizeViaForm();
+//                                                            authorizeViaForm();
+                    authorizeTestLogin();
                     usernameChanged = false;
                     passwordChanged = false;
                 });
