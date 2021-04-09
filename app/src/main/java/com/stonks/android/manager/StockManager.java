@@ -1,6 +1,7 @@
 package com.stonks.android.manager;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.util.Log;
 import android.util.Pair;
 import com.github.mikephil.charting.data.CandleEntry;
@@ -15,6 +16,7 @@ import com.stonks.android.storage.TransactionTable;
 import com.stonks.android.uicomponent.StockChart;
 import com.stonks.android.utility.ChartHelpers;
 import com.stonks.android.utility.SimpleMovingAverage;
+import com.stonks.android.utility.WeightedMovingAverage;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
@@ -34,6 +36,7 @@ public class StockManager {
     private final MarketDataService marketDataService;
     private DateRange currentRange;
     private final SimpleMovingAverage simpleMovingAverage;
+    private final WeightedMovingAverage weightedMovingAverage;
     private final HashMap<Integer, BarData> candleData;
     private final HashMap<Integer, BarData> lineData;
     private final Function<Integer, String> candleMarker;
@@ -88,6 +91,7 @@ public class StockManager {
                     return ChartHelpers.getMarkerDateFormatter(this.currentRange).format(date);
                 };
         simpleMovingAverage = new SimpleMovingAverage(5);
+        weightedMovingAverage = new WeightedMovingAverage(5);
         transactionTable = TransactionTable.getInstance(context);
         portfolioTable = PortfolioTable.getInstance(context);
         movingAverageEnabled = false;
@@ -351,9 +355,28 @@ public class StockManager {
                 .collect(Collectors.toList());
     }
 
+    private List<Entry> getWeightedMovingAverage() {
+        this.weightedMovingAverage.setData(
+                this.lineData.entrySet().stream()
+                        .sorted(Comparator.comparingInt(Map.Entry::getKey))
+                        .map(Map.Entry::getValue)
+                        .collect(Collectors.toList()));
+        List<Entry> movingAverage = this.weightedMovingAverage.getMovingAverage();
+        List<Entry> average =
+                movingAverage.subList(
+                        Math.max(movingAverage.size() - this.lineData.size(), 0),
+                        movingAverage.size());
+
+        AtomicInteger index = new AtomicInteger(1);
+        return average.stream()
+                .map(entry -> new Entry(index.getAndIncrement(), entry.getY()))
+                .collect(Collectors.toList());
+    }
+
     public LineData getLineChartData() {
         List<Entry> stockPrices = getLineData();
         List<Entry> simpleMovingAverage = getSimpleMovingAverage();
+        List<Entry> weightedMovingAverage = getWeightedMovingAverage();
 
         LineData lineData = new LineData();
 
@@ -362,7 +385,11 @@ public class StockManager {
         }
 
         if (movingAverageEnabled && simpleMovingAverage.size() > 0) {
-            lineData.addDataSet(StockChart.buildIndicatorDataSet(simpleMovingAverage));
+            lineData.addDataSet(StockChart.buildIndicatorDataSet(simpleMovingAverage, Color.GREEN));
+        }
+
+        if (wMovingAverageEnabled && weightedMovingAverage.size() > 0) {
+            lineData.addDataSet(StockChart.buildIndicatorDataSet(weightedMovingAverage, Color.RED));
         }
 
         return lineData;
@@ -384,13 +411,21 @@ public class StockManager {
         this.stockData.notifyChange();
     }
 
-    public void setWMovingAverageEnabled(boolean enabled) {
-        wMovingAverageEnabled = enabled;
+    public void setWMovingAverageEnabled(boolean enabled, int period) {
+        this.wMovingAverageEnabled = enabled;
+        this.weightedMovingAverage.setData(
+                this.lineData.entrySet().stream()
+                        .sorted(Comparator.comparingInt(Map.Entry::getKey))
+                        .map(Map.Entry::getValue)
+                        .collect(Collectors.toList()),
+                period);
+
+        this.stockData.notifyChange();
     }
 
     public int getWeightedMovingAveragePeriod() {
         // TODO: fix
-        return this.simpleMovingAverage.getSize();
+        return this.weightedMovingAverage.getSize();
     }
 
     public boolean isMovingAverageEnabled() {

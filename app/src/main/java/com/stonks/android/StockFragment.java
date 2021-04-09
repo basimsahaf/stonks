@@ -197,7 +197,9 @@ public class StockFragment extends BaseFragment {
                             this.stockManager.setMovingAverage(
                                     maEnabled.isChecked(),
                                     Integer.parseInt(maPeriod.getText().toString()));
-                            this.stockManager.setWMovingAverageEnabled(wmaEnabled.isChecked());
+                            this.stockManager.setWMovingAverageEnabled(
+                                    wmaEnabled.isChecked(),
+                                    Integer.parseInt(wmaPeriod.getText().toString()));
                         })
                 .setNegativeButton("Cancel", null);
         this.dialog = dialogBuilder.create();
