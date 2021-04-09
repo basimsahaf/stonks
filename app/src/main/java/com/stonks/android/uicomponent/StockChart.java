@@ -205,7 +205,7 @@ public class StockChart extends LineChart {
         public void onChartLongPressed(MotionEvent me) {
             scrollView.requestDisallowInterceptTouchEvent(true);
             Highlight h = chart.getHighlightByTouchPoint(me.getX(), me.getY());
-            chart.highlightValue(h);
+            chart.highlightValue(h, true);
 
             chart.setHighlightPerDragEnabled(true);
         }

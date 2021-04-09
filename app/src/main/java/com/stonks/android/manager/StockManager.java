@@ -2,16 +2,16 @@ package com.stonks.android.manager;
 
 import android.content.Context;
 import android.util.Log;
+import android.util.Pair;
 import com.github.mikephil.charting.data.CandleEntry;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.stonks.android.external.MarketDataService;
-import com.stonks.android.model.BarData;
-import com.stonks.android.model.QuoteData;
-import com.stonks.android.model.StockData;
-import com.stonks.android.model.Symbols;
+import com.stonks.android.model.*;
 import com.stonks.android.model.alpaca.AlpacaTimeframe;
 import com.stonks.android.model.alpaca.DateRange;
+import com.stonks.android.storage.PortfolioTable;
+import com.stonks.android.storage.TransactionTable;
 import com.stonks.android.uicomponent.StockChart;
 import com.stonks.android.utility.ChartHelpers;
 import com.stonks.android.utility.SimpleMovingAverage;
@@ -38,6 +38,8 @@ public class StockManager {
     private final HashMap<Integer, BarData> lineData;
     private final Function<Integer, String> candleMarker;
     private final Function<Integer, String> lineMarker;
+    private final TransactionTable transactionTable;
+    private final PortfolioTable portfolioTable;
 
     private StockManager(Context context) {
         this.stockData = new StockData();
@@ -74,14 +76,19 @@ public class StockManager {
                         return "";
                     }
 
+                    long timeStamp =
+                            x == this.lineData.size() ? bar.getEndTimestamp() : bar.getTimestamp();
+
                     LocalDateTime date =
                             LocalDateTime.ofInstant(
-                                    Instant.ofEpochSecond(bar.getTimestamp()),
+                                    Instant.ofEpochSecond(timeStamp),
                                     TimeZone.getDefault().toZoneId());
 
                     return ChartHelpers.getMarkerDateFormatter(this.currentRange).format(date);
                 };
         simpleMovingAverage = new SimpleMovingAverage(5);
+        transactionTable = TransactionTable.getInstance(context);
+        portfolioTable = PortfolioTable.getInstance(context);
     }
 
     public static StockManager getInstance(Context context) {
@@ -115,6 +122,52 @@ public class StockManager {
     public void setCurrentRange(DateRange newRange) {
         this.currentRange = newRange;
         this.fetchGraphData();
+    }
+
+    public PortfolioItem getPosition() {
+        List<PortfolioItem> positions =
+                portfolioTable.getPortfolioItemsBySymbol("username", this.symbol);
+        int quantity = positions.stream().map(PortfolioItem::getQuantity).reduce(0, Integer::sum);
+
+        return new PortfolioItem("username", this.symbol, quantity);
+    }
+
+    public List<TransactionsListRow> getTransactions() {
+        List<TransactionsListRow> transactionList = new ArrayList<>();
+
+        // TODO: get username from LoginRepository
+        List<Transaction> transactions = this.transactionTable.getTransactions("tmp");
+
+        if (transactions.size() == 0) {
+            return Collections.emptyList();
+        }
+
+        LocalDateTime lastTransactionDate = transactions.get(0).getCreatedAt();
+
+        for (Transaction transaction : transactions) {
+            LocalDateTime createdAt = transaction.getCreatedAt();
+            if (!lastTransactionDate.toLocalDate().isEqual(createdAt.toLocalDate())) {
+                transactionList.add(new TransactionsListRow(createdAt));
+                lastTransactionDate = createdAt;
+            }
+
+            transactionList.add(new TransactionsListRow(transaction));
+        }
+
+        return transactionList;
+    }
+
+    public Pair<Float, Float> getChange(Float price) {
+        float open = this.stockData.getOpen();
+
+        if (this.lineData.size() != 0) {
+            open = this.lineData.get(1).getOpen();
+        }
+
+        float change = price - open;
+        float changePercentage = change * 100 / open;
+
+        return new Pair<>(change, changePercentage);
     }
 
     public void fetchInitialData() {

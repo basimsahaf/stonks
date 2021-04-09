@@ -36,7 +36,7 @@
             app:layout_constraintTop_toBottomOf="@id/settings_header" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/email_setting"
+            android:id="@+id/username_setting"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/label_margin"
@@ -49,28 +49,28 @@
             app:layout_constraintTop_toBottomOf="@id/account_subheader">
 
             <TextView
-                android:id="@+id/email_label"
+                android:id="@+id/username_label"
                 style="@style/AppTheme.TextAppearance.SmallLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/email"
+                android:text="@string/username_settings"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/current_email"
+                android:id="@+id/current_username"
                 style="@style/AppTheme.TextAppearance.SmallLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingRight="10sp"
                 android:text="@string/sample_email"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintRight_toLeftOf="@id/email_arrow"
+                app:layout_constraintRight_toLeftOf="@id/username_arrow"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/email_arrow"
+                android:id="@+id/username_arrow"
                 style="@style/AppTheme.TextAppearance.LargeLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -91,7 +91,7 @@
             android:paddingHorizontal="@dimen/page_padding_horizontal"
             android:paddingVertical="@dimen/row_margin"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/email_setting">
+            app:layout_constraintTop_toBottomOf="@id/username_setting">
 
             <TextView
                 android:id="@+id/password_label"
@@ -135,6 +135,7 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <com.google.android.material.checkbox.MaterialCheckBox
+                android:id="@+id/biometrics_checkbox"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:minHeight="0dp"
@@ -144,6 +145,16 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <TextView
+            android:id="@+id/biometrics_error_message"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/AppTheme.TextAppearance.ExtraSmallErrorLabel"
+            android:textAlignment="textStart"
+            android:paddingHorizontal="@dimen/page_padding_horizontal"
+            app:layout_constraintTop_toBottomOf="@id/biometrics_setting"
+            android:visibility="gone"/>
 
         <TextView
             android:id="@+id/portfolio_subheading"
@@ -194,7 +205,7 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/email_change"
+        android:id="@+id/username_change"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingHorizontal="@dimen/page_padding_horizontal"
@@ -205,22 +216,23 @@
         >
 
         <TextView
-            android:id="@+id/email_change_label"
+            android:id="@+id/username_change_label"
             style="@style/AppTheme.TextAppearance.LargeLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/update_email"
+            android:text="@string/update_username"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/email_input"
+            android:id="@+id/username_input"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/email"
-            app:layout_constraintTop_toBottomOf="@id/email_change_label">
+            android:hint="@string/settings_username"
+            app:layout_constraintTop_toBottomOf="@id/username_change_label">
 
             <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/username_text_field"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/section_divider_margin" />
@@ -258,6 +270,7 @@
             app:layout_constraintTop_toBottomOf="@id/password_change_label">
 
             <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/old_password_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
@@ -272,6 +285,7 @@
             app:layout_constraintTop_toBottomOf="@id/old_password">
 
             <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/new_password_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
@@ -309,6 +323,7 @@
             tools:layout_editor_absoluteX="16dp">
 
             <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/amount_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 

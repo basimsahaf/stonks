@@ -29,15 +29,15 @@ public class RecentTransactionsFragment extends BaseFragment {
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
+        getActionBar().setDisplayHomeAsUpEnabled(true);
+        getActionBar().setDisplayShowTitleEnabled(false);
+        getMainActivity().hideActionBarCustomViews();
+
         recentTransactionsManager = RecentTransactionsManager.getInstance(this.getContext());
 
         RecyclerView transactionList;
         RecyclerView.Adapter transactionListAdapter;
         FloatingActionButton filterButton;
-
-        getActionBar().setDisplayHomeAsUpEnabled(false);
-        getActionBar().setDisplayShowTitleEnabled(false);
-        getMainActivity().hideActionBarCustomViews();
 
         RecyclerView.LayoutManager transactionListManager =
                 new LinearLayoutManager(this.getContext());

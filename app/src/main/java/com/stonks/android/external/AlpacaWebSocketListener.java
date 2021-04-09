@@ -6,6 +6,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.google.gson.Gson;
+import com.stonks.android.model.BarData;
 import com.stonks.android.model.alpaca.WebSocketRequest;
 import com.stonks.android.model.alpaca.WebSocketResponse;
 import java.util.concurrent.ExecutorService;
@@ -89,10 +90,19 @@ public class AlpacaWebSocketListener extends WebSocketListener {
                 // received a new price update
                 // UI updates have to be made on the main (UI) thread
                 Handler h = new Handler(Looper.getMainLooper());
+                WebSocketResponse.WebSocketData data = message.getData();
+                BarData newBar =
+                        new BarData(
+                                (int) data.getStartTimestamp(),
+                                data.getHigh(),
+                                data.getLow(),
+                                data.getOpen(),
+                                data.getClose());
+                newBar.setEndTimestamp((int) data.getEndTimestamp());
                 h.post(
                         () ->
                                 this.alpacaWebSocket.updateCurrentPrice(
-                                        removeAlpacaPrefix(stream), message.getData().getClose()));
+                                        removeAlpacaPrefix(stream), newBar));
             }
         }
     }

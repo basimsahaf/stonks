@@ -9,10 +9,13 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.stonks.android.adapter.StockListRecyclerViewAdapter;
+import com.stonks.android.manager.FavouriteStocksManager;
 import com.stonks.android.model.StockListItem;
 import java.util.ArrayList;
 
 public class SavedStocksFragment extends BaseFragment {
+    private FavouriteStocksManager favouriteStocksManager;
+
     @Override
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -21,12 +24,14 @@ public class SavedStocksFragment extends BaseFragment {
 
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
+        favouriteStocksManager = FavouriteStocksManager.getInstance(getContext());
+
         RecyclerView savedStocksListView;
         RecyclerView.LayoutManager savedStocksListManager =
                 new LinearLayoutManager(this.getContext());
-        ArrayList<StockListItem> savedStocks = HomePageFragment.getMockItems();
+        ArrayList<StockListItem> savedStocks = favouriteStocksManager.getAllFavouriteStocks();
 
-        getActionBar().setDisplayHomeAsUpEnabled(false);
+        getActionBar().setDisplayHomeAsUpEnabled(true);
         getActionBar().setDisplayShowTitleEnabled(false);
         getMainActivity().hideActionBarCustomViews();
 
