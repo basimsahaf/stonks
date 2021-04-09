@@ -18,11 +18,13 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.stonks.android.adapter.CompanyFilterListAdapter;
 import com.stonks.android.manager.RecentTransactionsManager;
 import com.stonks.android.model.TransactionMode;
+import com.stonks.android.storage.CompanyTable;
 
 public class FilterFragment extends BaseFragment
         implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
     private CompanyFilterListAdapter companiesFilterListAdapter;
     private RecentTransactionsManager recentTransactionsManager;
+    private String TAG = CompanyTable.class.getCanonicalName();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -47,7 +49,10 @@ public class FilterFragment extends BaseFragment
         companiesFilterList = view.findViewById(R.id.companies_list);
         companiesFilterList.setLayoutManager(companiesFilterListManager);
         companiesFilterListAdapter =
-                new CompanyFilterListAdapter(recentTransactionsManager.getSymbols(), this);
+                new CompanyFilterListAdapter(
+                        recentTransactionsManager.getSymbols(),
+                        this,
+                        recentTransactionsManager.filters.getSymbols());
         companiesFilterList.setAdapter(companiesFilterListAdapter);
 
         setupRadioListeners(view);
@@ -71,6 +76,15 @@ public class FilterFragment extends BaseFragment
         RadioButton allRadio = view.findViewById(R.id.radio_all);
         RadioButton buyRadio = view.findViewById(R.id.radio_buy);
         RadioButton sellRadio = view.findViewById(R.id.radio_sell);
+
+        if (recentTransactionsManager.filters.isModeFilterApplied()) {
+            TransactionMode modeFilter = recentTransactionsManager.filters.getMode();
+            if (modeFilter == TransactionMode.BUY) {
+                buyRadio.setChecked(true);
+            } else if (modeFilter == TransactionMode.SELL) {
+                sellRadio.setChecked(true);
+            }
+        }
 
         allRadio.setOnClickListener(
                 v -> {
@@ -117,9 +131,17 @@ public class FilterFragment extends BaseFragment
                     @Override
                     public void afterTextChanged(Editable s) {
                         String minAmount = min.getText().toString();
+                        if (minAmount.isEmpty()) {
+                            return;
+                        }
                         recentTransactionsManager.applyMinAmountFilter(Integer.parseInt(minAmount));
                     }
                 });
+
+        if (recentTransactionsManager.filters.isMinAmountFilterApplied()) {
+            int minAmount = recentTransactionsManager.filters.getMinAmount();
+            min.setText(Integer.toString(minAmount));
+        }
     }
 
     private void setupMaxAmountInputEdit(View view) {
@@ -136,9 +158,17 @@ public class FilterFragment extends BaseFragment
                     @Override
                     public void afterTextChanged(Editable s) {
                         String maxAmount = max.getText().toString();
+                        if (maxAmount.isEmpty()) {
+                            return;
+                        }
                         recentTransactionsManager.applyMaxAmountFilter(Integer.parseInt(maxAmount));
                     }
                 });
+
+        if (recentTransactionsManager.filters.isMaxAmountFilterApplied()) {
+            int maxAmount = recentTransactionsManager.filters.getMaxAmount();
+            max.setText(Integer.toString(maxAmount));
+        }
     }
 
     private void setupResetAllButton(View view) {
@@ -152,8 +182,8 @@ public class FilterFragment extends BaseFragment
                     TextView reset = view.findViewById(R.id.reset_button);
                     reset.performClick();
 
-                    companiesFilterListAdapter.notifyDataSetChanged();
                     recentTransactionsManager.resetFilters();
+                    companiesFilterListAdapter.notifyDataSetChanged();
                 });
     }
 

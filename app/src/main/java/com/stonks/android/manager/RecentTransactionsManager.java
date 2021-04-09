@@ -10,7 +10,7 @@ public class RecentTransactionsManager {
     private static RecentTransactionsManager recentTransactionsManager = null;
     private static TransactionTable transactionTable;
     private ArrayList<TransactionsListRow> transactions;
-    private static TransactionFilters filters;
+    public static TransactionFilters filters;
     private final String username;
 
     private RecentTransactionsManager(Context context) {
@@ -80,7 +80,7 @@ public class RecentTransactionsManager {
 
     public void resetFilters() {
         filters.setMode(null);
-        filters.setSymbols(new ArrayList<String>());
+        filters.setSymbols(new ArrayList<>());
         filters.setMinAmount(TransactionFilters.UNINITIALIZED_AMOUNT);
         filters.setMaxAmount(TransactionFilters.UNINITIALIZED_AMOUNT);
     }
