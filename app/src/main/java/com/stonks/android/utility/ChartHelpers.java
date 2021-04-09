@@ -152,7 +152,7 @@ public class ChartHelpers {
                     expectedStart.atZone(TimeZone.getDefault().toZoneId()).toEpochSecond();
 
             int i = data.size() - 1;
-            while (i >= 0 && data.get(i).getTimestamp() > expectedTimestamp) {
+            while (i > 0 && data.get(i).getTimestamp() > expectedTimestamp) {
                 i--;
             }
 
