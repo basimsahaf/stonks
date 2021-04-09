@@ -165,6 +165,7 @@ public class StockManager {
         }
 
         LocalDateTime lastTransactionDate = filteredTransactions.get(0).getCreatedAt();
+        transactionList.add(new TransactionsListRow(lastTransactionDate));
 
         for (Transaction transaction : filteredTransactions) {
             LocalDateTime createdAt = transaction.getCreatedAt();

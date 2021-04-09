@@ -60,7 +60,9 @@ public class Transaction {
 
     public String getTimeStringFromCreatedAt() {
         DateTimeFormatter format = DateTimeFormatter.ofPattern("HH:mm");
-        return createdAt.format(format);
+        // TODO: fix - timestamp not stored in EST
+        // Subtracting 4 hours to render the correct time
+        return createdAt.minusHours(4).format(format);
     }
 
     public static LocalDateTime getCreatedAtFromString(String transactionDate) {
