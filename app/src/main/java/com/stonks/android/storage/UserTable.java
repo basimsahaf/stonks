@@ -43,7 +43,7 @@ public class UserTable extends SQLiteOpenHelper {
                     + ")";
 
     private UserTable(@Nullable Context context) {
-        super(context, BuildConfig.DATABASE_NAME, null, 6);
+        super(context, BuildConfig.DATABASE_NAME, null, 7);
     }
 
     public static UserTable getInstance(Context context) {
@@ -104,6 +104,54 @@ public class UserTable extends SQLiteOpenHelper {
         boolean exists = cursor.moveToFirst();
         cursor.close();
         return exists;
+    }
+
+    public float getTotalAmountAvailable(String username) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String queryString = "SELECT * FROM " + TABLE_NAME + " WHERE username = '" + username + "'";
+
+        Cursor cursor = db.rawQuery(queryString, null);
+        float amountAvailableToTrade = 0f;
+
+        if (cursor.moveToFirst()) {
+            amountAvailableToTrade =
+                    Float.parseFloat(cursor.getString(cursor.getColumnIndex(COLUMN_TOTAL_AMOUNT)));
+        }
+
+        return amountAvailableToTrade;
+    }
+
+    // TODO: once UserManager is written,this function can be refactored
+    public boolean updateTotalAmount(String username, float newAmount) {
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query =
+                String.format(
+                        "SELECT * FROM %s WHERE %s = '%s'", TABLE_NAME, COLUMN_USERNAME, username);
+
+        Cursor cursor = db.rawQuery(query, null);
+        String whereClause = String.format("%s = '%s'", COLUMN_USERNAME, username);
+
+        if (cursor.moveToFirst()) {
+            String password = cursor.getString(cursor.getColumnIndex(COLUMN_PASSWORD));
+            String biometrics = cursor.getString(cursor.getColumnIndex(COLUMN_BIOMETRICS));
+            String totalAmount = cursor.getString(cursor.getColumnIndex(COLUMN_TOTAL_AMOUNT));
+
+            ContentValues cv = new ContentValues();
+            cv.put(COLUMN_USERNAME, username);
+            cv.put(COLUMN_PASSWORD, password);
+            cv.put(COLUMN_BIOMETRICS, biometrics);
+            cv.put(COLUMN_TOTAL_AMOUNT, newAmount);
+
+            try {
+                db.update(TABLE_NAME, cv, whereClause, null);
+                cursor.close();
+                return true;
+            } catch (SQLiteConstraintException e) {
+                Log.d(TAG, e.toString());
+            }
+        }
+        return false;
     }
 
     public Result<LoggedInUser> changeUsername(String oldUsername, String newUsername) {
@@ -294,7 +342,37 @@ public class UserTable extends SQLiteOpenHelper {
         return new Result.Error(R.string.internal_server_error);
     }
 
-    public Result<LoggedInUser> changeTrainingAmount(String username, float amount) {
+    public boolean changeTrainingAmount(String username, float amount) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query =
+                String.format(
+                        "SELECT * FROM %s WHERE %s = '%s'", TABLE_NAME, COLUMN_USERNAME, username);
+        Cursor cursor = db.rawQuery(query, null);
+        String whereClause = String.format("%s = '%s'", COLUMN_USERNAME, username);
+
+        if (cursor.moveToFirst()) {
+            String password = cursor.getString(cursor.getColumnIndex(COLUMN_PASSWORD));
+            String biometrics = cursor.getString(cursor.getColumnIndex(COLUMN_BIOMETRICS));
+
+            ContentValues cv = new ContentValues();
+            cv.put(COLUMN_USERNAME, username);
+            cv.put(COLUMN_PASSWORD, password);
+            cv.put(COLUMN_BIOMETRICS, biometrics);
+
+            cv.put(COLUMN_TOTAL_AMOUNT, amount);
+
+            try {
+                db.update(TABLE_NAME, cv, whereClause, null);
+                cursor.close();
+                return true;
+            } catch (SQLiteConstraintException e) {
+                Log.d(TAG, e.toString());
+            }
+        }
+        return false;
+    }
+
+    public Result<LoggedInUser> changeTrainingBalance(String username, float amount) {
         SQLiteDatabase db = this.getWritableDatabase();
         String query =
                 String.format(

@@ -2,9 +2,7 @@ package com.stonks.android;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.MenuItem;
-import android.view.View;
+import android.view.*;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
@@ -22,6 +20,7 @@ public class MainActivity extends AppCompatActivity {
     private LinearLayout portfolioTitle;
     private TextView globalTitle;
     private AlpacaWebSocket socket;
+    private Menu menu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

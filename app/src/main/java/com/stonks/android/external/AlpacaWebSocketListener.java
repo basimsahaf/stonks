@@ -76,6 +76,9 @@ public class AlpacaWebSocketListener extends WebSocketListener {
                     this.authenticated.set(true);
                 } else {
                     Log.i(TAG, "WebSocket authorization failed");
+                    Log.d(TAG, "->" + message.getData().getStatus());
+                    Log.d(TAG, "->" + message.getData().getAction());
+                    Log.d(TAG, "->" + message.getData().getError());
                     // TODO: re-authenticate
                 }
             }
@@ -111,3 +114,6 @@ public class AlpacaWebSocketListener extends WebSocketListener {
         return streamName.replace("AM.", "");
     }
 }
+
+//  {"action": "authenticate","data": {"key_id": "PKGAS9LJFJXLEFY3E58I", "secret_key":
+// "RX3ghNUjdMWnfJpmo13hHYC6ZzPA9OAZeDV7l6dw"}}

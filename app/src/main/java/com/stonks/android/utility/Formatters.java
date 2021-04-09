@@ -22,6 +22,13 @@ public class Formatters {
     }
 
     public static String formatPriceChange(Float priceChange, Float changePercent) {
+        if (priceChange < 0) {
+            priceChange *= -1.0f;
+        }
+
+        if (changePercent < 0.01) {
+            return String.format(Locale.CANADA, "$%.2f (0.01%%)", priceChange);
+        }
         return String.format(Locale.CANADA, "$%.2f (%.2f%%)", priceChange, changePercent);
     }
 
@@ -40,5 +47,14 @@ public class Formatters {
     public static String formatDateISO8601(Date date) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.CANADA);
         return sdf.format(date);
+    }
+
+    public static String formatTotalReturn(Float amount, String dateString) {
+        if (amount < 0) {
+            amount *= -1.0f;
+            return String.format(Locale.CANADA, "$%.2f loss made since %s", amount, dateString);
+        }
+
+        return String.format(Locale.CANADA, "$%.2f profit made since %s", amount, dateString);
     }
 }

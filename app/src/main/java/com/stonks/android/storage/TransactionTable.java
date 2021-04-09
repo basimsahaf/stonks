@@ -49,7 +49,7 @@ public class TransactionTable extends SQLiteOpenHelper {
                     + "))";
 
     private TransactionTable(@Nullable Context context) {
-        super(context, BuildConfig.DATABASE_NAME, null, 6);
+        super(context, BuildConfig.DATABASE_NAME, null, 7);
     }
 
     public static TransactionTable getInstance(Context context) {
@@ -81,13 +81,19 @@ public class TransactionTable extends SQLiteOpenHelper {
         cv.put(COLUMN_SYMBOL, transaction.getSymbol());
         cv.put(COLUMN_PRICE, transaction.getPrice());
         cv.put(COLUMN_TRANSACTION_TYPE, transaction.getTransactionTypeString());
+        if (transaction.getCreatedAt() != null) {
+            cv.put(COLUMN_CREATED_AT, transaction.getCreatedAtString());
+        }
 
         long insert = db.insert(TABLE_NAME, null, cv);
         return insert >= 0;
     }
 
     public ArrayList<Transaction> getTransactions(String username) {
-        String query = String.format("SELECT * FROM %s WHERE %s = ?", TABLE_NAME, COLUMN_USERNAME);
+        String query =
+                String.format(
+                        "SELECT * FROM %s WHERE %s = ? ORDER BY %s DESC",
+                        TABLE_NAME, COLUMN_USERNAME, COLUMN_CREATED_AT);
 
         return queryTransactions(query, new String[] {username});
     }
@@ -101,7 +107,10 @@ public class TransactionTable extends SQLiteOpenHelper {
     }
 
     public ArrayList<Transaction> filterTransactions(TransactionFilters filters) {
-        String query = String.format("SELECT * FROM %s WHERE %s = ?", TABLE_NAME, COLUMN_USERNAME);
+        String query =
+                String.format(
+                        "SELECT * FROM %s WHERE %s = ?",
+                        TABLE_NAME, COLUMN_USERNAME, COLUMN_CREATED_AT);
         ArrayList<String> selectionArgsList = new ArrayList();
         selectionArgsList.add(filters.getUsername());
 
@@ -135,6 +144,8 @@ public class TransactionTable extends SQLiteOpenHelper {
                             + filters.getSymbolsAsQueryString();
         }
 
+        query += String.format(" ORDER BY %s DESC", COLUMN_CREATED_AT);
+
         return queryTransactions(
                 query, selectionArgsList.toArray(new String[selectionArgsList.size()]));
     }
@@ -142,7 +153,7 @@ public class TransactionTable extends SQLiteOpenHelper {
     public ArrayList<String> getSymbols(String username) {
         String query =
                 String.format(
-                        "SELECT %s FROM %s WHERE %s = ?",
+                        "SELECT DISTINCT %s FROM %s WHERE %s = ?",
                         COLUMN_SYMBOL, TABLE_NAME, COLUMN_USERNAME);
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(query, new String[] {username});

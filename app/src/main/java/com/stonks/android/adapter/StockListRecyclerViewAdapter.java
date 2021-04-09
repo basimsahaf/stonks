@@ -1,6 +1,10 @@
 package com.stonks.android.adapter;
 
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,11 +20,12 @@ import com.stonks.android.StockFragment;
 import com.stonks.android.model.StockListItem;
 import com.stonks.android.utility.Formatters;
 import java.util.ArrayList;
+import java.util.Locale;
 
 public class StockListRecyclerViewAdapter
         extends RecyclerView.Adapter<StockListRecyclerViewAdapter.ViewHolder> {
     private final FragmentActivity parentActivity;
-    private final ArrayList<StockListItem> portfolioItems;
+    private ArrayList<StockListItem> portfolioItems;
     private final boolean isSavedStocksList;
 
     public StockListRecyclerViewAdapter(
@@ -72,23 +77,13 @@ public class StockListRecyclerViewAdapter
             holder.price.setText("");
             holder.priceChange.setText("");
             holder.arrowIndicator.setVisibility(View.GONE);
-        } else {
-            holder.price.setText(
-                    Formatters.formatStockQuantity(item.getPrice(), item.getQuantity()));
-
-            if (item.getPriceChange() < 0) {
-                holder.priceChange.setText(
-                        Formatters.formatPriceChange(
-                                item.getPriceChange() * -1.0f, item.getChangePercent() * -1.0f));
-                holder.priceChange.setTextColor(
-                        ContextCompat.getColor(holder.priceChange.getContext(), R.color.red));
-                holder.arrowIndicator.setImageResource(R.drawable.ic_baseline_arrow_drop_down_24);
-            } else {
-                holder.priceChange.setText(
-                        Formatters.formatPriceChange(
-                                item.getPriceChange(), item.getChangePercent()));
-            }
+            return;
         }
+
+        holder.price.setText(Formatters.formatStockQuantity(item.getPrice(), item.getQuantity()));
+        holder.priceChange.setText(
+                generateChangeString(item.getPriceChange(), item.getChangePercent()));
+        holder.arrowIndicator.setImageDrawable(getIndicatorDrawable(item.getPriceChange()));
     }
 
     @Override
@@ -98,6 +93,38 @@ public class StockListRecyclerViewAdapter
         }
 
         return 0;
+    }
+
+    public void setNewStocks(ArrayList<StockListItem> newStocks) {
+        this.portfolioItems = newStocks;
+    }
+
+    SpannableString generateChangeString(float change, float changePercentage) {
+        String formattedPrice = Formatters.formatPrice(Math.abs(change));
+        String changeString =
+                String.format(
+                        Locale.CANADA, "%s (%.2f%%)", formattedPrice, Math.abs(changePercentage));
+        SpannableString text = new SpannableString(changeString);
+
+        int color = change >= 0 ? R.color.green : R.color.red;
+
+        text.setSpan(
+                new ForegroundColorSpan(ContextCompat.getColor(parentActivity, color)),
+                0,
+                changeString.length(),
+                Spanned.SPAN_EXCLUSIVE_INCLUSIVE);
+
+        return text;
+    }
+
+    Drawable getIndicatorDrawable(float change) {
+        if (change >= 0) {
+            return ContextCompat.getDrawable(
+                    parentActivity, R.drawable.ic_baseline_arrow_drop_up_24);
+        } else {
+            return ContextCompat.getDrawable(
+                    parentActivity, R.drawable.ic_baseline_arrow_drop_down_24);
+        }
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
