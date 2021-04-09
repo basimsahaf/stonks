@@ -114,6 +114,18 @@
         app:layout_constraintTop_toBottomOf="@id/auth_failed_error_message"
         android:layout_marginTop="@dimen/text_margin" />
 
+    <Button
+        android:id="@+id/biometrics_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@style/AppTheme.Button.PrimaryButton"
+        android:text="@string/login_biometrics"
+        android:drawableLeft="@drawable/ic_baseline_lock_open_24"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/login_button"
+        android:layout_marginTop="@dimen/text_margin" />
+
     <TextView
         android:id="@+id/username_error_message"
         android:layout_width="match_parent"
