@@ -31,10 +31,12 @@ public class WeightedMovingAverage {
 
     void calculate(List<BarData> barData) {
         int d = size * (size + 1) / 2;
+        float tSum = 0f;
 
         for (int i = 0; i < barData.size(); ++i) {
             if (i < size) {
-                this.movingAverage.add(new Entry(i, barData.get(i).getOpen()));
+                tSum += barData.get(i).getOpen() * (i + 1);
+                this.movingAverage.add(new Entry(i, (tSum / ((i + 1) * (i + 2) / 2))));
                 continue;
             }
 
