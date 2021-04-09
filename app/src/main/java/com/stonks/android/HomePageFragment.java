@@ -150,8 +150,7 @@ public class HomePageFragment extends BaseFragment {
 
         float soldProfit = portfolioManager.getTransactionProfits();
         this.totalReturn.setText(
-                Formatters.formatTotalReturn(
-                        soldProfit)); // TODO: get training period start form user table
+                Formatters.formatTotalReturn(soldProfit, portfolioManager.getTrainingStartDate()));
         this.totalReturnArrow.setImageDrawable(getIndicatorDrawable(soldProfit));
 
         updateGraph();

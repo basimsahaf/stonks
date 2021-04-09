@@ -20,6 +20,7 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -92,17 +93,20 @@ public class PortfolioManager {
             //            }
         }
 
-        // String username = LoginRepository.getInstance(new
-        // LoginDataSource(userTable)).getCurrentUser();
+        String username = portfolioManager.loginRepository.getCurrentUser();
         portfolio =
                 new Portfolio(
-                        0.0f,
+                        portfolioManager.userTable.getTotalAmountAvailable(username),
                         0.0f,
                         portfolioManager.portfolioTable.getPortfolioItems(
                                 LoginRepository.getInstance(context).getCurrentUser()),
-                        portfolioManager); // TODO: get user from table
+                        portfolioManager);
         portfolioManager.fragment = f;
         portfolioManager.currentRange = DateRange.DAY;
+
+        transactions = new ArrayList<>();
+        transactions = portfolioManager.transactionTable.getTransactions(username);
+        symbolList = portfolioManager.transactionTable.getSymbols(username);
 
         portfolioManager.subscribePortfolioItems();
 
@@ -111,11 +115,6 @@ public class PortfolioManager {
 
     public void subscribePortfolioItems() {
         MainActivity activity = fragment.getMainActivity();
-
-        String username = loginRepository.getCurrentUser();
-        transactions = new ArrayList<>();
-        transactions = portfolioManager.transactionTable.getTransactions(username);
-        symbolList = portfolioManager.transactionTable.getSymbols(username);
 
         for (PortfolioItem item : portfolio.getPortfolioItems()) {
             activity.subscribe(item.getSymbol(), item);
@@ -133,6 +132,14 @@ public class PortfolioManager {
 
     public float getAccountBalance() {
         return portfolio.getAccountBalance();
+    }
+
+    public String getTrainingStartDate() {
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MM yyyy");
+        LocalDateTime dateTime = userTable.getTrainingStartDate(loginRepository.getCurrentUser());
+
+        return dateTime.format(formatter);
     }
 
     public float getAccountValue() {
@@ -198,7 +205,7 @@ public class PortfolioManager {
                     continue;
                 }
 
-                float newValue = stockGraphData.get(i) + (quantity * stockPrices.get(i).getClose());
+                float newValue = stockGraphData.get(i) + (quantity * stockPrices.get(i).getOpen());
                 stockGraphData.set(i, totalQuantity == 0.0f ? 0.0f : newValue);
             }
         }
@@ -239,9 +246,9 @@ public class PortfolioManager {
 
         for (String symbol : symbolList) {
             List<BarData> priceList = stocksData.get(symbol);
-            float currentPrice = priceList.get(priceList.size() - 1).getClose();
-            float change = currentPrice - priceList.get(0).getClose();
-            float changePercentage = change * 100 / priceList.get(0).getClose();
+            float currentPrice = priceList.get(priceList.size() - 1).getOpen();
+            float change = currentPrice - priceList.get(0).getOpen();
+            float changePercentage = change * 100 / priceList.get(0).getOpen();
             int quantity = portfolio.getStockQuantity(symbol);
 
             portfolio.setPrice(symbol, currentPrice);
@@ -329,7 +336,6 @@ public class PortfolioManager {
                                         createGraphData(symbol, clubbedBars);
 
                                 while (graphData.size() < currStockData.size()) {
-                                    graphData.add(0.0f);
                                     graphData.add(0.0f);
                                 }
 
