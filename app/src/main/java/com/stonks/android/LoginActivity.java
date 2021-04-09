@@ -70,32 +70,6 @@ public class LoginActivity extends BaseActivity {
         setTextWatcher(passwordField);
         // TODO: enable this later
         setLoginViewModelListeners();
-<<<<<<< HEAD
-
-        // auth triggers
-        passwordField
-                .getEditText()
-                .setOnEditorActionListener(
-                        (v, actionId, event) -> {
-                            if (actionId == EditorInfo.IME_ACTION_DONE) {
-                                authorize();
-                            }
-                            return false;
-                        });
-
-        loginButton.setOnClickListener(
-                view -> {
-                    // TODO: use this after testing is done
-                    authorize();
-
-                    // this is just for testing purposes
-                    //                    authorizeTestLogin();
-
-                    usernameChanged = false;
-                    passwordChanged = false;
-                });
-=======
->>>>>>> main
 
         // disable login button initially as no data is entered
         // TODO: change to disable once testing is done

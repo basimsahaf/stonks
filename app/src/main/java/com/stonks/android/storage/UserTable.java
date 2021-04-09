@@ -342,7 +342,7 @@ public class UserTable extends SQLiteOpenHelper {
         return new Result.Error(R.string.internal_server_error);
     }
 
-    public Result<LoggedInUser> changeTrainingAmount(String username, float amount) {
+    public boolean changeTrainingAmount(String username, float amount) {
         SQLiteDatabase db = this.getWritableDatabase();
         String query =
                 String.format(
@@ -358,11 +358,11 @@ public class UserTable extends SQLiteOpenHelper {
             cv.put(COLUMN_USERNAME, username);
             cv.put(COLUMN_PASSWORD, password);
             cv.put(COLUMN_BIOMETRICS, biometrics);
-<<<<<<< HEAD
-            cv.put(COLUMN_TOTAL_AMOUNT, newAmount);
+
+            cv.put(COLUMN_TOTAL_AMOUNT, amount);
 
             try {
-                db.update(USER_TABLE, cv, whereClause, null);
+                db.update(TABLE_NAME, cv, whereClause, null);
                 cursor.close();
                 return true;
             } catch (SQLiteConstraintException e) {
@@ -370,7 +370,24 @@ public class UserTable extends SQLiteOpenHelper {
             }
         }
         return false;
-=======
+    }
+
+    public Result<LoggedInUser> changeTrainingBalance(String username, float amount) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query =
+                String.format(
+                        "SELECT * FROM %s WHERE %s = '%s'", TABLE_NAME, COLUMN_USERNAME, username);
+        Cursor cursor = db.rawQuery(query, null);
+        String whereClause = String.format("%s = '%s'", COLUMN_USERNAME, username);
+
+        if (cursor.moveToFirst()) {
+            String password = cursor.getString(cursor.getColumnIndex(COLUMN_PASSWORD));
+            String biometrics = cursor.getString(cursor.getColumnIndex(COLUMN_BIOMETRICS));
+
+            ContentValues cv = new ContentValues();
+            cv.put(COLUMN_USERNAME, username);
+            cv.put(COLUMN_PASSWORD, password);
+            cv.put(COLUMN_BIOMETRICS, biometrics);
             cv.put(COLUMN_TOTAL_AMOUNT, amount);
 
             try {
@@ -384,6 +401,5 @@ public class UserTable extends SQLiteOpenHelper {
         // this shouldn't happen but just in case something goes wrong, this will allow graceful
         // exit
         return new Result.Error(R.string.internal_server_error);
->>>>>>> main
     }
 }

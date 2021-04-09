@@ -52,9 +52,8 @@
     <string name="buy_unsuccessful">Stock purchase failed, try again</string>
     <string name="sell_successful">Stocks successfully sold</string>
     <string name="sell_unsuccessful">Stocks could not be sold, try again</string>
-    <string name="insufficient_funds">Not enough funds</string>
+    <string name="insufficient_funds">Insufficient balance</string>
     <string name="insufficent_stocks">Not enough stocks to sell</string>
-    <string name="amount_exceeded">Insuffient balance</string>
 
     <!-- Home Page Strings -->
     <string name="title_activity_home_page">ScrollingActivity</string>

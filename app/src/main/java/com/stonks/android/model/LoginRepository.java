@@ -74,10 +74,10 @@ public class LoginRepository {
         return this.user.getUserId();
     }
 
-<<<<<<< HEAD
     public float getTotalAmountAvailable() {
         return dataSource.getTotalAmountAvailable(this.user.getUserId());
-=======
+    }
+
     public Result<LoggedInUser> changeUsername(String newUsername) {
         Result<LoggedInUser> result = dataSource.changeUsername(this.user.getUserId(), newUsername);
         if (result instanceof Result.Success) {
@@ -121,6 +121,5 @@ public class LoginRepository {
 
     public Result<LoggedInUser> changeTrainingAmount(float amount) {
         return dataSource.changeTrainingAmount(this.user.getUserId(), amount);
->>>>>>> main
     }
 }
