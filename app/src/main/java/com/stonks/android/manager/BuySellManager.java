@@ -12,7 +12,7 @@ import java.util.ArrayList;
 
 public class BuySellManager {
 
-    private static volatile BuySellManager buySellManager;
+    private static BuySellManager buySellManager;
     private PortfolioTable portfolioTable;
     private TransactionTable transactionTable;
     private UserTable userTable;
@@ -40,11 +40,9 @@ public class BuySellManager {
         switch (mode) {
             case BUY:
                 return quantity * price <= amountAvailable;
-
             case SELL:
                 int totalStocks = getStocksOwnedBySymbol(username, symbol);
                 return totalStocks <= quantity;
-
             default:
                 return false;
         }
