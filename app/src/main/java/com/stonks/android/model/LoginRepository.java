@@ -1,6 +1,7 @@
 package com.stonks.android.model;
 
 import android.content.Context;
+import android.util.Log;
 import com.stonks.android.storage.UserTable;
 
 /**
@@ -36,6 +37,7 @@ public class LoginRepository {
     }
 
     private void setLoggedInUser(LoggedInUser user) {
+        Log.d("Tag", "Current user: " + user.getUserId());
         this.user = user;
     }
 
@@ -56,16 +58,64 @@ public class LoginRepository {
         return result;
     }
 
-    public boolean isBiometricsEnabled() {
+    public boolean initializeBiometricsUser() {
         Result<LoggedInUser> biometricsUser = dataSource.getBiometricsUser();
         if (biometricsUser instanceof Result.Success) {
             setLoggedInUser(((Result.Success<LoggedInUser>) biometricsUser).getData());
+            this.user.setBiometricsEnabled(true);
             return true;
         }
         return false;
     }
 
+    // TODO: everything below this goes into the new UserManager
+
     public String getCurrentUser() {
         return this.user.getUserId();
+    }
+
+    public Result<LoggedInUser> changeUsername(String newUsername) {
+        Result<LoggedInUser> result = dataSource.changeUsername(this.user.getUserId(), newUsername);
+        if (result instanceof Result.Success) {
+            setLoggedInUser(((Result.Success<LoggedInUser>) result).getData());
+        }
+        return result;
+    }
+
+    public boolean verifyCurrentPassword(String currentPassword) {
+        return dataSource.verifyCurrentPassword(this.user.getUserId(), currentPassword);
+    }
+
+    public Result<LoggedInUser> changePassword(String newPassword) {
+        Result<LoggedInUser> result = dataSource.changePassword(this.user.getUserId(), newPassword);
+        if (result instanceof Result.Success) {
+            setLoggedInUser(((Result.Success<LoggedInUser>) result).getData());
+        }
+        return result;
+    }
+
+    public boolean isCurrentUserBiometricsEnabled() {
+        Result<LoggedInUser> biometricsUser = dataSource.getBiometricsUser();
+        if (biometricsUser instanceof Result.Success) {
+            return ((Result.Success<LoggedInUser>) biometricsUser)
+                    .getData()
+                    .getUserId()
+                    .equals(this.user.getUserId());
+        }
+        return false;
+    }
+
+    public boolean isBiometricsAvailableOnDevice() {
+        Result<LoggedInUser> biometricsUser = dataSource.getBiometricsUser();
+        return !(biometricsUser instanceof Result.Success);
+    }
+
+    public boolean toggleBiometrics(boolean status) {
+        Result<LoggedInUser> result = dataSource.toggleBiometrics(this.user.getUserId(), status);
+        return result instanceof Result.Success;
+    }
+
+    public Result<LoggedInUser> changeTrainingAmount(float amount) {
+        return dataSource.changeTrainingAmount(this.user.getUserId(), amount);
     }
 }

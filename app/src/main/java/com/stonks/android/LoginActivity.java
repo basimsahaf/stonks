@@ -53,7 +53,7 @@ public class LoginActivity extends BaseActivity {
         setContentView(R.layout.activity_login);
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
 
-        LoginRepository repo = LoginRepository.getInstance(getApplicationContext());
+        repo = LoginRepository.getInstance(getApplicationContext());
         loginViewModel = new LoginViewModel(repo);
 
         loginModeButton = findViewById(R.id.login_mode_button);
@@ -84,6 +84,18 @@ public class LoginActivity extends BaseActivity {
                             return false;
                         });
 
+        loginButton.setOnClickListener(
+                view -> {
+                    // TODO: use this after testing is done
+                    //                    authorizeViaForm();
+
+                    // this is just for testing purposes
+                    authorizeTestLogin();
+
+                    usernameChanged = false;
+                    passwordChanged = false;
+                });
+
         // disable login button initially as no data is entered
         // TODO: change to disable once testing is done
         loginButton.setEnabled(true);
@@ -99,7 +111,7 @@ public class LoginActivity extends BaseActivity {
         // toggle login mode by default
         switchView(AuthMode.LOGIN);
 
-        if (repo.isBiometricsEnabled()) {
+        if (repo.initializeBiometricsUser()) {
             biometricsButton.setVisibility(View.VISIBLE);
             authorizeViaBiometrics();
         } else {
@@ -176,11 +188,6 @@ public class LoginActivity extends BaseActivity {
                             public void onAuthenticationSucceeded(
                                     @NonNull BiometricPrompt.AuthenticationResult result) {
                                 super.onAuthenticationSucceeded(result);
-                                Toast.makeText(
-                                                getApplicationContext(),
-                                                R.string.welcome,
-                                                Toast.LENGTH_LONG)
-                                        .show();
                                 showLoginSucceeded();
                                 Log.d(TAG, "Fingerprint recognised successfully");
                             }
