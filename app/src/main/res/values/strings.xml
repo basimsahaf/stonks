@@ -89,7 +89,7 @@
     <string name="home_menu">Home</string>
     <string name="search_menu">Search</string>
     <string name="activity_menu">Activity</string>
-    <string name="saved_menu">Saved</string>
+    <string name="favourites_menu">Favourites</string>
     <string name="settings_menu">Settings</string>
 
     <!-- Login Activity strings -->

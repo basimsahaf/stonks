@@ -22,7 +22,7 @@
             android:id="@+id/saved_nav"
             android:enabled="true"
             android:icon="@drawable/ic_baseline_favorite_border_48"
-            android:title="@string/saved_menu"
+            android:title="@string/favourites_menu"
     />
     <item
             android:id="@+id/settings_nav"
