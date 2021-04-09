@@ -20,8 +20,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/sym_placeholder"
-            style="@style/AppTheme.TextAppearance.LargeLabel"
+            style="@style/AppTheme.TextAppearance.XXLLabel"
             app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"/>
 
         <TextView
@@ -32,6 +33,7 @@
             style="@style/AppTheme.TextAppearance.MediumLabel"
             app:layout_constraintTop_toBottomOf="@id/stock_symbol"
             app:layout_constraintLeft_toLeftOf="parent"
+            android:visibility="gone"
             />
 
         <TextView
