@@ -61,14 +61,11 @@ public class StockFragment extends BaseFragment {
     private MaterialButton rangeYearButton;
     private MaterialButton rangeAllButton;
     private LinearLayout overlay;
-    private NestedScrollView scrollView;
     private ImageView changeIndicator;
     private ImageView favIcon;
     private StockChart stockChart;
     private CandleChart candleChart;
-    private LineData lineData;
-    private LineDataSet lineDataSet;
-    private boolean isCandleVisible = true;
+    private boolean isCandleVisible = false;
     private boolean favourited = false;
     private StockManager stockManager;
     private RecentTransactionsManager transactionsManager;
@@ -157,7 +154,7 @@ public class StockFragment extends BaseFragment {
         this.overlay = view.findViewById(R.id.screen_overlay);
         this.tradeButton = view.findViewById(R.id.trade_button);
         this.transactionList = view.findViewById(R.id.history_list);
-        this.scrollView = view.findViewById(R.id.scroll_view);
+        NestedScrollView scrollView = view.findViewById(R.id.scroll_view);
         this.currentPrice = view.findViewById(R.id.current_price);
         this.priceChange = view.findViewById(R.id.change);
         this.changeIndicator = view.findViewById(R.id.change_indicator);
@@ -240,9 +237,9 @@ public class StockFragment extends BaseFragment {
                         getContext(), R.layout.chart_marker, this.stockManager.getLineMarker());
         lineMarker.setChartView(this.stockChart);
         StockChart.CustomGestureListener lineChartGestureListener =
-                new StockChart.CustomGestureListener(this.stockChart, this.scrollView);
+                new StockChart.CustomGestureListener(this.stockChart, scrollView);
         StockChart.CustomGestureListener candleChartGestureListener =
-                new StockChart.CustomGestureListener(this.candleChart, this.scrollView);
+                new StockChart.CustomGestureListener(this.candleChart, scrollView);
         lineChartGestureListener.setOnGestureEnded(
                 () -> {
                     this.currentPrice.setText(
@@ -258,13 +255,13 @@ public class StockFragment extends BaseFragment {
                     this.changeIndicator.setImageDrawable(getIndicatorDrawable(y));
                 });
 
-        this.lineDataSet = new LineDataSet(Collections.emptyList(), "");
-        this.lineData = new LineData(lineDataSet);
+        LineDataSet lineDataSet = new LineDataSet(Collections.emptyList(), "");
+        LineData lineData = new LineData(lineDataSet);
 
         this.stockChart.addValueListener(currentPrice);
         this.stockChart.setOnChartGestureListener(lineChartGestureListener);
         this.stockChart.setMarker(lineMarker);
-        this.stockChart.setData(this.lineData);
+        this.stockChart.setData(lineData);
 
         this.candleChart.setOnChartGestureListener(candleChartGestureListener);
         this.candleChart.setMarker(candleMarker);
@@ -359,7 +356,19 @@ public class StockFragment extends BaseFragment {
                     this.rangeAllButton.setChecked(true);
                 });
 
-        chartToggleButton.setOnClickListener(v -> this.toggleCandleVisible());
+        chartToggleButton.setOnClickListener(
+                v -> {
+                    this.toggleCandleVisible();
+                    if (this.isCandleVisible) {
+                        chartToggleButton.setImageDrawable(
+                                ContextCompat.getDrawable(
+                                        getMainActivity(), R.drawable.ic_baseline_show_chart_24));
+                    } else {
+                        chartToggleButton.setImageDrawable(
+                                ContextCompat.getDrawable(
+                                        getMainActivity(), R.drawable.ic_baseline_graphic_eq_24));
+                    }
+                });
 
         // default date range is daily
         this.rangeDayButton.setChecked(true);
@@ -424,8 +433,9 @@ public class StockFragment extends BaseFragment {
         return getIndicatorDrawable(this.stockManager.getStockData().getCurrentPrice());
     }
 
-    Drawable getIndicatorDrawable(float value) {
-        float change = value - this.stockManager.getStockData().getOpen();
+    Drawable getIndicatorDrawable(float price) {
+        Pair<Float, Float> changePair = this.stockManager.getChange(price);
+        float change = changePair.first;
 
         if (change >= 0) {
             return ContextCompat.getDrawable(
