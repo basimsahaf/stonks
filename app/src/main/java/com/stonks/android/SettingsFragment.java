@@ -1,5 +1,6 @@
 package com.stonks.android;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,7 +25,8 @@ public class SettingsFragment extends BaseFragment {
             passwordSetting,
             passwordChangeScreen,
             trainingPeriodSetting,
-            amountChangeScreen;
+            amountChangeScreen,
+            logout;
     private Button submitButton;
     private SettingsMode currentMode;
     private SettingsManager settingsManager;
@@ -60,6 +62,7 @@ public class SettingsFragment extends BaseFragment {
         passwordChangeScreen = view.findViewById(R.id.password_change);
         trainingPeriodSetting = view.findViewById(R.id.money_setting);
         amountChangeScreen = view.findViewById(R.id.training_period_change);
+        logout = view.findViewById(R.id.logout);
         submitButton = view.findViewById(R.id.submit_button);
         usernameField = view.findViewById(R.id.username_text_field);
         currentUsername = view.findViewById(R.id.current_username);
@@ -127,6 +130,14 @@ public class SettingsFragment extends BaseFragment {
                                 ResourcesCompat.getColor(
                                         getResources(), R.color.colorPrimary, null));
                     }
+                });
+
+        logout.setOnClickListener(
+                v -> {
+                    Intent intent = new Intent(getActivity(), LoginActivity.class);
+                    intent.setFlags(
+                            Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
                 });
     }
 
