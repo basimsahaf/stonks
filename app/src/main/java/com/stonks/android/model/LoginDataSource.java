@@ -61,9 +61,37 @@ public class LoginDataSource {
         // TODO: revoke authentication
     }
 
+    public Result<LoggedInUser> changeUsername(String oldUsername, String newUsername) {
+        return userTable.changeUsername(oldUsername, newUsername);
+    }
+
+    public boolean verifyCurrentPassword(String currentUsername, String currentPassword) {
+        return userTable.verifyCurrentPassword(currentUsername, currentPassword);
+    }
+
+    public Result<LoggedInUser> changePassword(String username, String newPassword) {
+        return userTable.changePassword(username, newPassword);
+    }
+
     public Result<LoggedInUser> getBiometricsUser() {
         try {
             return userTable.getBiometricsUser();
+        } catch (Exception e) {
+            return new Result.Error(R.string.internal_server_error);
+        }
+    }
+
+    public Result<LoggedInUser> toggleBiometrics(String username, boolean status) {
+        try {
+            return userTable.toggleBiometrics(username, status);
+        } catch (Exception e) {
+            return new Result.Error(R.string.internal_server_error);
+        }
+    }
+
+    public Result<LoggedInUser> changeTrainingAmount(String username, float amount) {
+        try {
+            return userTable.changeTrainingAmount(username, amount);
         } catch (Exception e) {
             return new Result.Error(R.string.internal_server_error);
         }

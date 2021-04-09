@@ -3,8 +3,10 @@ package com.stonks.android.storage;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 import androidx.annotation.Nullable;
 import com.stonks.android.BuildConfig;
 import com.stonks.android.R;
@@ -104,6 +106,91 @@ public class UserTable extends SQLiteOpenHelper {
         return exists;
     }
 
+    public Result<LoggedInUser> changeUsername(String oldUsername, String newUsername) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query =
+                String.format(
+                        "SELECT * FROM %s WHERE %s = '%s'",
+                        TABLE_NAME, COLUMN_USERNAME, oldUsername);
+        Cursor cursor = db.rawQuery(query, null);
+        String whereClause = String.format("%s = '%s'", COLUMN_USERNAME, oldUsername);
+
+        if (cursor.moveToFirst()) {
+            String password = cursor.getString(cursor.getColumnIndex(COLUMN_PASSWORD));
+            String biometrics = cursor.getString(cursor.getColumnIndex(COLUMN_BIOMETRICS));
+            String totalAmount = cursor.getString(cursor.getColumnIndex(COLUMN_TOTAL_AMOUNT));
+
+            ContentValues cv = new ContentValues();
+            cv.put(COLUMN_USERNAME, newUsername);
+            cv.put(COLUMN_PASSWORD, password);
+            cv.put(COLUMN_BIOMETRICS, biometrics);
+            cv.put(COLUMN_TOTAL_AMOUNT, totalAmount);
+
+            try {
+                db.update(TABLE_NAME, cv, whereClause, null);
+                cursor.close();
+                return new Result.Success<>(new LoggedInUser(newUsername));
+            } catch (SQLiteConstraintException e) {
+                return new Result.Error(R.string.user_exists);
+            }
+        }
+        // this shouldn't happen but just in case something goes wrong, this will allow graceful
+        // exit
+        return new Result.Error(R.string.internal_server_error);
+    }
+
+    public boolean verifyCurrentPassword(String currentUsername, String currentPassword) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query =
+                String.format(
+                        "SELECT * FROM %s WHERE %s = '%s' AND %s = '%s'",
+                        TABLE_NAME,
+                        COLUMN_USERNAME,
+                        currentUsername,
+                        COLUMN_PASSWORD,
+                        currentPassword);
+        Cursor cursor = db.rawQuery(query, null);
+        boolean result = false;
+        if (cursor.moveToFirst()) {
+            result = true;
+        }
+        cursor.close();
+        return result;
+    }
+
+    public Result<LoggedInUser> toggleBiometrics(String username, boolean status) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query =
+                String.format(
+                        "SELECT * FROM %s WHERE %s = '%s'", TABLE_NAME, COLUMN_USERNAME, username);
+        Cursor cursor = db.rawQuery(query, null);
+        String whereClause = String.format("%s = '%s'", COLUMN_USERNAME, username);
+
+        if (cursor.moveToFirst()) {
+            String password = cursor.getString(cursor.getColumnIndex(COLUMN_PASSWORD));
+            String totalAmount = cursor.getString(cursor.getColumnIndex(COLUMN_TOTAL_AMOUNT));
+
+            ContentValues cv = new ContentValues();
+            cv.put(COLUMN_USERNAME, username);
+            cv.put(COLUMN_PASSWORD, password);
+            cv.put(COLUMN_BIOMETRICS, status);
+            cv.put(COLUMN_TOTAL_AMOUNT, totalAmount);
+
+            Log.d("Usertable", "trying to disable biometrics");
+
+            try {
+                db.update(TABLE_NAME, cv, whereClause, null);
+                cursor.close();
+                return new Result.Success<>(new LoggedInUser(username));
+            } catch (SQLiteConstraintException e) {
+                return new Result.Error(R.string.password_update_error);
+            }
+        }
+        // this shouldn't happen but just in case something goes wrong, this will allow graceful
+        // exit
+        return new Result.Error(R.string.internal_server_error);
+    }
+
     public Result<LoggedInUser> getBiometricsUser() {
         SQLiteDatabase db = this.getReadableDatabase();
         String query =
@@ -172,7 +259,69 @@ public class UserTable extends SQLiteOpenHelper {
         cv.put(COLUMN_USERNAME, username);
         cv.put(COLUMN_TRAINING_START_DATE, LocalDateTime.now().toString());
 
-        long update = db.update(TABLE_NAME, cv, whereClause, new String[] {username});
+        long update = db.update(TABLE_NAME, cv, whereClause, new String[]{username});
         return update >= 0;
+    }
+
+    public Result<LoggedInUser> changePassword(String username, String newPassword) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query =
+                String.format(
+                        "SELECT * FROM %s WHERE %s = '%s'", TABLE_NAME, COLUMN_USERNAME, username);
+        Cursor cursor = db.rawQuery(query, null);
+        String whereClause = String.format("%s = '%s'", COLUMN_USERNAME, username);
+
+        if (cursor.moveToFirst()) {
+            String biometrics = cursor.getString(cursor.getColumnIndex(COLUMN_BIOMETRICS));
+            String totalAmount = cursor.getString(cursor.getColumnIndex(COLUMN_TOTAL_AMOUNT));
+
+            ContentValues cv = new ContentValues();
+            cv.put(COLUMN_USERNAME, username);
+            cv.put(COLUMN_PASSWORD, newPassword);
+            cv.put(COLUMN_BIOMETRICS, biometrics);
+            cv.put(COLUMN_TOTAL_AMOUNT, totalAmount);
+
+            try {
+                db.update(TABLE_NAME, cv, whereClause, null);
+                cursor.close();
+                return new Result.Success<>(new LoggedInUser(username));
+            } catch (SQLiteConstraintException e) {
+                return new Result.Error(R.string.password_update_error);
+            }
+        }
+        // this shouldn't happen but just in case something goes wrong, this will allow graceful
+        // exit
+        return new Result.Error(R.string.internal_server_error);
+    }
+
+    public Result<LoggedInUser> changeTrainingAmount(String username, float amount) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query =
+                String.format(
+                        "SELECT * FROM %s WHERE %s = '%s'", TABLE_NAME, COLUMN_USERNAME, username);
+        Cursor cursor = db.rawQuery(query, null);
+        String whereClause = String.format("%s = '%s'", COLUMN_USERNAME, username);
+
+        if (cursor.moveToFirst()) {
+            String password = cursor.getString(cursor.getColumnIndex(COLUMN_PASSWORD));
+            String biometrics = cursor.getString(cursor.getColumnIndex(COLUMN_BIOMETRICS));
+
+            ContentValues cv = new ContentValues();
+            cv.put(COLUMN_USERNAME, username);
+            cv.put(COLUMN_PASSWORD, password);
+            cv.put(COLUMN_BIOMETRICS, biometrics);
+            cv.put(COLUMN_TOTAL_AMOUNT, amount);
+
+            try {
+                db.update(TABLE_NAME, cv, whereClause, null);
+                cursor.close();
+                return new Result.Success<>(new LoggedInUser(username));
+            } catch (SQLiteConstraintException e) {
+                return new Result.Error(R.string.training_period_error);
+            }
+        }
+        // this shouldn't happen but just in case something goes wrong, this will allow graceful
+        // exit
+        return new Result.Error(R.string.internal_server_error);
     }
 }

@@ -72,18 +72,6 @@ public class LoginActivity extends BaseActivity {
         // TODO: enable this later
                 setLoginViewModelListeners();
 
-        // auth triggers
-        passwordField
-                .getEditText()
-                .setOnEditorActionListener(
-                        (v, actionId, event) -> {
-                            if (actionId == EditorInfo.IME_ACTION_DONE) {
-                                authorizeViaForm();
-//                                authorizeTestLogin();
-                            }
-                            return false;
-                        });
-
         // disable login button initially as no data is entered
         // TODO: change to disable once testing is done
         loginButton.setEnabled(false);
@@ -99,7 +87,7 @@ public class LoginActivity extends BaseActivity {
         // toggle login mode by default
         switchView(AuthMode.LOGIN);
 
-        if (repo.isBiometricsEnabled()) {
+        if (repo.initializeBiometricsUser()) {
             biometricsButton.setVisibility(View.VISIBLE);
             authorizeViaBiometrics();
         } else {
@@ -177,11 +165,6 @@ public class LoginActivity extends BaseActivity {
                             public void onAuthenticationSucceeded(
                                     @NonNull BiometricPrompt.AuthenticationResult result) {
                                 super.onAuthenticationSucceeded(result);
-                                Toast.makeText(
-                                                getApplicationContext(),
-                                                R.string.welcome,
-                                                Toast.LENGTH_LONG)
-                                        .show();
                                 showLoginSucceeded();
                                 Log.d(TAG, "Fingerprint recognised successfully");
                             }
@@ -308,8 +291,8 @@ public class LoginActivity extends BaseActivity {
 
         loginButton.setOnClickListener(
                 view -> {
-                                        authorizeViaForm();
-//                    authorizeTestLogin();
+//                                        authorizeViaForm();
+                    authorizeTestLogin();
                     usernameChanged = false;
                     passwordChanged = false;
                 });
