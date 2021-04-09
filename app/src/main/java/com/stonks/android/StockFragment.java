@@ -6,9 +6,7 @@ import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
 import android.util.Pair;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.*;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -34,6 +32,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.stonks.android.adapter.TransactionViewAdapter;
 import com.stonks.android.databinding.FragmentStockBinding;
+import com.stonks.android.manager.FavouriteStocksManager;
 import com.stonks.android.manager.RecentTransactionsManager;
 import com.stonks.android.manager.StockManager;
 import com.stonks.android.model.*;
@@ -45,6 +44,7 @@ import com.stonks.android.uicomponent.StockChart;
 import com.stonks.android.utility.Constants;
 import com.stonks.android.utility.Formatters;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class StockFragment extends BaseFragment {
     public static final String SYMBOL_ARG = "symbol";
@@ -54,22 +54,77 @@ public class StockFragment extends BaseFragment {
     private RecyclerView transactionList;
     private RecyclerView.Adapter<RecyclerView.ViewHolder> transactionListAdapter;
     private TextView currentPrice, priceChange;
+    private TextView numShares, marketVal, avgCost;
+    private TextView todayReturn, totalReturn;
     private SpeedDialExtendedFab tradeButton;
     private MaterialButton rangeDayButton;
     private MaterialButton rangeWeekButton;
     private MaterialButton rangeMonthButton;
     private MaterialButton rangeYearButton;
     private MaterialButton rangeAllButton;
+    private ConstraintLayout positionContainer;
     private LinearLayout overlay;
+    private View historySection;
     private ImageView changeIndicator;
-    private ImageView favIcon;
     private StockChart stockChart;
     private CandleChart candleChart;
     private boolean isCandleVisible = false;
-    private boolean favourited = false;
     private StockManager stockManager;
     private RecentTransactionsManager transactionsManager;
+    private FavouriteStocksManager favouriteStocksManager;
     private AlertDialog dialog;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        this.symbol = getArguments().getString(SYMBOL_ARG);
+        this.stockManager = StockManager.getInstance(getMainActivity());
+        this.transactionsManager = RecentTransactionsManager.getInstance(getMainActivity());
+        this.favouriteStocksManager = FavouriteStocksManager.getInstance(getMainActivity());
+        setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.actionbar, menu);
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(@NonNull Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+
+        MenuItem item = menu.findItem(R.id.favourite_stock_icon);
+
+        if (this.favouriteStocksManager.isStockFavourited(this.symbol)) {
+            item.setIcon(
+                    ContextCompat.getDrawable(
+                            getMainActivity(), R.drawable.ic_baseline_favorite_48));
+        } else {
+            item.setIcon(
+                    ContextCompat.getDrawable(
+                            getMainActivity(), R.drawable.ic_baseline_favorite_border_48));
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == R.id.favourite_stock_icon) {
+            if (this.favouriteStocksManager.isStockFavourited(this.symbol)) {
+                this.favouriteStocksManager.removeFavouriteStock(this.symbol);
+                item.setIcon(
+                        ContextCompat.getDrawable(
+                                getMainActivity(), R.drawable.ic_baseline_favorite_border_48));
+            } else {
+                this.favouriteStocksManager.addFavouriteStock(this.symbol);
+                item.setIcon(
+                        ContextCompat.getDrawable(
+                                getMainActivity(), R.drawable.ic_baseline_favorite_48));
+            }
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
     @Nullable
     @Override
@@ -79,10 +134,6 @@ public class StockFragment extends BaseFragment {
             @Nullable Bundle savedInstanceState) {
         FragmentStockBinding binding =
                 DataBindingUtil.inflate(inflater, R.layout.fragment_stock, container, false);
-
-        this.symbol = getArguments().getString(SYMBOL_ARG);
-        this.stockManager = StockManager.getInstance(getMainActivity());
-        this.transactionsManager = RecentTransactionsManager.getInstance(getMainActivity());
         this.stockManager.setSymbol(this.symbol);
 
         // using the addOnPropertyChangedCallback method to update properties that
@@ -97,6 +148,71 @@ public class StockFragment extends BaseFragment {
                                     androidx.databinding.Observable observable, int i) {
                                 List<CandleEntry> newCandleData = stockManager.getCandleStickData();
                                 LineData lineChartData = stockManager.getLineChartData();
+
+                                ArrayList<TransactionsListRow> transactions =
+                                        stockManager.getTransactions();
+                                PortfolioItem portfolioItem = stockManager.getPosition();
+
+                                if (transactions.size() == 0) {
+                                    historySection.setVisibility(View.GONE);
+                                } else {
+                                    transactionListAdapter =
+                                            new TransactionViewAdapter(transactions);
+                                    transactionList.setAdapter(transactionListAdapter);
+
+                                    historySection.setVisibility(View.VISIBLE);
+                                }
+
+                                if (portfolioItem != null && portfolioItem.getQuantity() != 0) {
+                                    positionContainer.setVisibility(View.VISIBLE);
+
+                                    numShares.setText(String.valueOf(portfolioItem.getQuantity()));
+                                    marketVal.setText(
+                                            Formatters.formatPrice(
+                                                    portfolioItem.getQuantity()
+                                                            * stockManager
+                                                                    .getStockData()
+                                                                    .getCurrentPrice()));
+
+                                    List<Transaction> realTransactions =
+                                            transactions.stream()
+                                                    .filter(
+                                                            transactionsListRow ->
+                                                                    transactionsListRow
+                                                                                    .getTransaction()
+                                                                            != null)
+                                                    .map(TransactionsListRow::getTransaction)
+                                                    .filter(
+                                                            transaction ->
+                                                                    transaction.getTransactionType()
+                                                                            == TransactionMode.BUY)
+                                                    .collect(Collectors.toList());
+
+                                    int totalShares = 0;
+                                    float cost = 0f;
+
+                                    for (Transaction transaction : realTransactions) {
+                                        totalShares += transaction.getShares();
+                                        cost += transaction.getShares() * transaction.getPrice();
+                                    }
+
+                                    float averageCost = cost / totalShares;
+                                    avgCost.setText(Formatters.formatPrice(averageCost));
+
+                                    float returnTotal =
+                                            (stockManager.getStockData().getCurrentPrice()
+                                                            * totalShares)
+                                                    - cost;
+                                    float returnToday =
+                                            (stockManager.getStockData().getCurrentPrice()
+                                                            - stockManager.getStockData().getOpen())
+                                                    * totalShares;
+
+                                    todayReturn.setText(Formatters.formatPrice(returnToday));
+                                    totalReturn.setText(Formatters.formatPrice(returnTotal));
+                                } else {
+                                    positionContainer.setVisibility(View.GONE);
+                                }
 
                                 priceChange.setText(generateChangeString());
                                 changeIndicator.setImageDrawable(getIndicatorDrawable());
@@ -143,14 +259,18 @@ public class StockFragment extends BaseFragment {
         final ConstraintLayout buyButtonContainer = view.findViewById(R.id.buy_button_container);
         final ConstraintLayout sellButtonContainer = view.findViewById(R.id.sell_button_container);
         final ConstraintLayout tryButtonContainer = view.findViewById(R.id.try_button_container);
-        final ConstraintLayout positionContainer = view.findViewById(R.id.position_container);
+        this.positionContainer = view.findViewById(R.id.position_container);
+        this.numShares = view.findViewById(R.id.num_shares);
+        this.marketVal = view.findViewById(R.id.mkt_value);
+        this.avgCost = view.findViewById(R.id.avg_cost);
+        this.todayReturn = view.findViewById(R.id.day_return);
+        this.totalReturn = view.findViewById(R.id.total_return);
         final FloatingActionButton tryButton = view.findViewById(R.id.try_button);
         final FloatingActionButton buyButton = view.findViewById(R.id.buy_button);
         final FloatingActionButton sellButton = view.findViewById(R.id.sell_button);
         final ImageButton chartToggleButton = view.findViewById(R.id.chart_toggle);
         final MaterialButton indicatorButton = view.findViewById(R.id.indicator_button);
 
-        this.favIcon = view.findViewById(R.id.fav_icon);
         this.overlay = view.findViewById(R.id.screen_overlay);
         this.tradeButton = view.findViewById(R.id.trade_button);
         this.transactionList = view.findViewById(R.id.history_list);
@@ -160,6 +280,7 @@ public class StockFragment extends BaseFragment {
         this.changeIndicator = view.findViewById(R.id.change_indicator);
         this.stockChart = view.findViewById(R.id.stock_chart);
         this.candleChart = view.findViewById(R.id.stock_chart_candle);
+        this.historySection = view.findViewById(R.id.history_section);
 
         this.rangeDayButton = view.findViewById(R.id.range_day);
         this.rangeWeekButton = view.findViewById(R.id.range_week);
@@ -170,9 +291,6 @@ public class StockFragment extends BaseFragment {
         this.tradeButton.addToSpeedDial(buyButtonContainer);
         this.tradeButton.addToSpeedDial(sellButtonContainer);
         this.tradeButton.addToSpeedDial(tryButtonContainer);
-
-        this.stockManager.getPosition();
-        this.stockManager.getTransactions();
 
         MaterialAlertDialogBuilder dialogBuilder =
                 new MaterialAlertDialogBuilder(getMainActivity());
@@ -314,20 +432,6 @@ public class StockFragment extends BaseFragment {
                             .beginTransaction()
                             .replace(R.id.sliding_drawer, sellFrag, null)
                             .commit();
-                });
-        this.favIcon.setOnClickListener(
-                v -> {
-                    favourited = !favourited;
-
-                    if (favourited) {
-                        favIcon.setImageDrawable(
-                                ContextCompat.getDrawable(
-                                        getContext(), R.drawable.ic_baseline_favorite_48));
-                    } else {
-                        favIcon.setImageDrawable(
-                                ContextCompat.getDrawable(
-                                        getContext(), R.drawable.ic_baseline_favorite_border_48));
-                    }
                 });
 
         rangeDayButton.setOnClickListener(
