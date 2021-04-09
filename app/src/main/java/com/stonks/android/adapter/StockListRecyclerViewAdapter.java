@@ -79,10 +79,9 @@ public class StockListRecyclerViewAdapter
             holder.price.setText("");
             holder.priceChange.setText("");
             holder.arrowIndicator.setVisibility(View.GONE);
-        } else {
-            holder.price.setText(
-                    Formatters.formatStockQuantity(item.getPrice(), item.getQuantity()));
+        }
 
+        holder.price.setText(Formatters.formatStockQuantity(item.getPrice(), item.getQuantity()));
         holder.priceChange.setText(generateChangeString(item.getPriceChange(), item.getChangePercent()));
         holder.arrowIndicator.setImageDrawable(getIndicatorDrawable(item.getPriceChange()));
     }
