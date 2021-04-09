@@ -9,11 +9,13 @@ import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.core.widget.NestedScrollView;
@@ -26,7 +28,10 @@ import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.interfaces.datasets.IDataSet;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.checkbox.MaterialCheckBox;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.textfield.TextInputEditText;
 import com.stonks.android.adapter.TransactionViewAdapter;
 import com.stonks.android.databinding.FragmentStockBinding;
 import com.stonks.android.manager.RecentTransactionsManager;
@@ -67,6 +72,7 @@ public class StockFragment extends BaseFragment {
     private boolean favourited = false;
     private StockManager stockManager;
     private RecentTransactionsManager transactionsManager;
+    private AlertDialog dialog;
 
     @Nullable
     @Override
@@ -144,7 +150,8 @@ public class StockFragment extends BaseFragment {
         final FloatingActionButton tryButton = view.findViewById(R.id.try_button);
         final FloatingActionButton buyButton = view.findViewById(R.id.buy_button);
         final FloatingActionButton sellButton = view.findViewById(R.id.sell_button);
-        final ImageView chartToggleButton = view.findViewById(R.id.chart_toggle);
+        final ImageButton chartToggleButton = view.findViewById(R.id.chart_toggle);
+        final MaterialButton indicatorButton = view.findViewById(R.id.indicator_button);
 
         this.favIcon = view.findViewById(R.id.fav_icon);
         this.overlay = view.findViewById(R.id.screen_overlay);
@@ -169,6 +176,51 @@ public class StockFragment extends BaseFragment {
 
         this.stockManager.getPosition();
         this.stockManager.getTransactions();
+
+        MaterialAlertDialogBuilder dialogBuilder =
+                new MaterialAlertDialogBuilder(getMainActivity());
+        dialogBuilder
+                .setView(R.layout.indicator_configuration)
+                .setPositiveButton(
+                        "Done",
+                        (dialogInterface, i) -> {
+                            final MaterialCheckBox maEnabled =
+                                    this.dialog.findViewById(R.id.moving_average_enabled);
+                            final MaterialCheckBox wmaEnabled =
+                                    this.dialog.findViewById(R.id.weighted_moving_average_enabled);
+
+                            final TextInputEditText maPeriod =
+                                    this.dialog.findViewById(R.id.moving_average_period);
+                            final TextInputEditText wmaPeriod =
+                                    this.dialog.findViewById(R.id.weighted_moving_average_period);
+
+                            this.stockManager.setMovingAverage(
+                                    maEnabled.isChecked(),
+                                    Integer.parseInt(maPeriod.getText().toString()));
+                            this.stockManager.setWMovingAverageEnabled(wmaEnabled.isChecked());
+                        })
+                .setNegativeButton("Cancel", null);
+        this.dialog = dialogBuilder.create();
+
+        indicatorButton.setOnClickListener(
+                v -> {
+                    dialog.show();
+
+                    final MaterialCheckBox maEnabled =
+                            dialog.findViewById(R.id.moving_average_enabled);
+                    final MaterialCheckBox wmaEnabled =
+                            dialog.findViewById(R.id.weighted_moving_average_enabled);
+
+                    final TextInputEditText maPeriod =
+                            dialog.findViewById(R.id.moving_average_period);
+                    final TextInputEditText wmaPeriod =
+                            dialog.findViewById(R.id.weighted_moving_average_period);
+
+                    maEnabled.setChecked(this.stockManager.isMovingAverageEnabled());
+                    wmaEnabled.setChecked(this.stockManager.iswMovingAverageEnabled());
+                    maPeriod.setText("" + this.stockManager.getMovingAveragePeriod());
+                    wmaPeriod.setText("" + this.stockManager.getWeightedMovingAveragePeriod());
+                });
 
         RecyclerView.LayoutManager transactionListManager = new LinearLayoutManager(getContext());
         this.transactionList.setLayoutManager(transactionListManager);

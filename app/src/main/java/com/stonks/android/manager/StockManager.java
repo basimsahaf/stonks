@@ -40,6 +40,7 @@ public class StockManager {
     private final Function<Integer, String> lineMarker;
     private final TransactionTable transactionTable;
     private final PortfolioTable portfolioTable;
+    private boolean movingAverageEnabled, wMovingAverageEnabled;
 
     private StockManager(Context context) {
         this.stockData = new StockData();
@@ -89,6 +90,8 @@ public class StockManager {
         simpleMovingAverage = new SimpleMovingAverage(5);
         transactionTable = TransactionTable.getInstance(context);
         portfolioTable = PortfolioTable.getInstance(context);
+        movingAverageEnabled = false;
+        wMovingAverageEnabled = false;
     }
 
     public static StockManager getInstance(Context context) {
@@ -105,6 +108,8 @@ public class StockManager {
         this.currentRange = DateRange.DAY;
         this.candleData.clear();
         this.lineData.clear();
+        movingAverageEnabled = false;
+        wMovingAverageEnabled = false;
     }
 
     public Function<Integer, String> getCandleMarker() {
@@ -356,10 +361,43 @@ public class StockManager {
             lineData.addDataSet(StockChart.buildDataSet(stockPrices));
         }
 
-        if (simpleMovingAverage.size() > 0) {
+        if (movingAverageEnabled && simpleMovingAverage.size() > 0) {
             lineData.addDataSet(StockChart.buildIndicatorDataSet(simpleMovingAverage));
         }
 
         return lineData;
+    }
+
+    public int getMovingAveragePeriod() {
+        return this.simpleMovingAverage.getSize();
+    }
+
+    public void setMovingAverage(boolean enabled, int period) {
+        this.movingAverageEnabled = enabled;
+        this.simpleMovingAverage.setData(
+                this.lineData.entrySet().stream()
+                        .sorted(Comparator.comparingInt(Map.Entry::getKey))
+                        .map(Map.Entry::getValue)
+                        .collect(Collectors.toList()),
+                period);
+
+        this.stockData.notifyChange();
+    }
+
+    public void setWMovingAverageEnabled(boolean enabled) {
+        wMovingAverageEnabled = enabled;
+    }
+
+    public int getWeightedMovingAveragePeriod() {
+        // TODO: fix
+        return this.simpleMovingAverage.getSize();
+    }
+
+    public boolean isMovingAverageEnabled() {
+        return movingAverageEnabled;
+    }
+
+    public boolean iswMovingAverageEnabled() {
+        return wMovingAverageEnabled;
     }
 }
