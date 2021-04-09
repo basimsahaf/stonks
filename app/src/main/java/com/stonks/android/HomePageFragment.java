@@ -125,18 +125,6 @@ public class HomePageFragment extends BaseFragment {
                     portfolioManager.setCurrentRange(DateRange.THREE_YEARS);
                 });
 
-//        CustomSparkView sparkView = view.findViewById(R.id.stock_chart);
-//        sparkView.setScrubListener(
-//                value -> scrollView.requestDisallowInterceptTouchEvent(value != null));
-//        dataAdapter =
-//                new StockChartAdapter(
-//                        StockFragment.getFakeStockPrices().stream()
-//                                .map(p -> p.second)
-//                                .collect(Collectors.toList()));
-//        dataAdapter.setBaseline(121.08f);
-//
-//        sparkView.setAdapter(dataAdapter);
-
         portfolioManager.calculateData(false);
     }
 
@@ -158,12 +146,6 @@ public class HomePageFragment extends BaseFragment {
         }
         ((StockListRecyclerViewAdapter) portfolioListAdapter).setNewStocks(portfolioManager.getStocksList());
         portfolioListAdapter.notifyDataSetChanged();
-
-//        dataAdapter.setData(
-//                barData.stream()
-//                        .collect(Collectors.toList()));
-//        dataAdapter.setBaseline(barData.get(0));
-//        dataAdapter.notifyDataSetChanged();
 
         getMainActivity().setPortfolioValue(portfolioManager.getAccountValue());
         this.moneyLeft.setText(Formatters.formatPrice(portfolioManager.getAccountBalance()));
