@@ -142,7 +142,7 @@ public class TransactionTable extends SQLiteOpenHelper {
     public ArrayList<String> getSymbols(String username) {
         String query =
                 String.format(
-                        "SELECT %s FROM %s WHERE %s = ?",
+                        "SELECT DISTINCT %s FROM %s WHERE %s = ?",
                         COLUMN_SYMBOL, TABLE_NAME, COLUMN_USERNAME);
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(query, new String[] {username});
