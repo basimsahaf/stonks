@@ -15,8 +15,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.StringRes;
-import androidx.appcompat.app.AppCompatDelegate;
 import androidx.biometric.BiometricPrompt;
+import androidx.appcompat.app.AppCompatDelegate;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputLayout;
 import com.stonks.android.model.AuthMode;
@@ -53,7 +53,7 @@ public class LoginActivity extends BaseActivity {
         setContentView(R.layout.activity_login);
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
 
-        LoginRepository repo = LoginRepository.getInstance(getApplicationContext());
+        repo = LoginRepository.getInstance(getApplicationContext());
         loginViewModel = new LoginViewModel(repo);
 
         loginModeButton = findViewById(R.id.login_mode_button);
@@ -70,7 +70,7 @@ public class LoginActivity extends BaseActivity {
         setTextWatcher(usernameField);
         setTextWatcher(passwordField);
         // TODO: enable this later
-        //        setLoginViewModelListeners();
+                setLoginViewModelListeners();
 
         // auth triggers
         passwordField
@@ -78,15 +78,15 @@ public class LoginActivity extends BaseActivity {
                 .setOnEditorActionListener(
                         (v, actionId, event) -> {
                             if (actionId == EditorInfo.IME_ACTION_DONE) {
-                                //                                authorizeViaForm();
-                                authorizeTestLogin();
+                                authorizeViaForm();
+//                                authorizeTestLogin();
                             }
                             return false;
                         });
 
         // disable login button initially as no data is entered
         // TODO: change to disable once testing is done
-        loginButton.setEnabled(true);
+        loginButton.setEnabled(false);
 
         // set error messages visibility to gone by default
         usernameErrorMessage.setVisibility(View.GONE);
@@ -125,6 +125,7 @@ public class LoginActivity extends BaseActivity {
         String password = getFieldText(passwordField);
         authErrorMessage.setVisibility(View.GONE);
 
+        Log.d(TAG, "Form login");
         // only login on non-empty username and password, otherwise show error
         if (!username.equals("") && !password.equals("")) {
             switch (currentAuthMode) {
@@ -307,8 +308,8 @@ public class LoginActivity extends BaseActivity {
 
         loginButton.setOnClickListener(
                 view -> {
-                    //                    authorizeViaForm();
-                    authorizeTestLogin();
+                                        authorizeViaForm();
+//                    authorizeTestLogin();
                     usernameChanged = false;
                     passwordChanged = false;
                 });

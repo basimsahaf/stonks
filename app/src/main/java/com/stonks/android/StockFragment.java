@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
-import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,52 +21,52 @@ import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import com.github.mikephil.charting.data.CandleEntry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.interfaces.datasets.IDataSet;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.stonks.android.adapter.StockChartAdapter;
 import com.stonks.android.adapter.TransactionViewAdapter;
 import com.stonks.android.databinding.FragmentStockBinding;
-import com.stonks.android.external.MarketDataService;
+import com.stonks.android.manager.RecentTransactionsManager;
+import com.stonks.android.manager.StockManager;
 import com.stonks.android.model.*;
-import com.stonks.android.model.alpaca.AlpacaTimeframe;
 import com.stonks.android.model.alpaca.DateRange;
-import com.stonks.android.uicomponent.CustomSparkView;
+import com.stonks.android.uicomponent.CandleChart;
+import com.stonks.android.uicomponent.ChartMarker;
 import com.stonks.android.uicomponent.SpeedDialExtendedFab;
+import com.stonks.android.uicomponent.StockChart;
 import com.stonks.android.utility.Constants;
 import com.stonks.android.utility.Formatters;
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
-import io.reactivex.rxjava3.core.Observable;
-import io.reactivex.rxjava3.schedulers.Schedulers;
-import java.time.LocalDateTime;
-import java.time.Month;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class StockFragment extends BaseFragment {
-    private static String TAG = StockFragment.class.getCanonicalName();
+    public static final String SYMBOL_ARG = "symbol";
+    private static final String TAG = StockFragment.class.getCanonicalName();
 
     private String symbol;
     private RecyclerView transactionList;
     private RecyclerView.Adapter<RecyclerView.ViewHolder> transactionListAdapter;
     private TextView currentPrice, priceChange;
     private SpeedDialExtendedFab tradeButton;
-    private MaterialButton rangeDayButton,
-            rangeWeekButton,
-            rangeMonthButton,
-            rangeYearButton,
-            rangeAllButton;
+    private MaterialButton rangeDayButton;
+    private MaterialButton rangeWeekButton;
+    private MaterialButton rangeMonthButton;
+    private MaterialButton rangeYearButton;
+    private MaterialButton rangeAllButton;
     private LinearLayout overlay;
     private NestedScrollView scrollView;
     private ImageView changeIndicator;
-    private final StockChartAdapter dataAdapter = new StockChartAdapter(new ArrayList<>());
     private ImageView favIcon;
-
+    private StockChart stockChart;
+    private CandleChart candleChart;
+    private LineData lineData;
+    private LineDataSet lineDataSet;
+    private boolean isCandleVisible = true;
     private boolean favourited = false;
-    private final StockData stockData = new StockData();
-    private DateRange currentDateRange;
-
-    private Symbols symbols;
-    private final MarketDataService marketDataService = new MarketDataService();
+    private StockManager stockManager;
+    private RecentTransactionsManager transactionsManager;
 
     @Nullable
     @Override
@@ -78,30 +77,63 @@ public class StockFragment extends BaseFragment {
         FragmentStockBinding binding =
                 DataBindingUtil.inflate(inflater, R.layout.fragment_stock, container, false);
 
-        // update properties like change string and change indicator
-        stockData.addOnPropertyChangedCallback(
-                new androidx.databinding.Observable.OnPropertyChangedCallback() {
-                    @Override
-                    public void onPropertyChanged(
-                            androidx.databinding.Observable observable, int i) {
-                        priceChange.setText(generateChangeString(stockData.getCurrentPrice()));
-                        changeIndicator.setImageDrawable(getIndicatorDrawable());
-                    }
-                });
+        this.symbol = getArguments().getString(SYMBOL_ARG);
+        this.stockManager = StockManager.getInstance(getMainActivity());
+        this.transactionsManager = RecentTransactionsManager.getInstance(getMainActivity());
+        this.stockManager.setSymbol(this.symbol);
 
-        binding.setStock(stockData);
+        // using the addOnPropertyChangedCallback method to update properties that
+        // aren't compatible with the @Binding annotation
+        // updates the change string, the indicator drawable, and the graphs
+        this.stockManager
+                .getStockData()
+                .addOnPropertyChangedCallback(
+                        new androidx.databinding.Observable.OnPropertyChangedCallback() {
+                            @Override
+                            public void onPropertyChanged(
+                                    androidx.databinding.Observable observable, int i) {
+                                List<CandleEntry> newCandleData = stockManager.getCandleStickData();
+                                LineData lineChartData = stockManager.getLineChartData();
+
+                                priceChange.setText(generateChangeString());
+                                changeIndicator.setImageDrawable(getIndicatorDrawable());
+
+                                if (newCandleData != null && newCandleData.size() > 0) {
+                                    candleChart.setData(newCandleData);
+                                    candleChart.setVisibleXRangeMinimum(
+                                            stockManager.getMaxCandlePoints(newCandleData.size()));
+                                    candleChart.invalidate();
+                                }
+
+                                stockChart.setData(lineChartData);
+                                stockChart.setVisibleXRangeMinimum(
+                                        stockManager.getMaxLinePoints(
+                                                lineChartData.getDataSets().stream()
+                                                        .map(IDataSet::getEntryCount)
+                                                        .max(Comparator.naturalOrder())
+                                                        .orElse(78)));
+                                stockChart.invalidate();
+                            }
+                        });
+
+        binding.setStock(this.stockManager.getStockData());
 
         return binding.getRoot();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        // unsubscribe from WebSocket updates when the fragment is paused
+        getMainActivity().unsubscribe(this.symbol);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        this.symbol = getArguments().getString(getString(R.string.intent_extra_symbol));
-        symbols = new Symbols(Collections.singletonList(symbol));
-
-        getMainActivity().subscribe(symbol, stockData);
+        getMainActivity().subscribe(symbol, this.stockManager.getStockData());
         getActionBar().setDisplayHomeAsUpEnabled(true);
         getMainActivity().setGlobalTitle(this.symbol);
 
@@ -112,6 +144,7 @@ public class StockFragment extends BaseFragment {
         final FloatingActionButton tryButton = view.findViewById(R.id.try_button);
         final FloatingActionButton buyButton = view.findViewById(R.id.buy_button);
         final FloatingActionButton sellButton = view.findViewById(R.id.sell_button);
+        final ImageView chartToggleButton = view.findViewById(R.id.chart_toggle);
 
         this.favIcon = view.findViewById(R.id.fav_icon);
         this.overlay = view.findViewById(R.id.screen_overlay);
@@ -121,6 +154,8 @@ public class StockFragment extends BaseFragment {
         this.currentPrice = view.findViewById(R.id.current_price);
         this.priceChange = view.findViewById(R.id.change);
         this.changeIndicator = view.findViewById(R.id.change_indicator);
+        this.stockChart = view.findViewById(R.id.stock_chart);
+        this.candleChart = view.findViewById(R.id.stock_chart_candle);
 
         this.rangeDayButton = view.findViewById(R.id.range_day);
         this.rangeWeekButton = view.findViewById(R.id.range_week);
@@ -132,61 +167,78 @@ public class StockFragment extends BaseFragment {
         this.tradeButton.addToSpeedDial(sellButtonContainer);
         this.tradeButton.addToSpeedDial(tryButtonContainer);
 
+        this.stockManager.getPosition();
+        this.stockManager.getTransactions();
+
         RecyclerView.LayoutManager transactionListManager = new LinearLayoutManager(getContext());
         this.transactionList.setLayoutManager(transactionListManager);
         this.transactionListAdapter =
-                new TransactionViewAdapter(this.getFakeTransactionsForStock());
+                new TransactionViewAdapter(
+                        RecentTransactionsFragment.getFakeTransactions(this.symbol));
         this.transactionList.setAdapter(this.transactionListAdapter);
 
-        CustomSparkView sparkView = view.findViewById(R.id.stock_chart);
-
-        sparkView.setAdapter(dataAdapter);
-        sparkView.setOnEndedCallback(
+        ChartMarker candleMarker =
+                new ChartMarker(
+                        getContext(), R.layout.chart_marker, this.stockManager.getCandleMarker());
+        candleMarker.setChartView(this.candleChart);
+        ChartMarker lineMarker =
+                new ChartMarker(
+                        getContext(), R.layout.chart_marker, this.stockManager.getLineMarker());
+        lineMarker.setChartView(this.stockChart);
+        StockChart.CustomGestureListener lineChartGestureListener =
+                new StockChart.CustomGestureListener(this.stockChart, this.scrollView);
+        StockChart.CustomGestureListener candleChartGestureListener =
+                new StockChart.CustomGestureListener(this.candleChart, this.scrollView);
+        lineChartGestureListener.setOnGestureEnded(
                 () -> {
-                    this.currentPrice.setText(Formatters.formatPrice(stockData.getCurrentPrice()));
+                    this.currentPrice.setText(
+                            Formatters.formatPrice(
+                                    this.stockManager.getStockData().getCurrentPrice()));
                     this.priceChange.setText(this.generateChangeString());
                     this.changeIndicator.setImageDrawable(getIndicatorDrawable());
                 });
-        sparkView.setScrubListener(
-                value -> {
-                    // disable scrolling when a value is selected
-                    scrollView.requestDisallowInterceptTouchEvent(value != null);
-
-                    if (value != null) {
-                        Float price = (Float) value;
-
-                        currentPrice.setText(Formatters.formatPrice(price));
-                        this.priceChange.setText(this.generateChangeString(price));
-                        this.changeIndicator.setImageDrawable(getIndicatorDrawable(price));
-                    }
+        this.stockChart.setOnScrub(
+                (x, y) -> {
+                    this.currentPrice.setText(Formatters.formatPrice(y));
+                    this.priceChange.setText(this.generateChangeString(y));
+                    this.changeIndicator.setImageDrawable(getIndicatorDrawable(y));
                 });
+
+        this.lineDataSet = new LineDataSet(Collections.emptyList(), "");
+        this.lineData = new LineData(lineDataSet);
+
+        this.stockChart.addValueListener(currentPrice);
+        this.stockChart.setOnChartGestureListener(lineChartGestureListener);
+        this.stockChart.setMarker(lineMarker);
+        this.stockChart.setData(this.lineData);
+
+        this.candleChart.setOnChartGestureListener(candleChartGestureListener);
+        this.candleChart.setMarker(candleMarker);
+        this.candleChart.setData(Collections.singletonList(new CandleEntry(1, 4f, 2f, 3f, 2.5f)));
 
         this.tradeButton.setOnClickListener(v -> tradeButton.trigger(this.overlay));
         this.overlay.setOnClickListener(v -> tradeButton.close(v));
-
-        if (!this.doesUserPositionExist()) {
-            positionContainer.setVisibility(View.GONE);
-        }
 
         tryButton.setOnClickListener(
                 v -> {
                     Fragment hypotheticalFragment = new HypotheticalFragment();
                     Bundle bundle = new Bundle();
                     bundle.putFloat(
-                            HypotheticalFragment.CURRENT_PRICE_ARG, stockData.getCurrentPrice());
+                            HypotheticalFragment.CURRENT_PRICE_ARG,
+                            this.stockManager.getStockData().getCurrentPrice());
                     hypotheticalFragment.setArguments(bundle);
                     getActivity()
                             .getSupportFragmentManager()
                             .beginTransaction()
                             .replace(R.id.sliding_drawer, hypotheticalFragment, null)
-                            .addToBackStack(null)
                             .commit();
                 });
 
         buyButton.setOnClickListener(
                 v -> {
                     Bundle bundle = new Bundle();
-                    bundle.putSerializable(BuySellFragment.STOCK_DATA_ARG, this.stockData);
+                    bundle.putSerializable(
+                            BuySellFragment.STOCK_DATA_ARG, this.stockManager.getStockData());
                     bundle.putSerializable(
                             BuySellFragment.TRANSACTION_MODE_ARG, TransactionMode.BUY);
                     Fragment buyFrag = new BuySellFragment();
@@ -195,13 +247,13 @@ public class StockFragment extends BaseFragment {
                             .getSupportFragmentManager()
                             .beginTransaction()
                             .replace(R.id.sliding_drawer, buyFrag, null)
-                            .addToBackStack(null)
                             .commit();
                 });
         sellButton.setOnClickListener(
                 v -> {
                     Bundle bundle = new Bundle();
-                    bundle.putSerializable(BuySellFragment.STOCK_DATA_ARG, this.stockData);
+                    bundle.putSerializable(
+                            BuySellFragment.STOCK_DATA_ARG, this.stockManager.getStockData());
                     bundle.putSerializable(
                             BuySellFragment.TRANSACTION_MODE_ARG, TransactionMode.BUY);
                     Fragment sellFrag = new BuySellFragment();
@@ -210,7 +262,6 @@ public class StockFragment extends BaseFragment {
                             .getSupportFragmentManager()
                             .beginTransaction()
                             .replace(R.id.sliding_drawer, sellFrag, null)
-                            .addToBackStack(null)
                             .commit();
                 });
         this.favIcon.setOnClickListener(
@@ -230,132 +281,73 @@ public class StockFragment extends BaseFragment {
 
         rangeDayButton.setOnClickListener(
                 v -> {
-                    switchDateRange(DateRange.DAY);
+                    this.stockManager.setCurrentRange(DateRange.DAY);
+                    this.rangeDayButton.setChecked(true);
                 });
         rangeWeekButton.setOnClickListener(
                 v -> {
-                    switchDateRange(DateRange.WEEK);
+                    this.rangeWeekButton.setChecked(true);
+                    this.stockManager.setCurrentRange(DateRange.WEEK);
                 });
         rangeMonthButton.setOnClickListener(
                 v -> {
-                    switchDateRange(DateRange.MONTH);
+                    this.stockManager.setCurrentRange(DateRange.MONTH);
+                    this.rangeMonthButton.setChecked(true);
                 });
         rangeYearButton.setOnClickListener(
                 v -> {
-                    switchDateRange(DateRange.YEAR);
+                    this.stockManager.setCurrentRange(DateRange.YEAR);
+                    this.rangeYearButton.setChecked(true);
                 });
         rangeAllButton.setOnClickListener(
                 v -> {
-                    switchDateRange(DateRange.THREE_YEARS);
+                    this.stockManager.setCurrentRange(DateRange.THREE_YEARS);
+                    this.rangeAllButton.setChecked(true);
                 });
+
+        chartToggleButton.setOnClickListener(v -> this.toggleCandleVisible());
 
         // default date range is daily
         this.rangeDayButton.setChecked(true);
-        this.currentDateRange = DateRange.DAY;
 
-        this.fetchInitialData();
-    }
-
-    private void fetchInitialData() {
-        AlpacaTimeframe timeframe;
-        int limit;
-
-        switch (this.currentDateRange) {
-            case DAY:
-                limit = 390; // 390 trading hours in a day
-                timeframe = AlpacaTimeframe.MINUTE;
-                break;
-            case WEEK:
-                limit = 390; // 390 * 5 days / 5 min increments
-                timeframe = AlpacaTimeframe.MINUTES_5;
-                break;
-            case MONTH:
-                limit = 806; // 390 * 31 days / 15 min increments
-                timeframe = AlpacaTimeframe.MINUTES_15;
-                break;
-            case YEAR:
-                limit = 366;
-                timeframe = AlpacaTimeframe.DAY;
-                break;
-            case THREE_YEARS:
-                limit = 1000;
-                timeframe = AlpacaTimeframe.DAY;
-                break;
-            default:
-                limit = 100;
-                timeframe = AlpacaTimeframe.MINUTE;
-                break;
+        if (!this.doesUserPositionExist()) {
+            positionContainer.setVisibility(View.GONE);
         }
 
-        Observable.zip(
-                        marketDataService.getBars(symbols, timeframe, limit),
-                        marketDataService.getQuotes(symbols),
-                        (bars, quotes) -> {
-                            List<BarData> barData = bars.get(symbol);
-                            QuoteData quoteData = quotes.get(symbol);
-
-                            return new StockData(barData, quoteData);
-                        })
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io())
-                .subscribe(
-                        newStockData -> {
-                            List<BarData> barData = newStockData.getGraphData();
-                            this.stockData.updateStock(newStockData);
-
-                            dataAdapter.setData(
-                                    barData.stream()
-                                            .map(BarData::getClose)
-                                            .collect(Collectors.toList()));
-                            dataAdapter.setBaseline(barData.get(0).getOpen());
-                            dataAdapter.notifyDataSetChanged();
-                        },
-                        err -> Log.e(TAG, err.toString()));
+        this.stockManager.fetchInitialData();
     }
 
-    private void switchDateRange(DateRange dateRange) {
-        switch (dateRange) {
-            case WEEK:
-                this.currentDateRange = DateRange.WEEK;
-                this.rangeWeekButton.setChecked(true);
-                break;
-            case MONTH:
-                this.currentDateRange = DateRange.MONTH;
-                this.rangeMonthButton.setChecked(true);
-                break;
-            case YEAR:
-                this.currentDateRange = DateRange.YEAR;
-                this.rangeYearButton.setChecked(true);
-                break;
-            case THREE_YEARS:
-                this.currentDateRange = DateRange.THREE_YEARS;
-                this.rangeAllButton.setChecked(true);
-                break;
-            default:
-                this.currentDateRange = DateRange.DAY;
-                this.rangeDayButton.setChecked(true);
+    private void toggleCandleVisible() {
+        if (this.isCandleVisible) {
+            this.stockChart.setVisibility(View.VISIBLE);
+            this.candleChart.setVisibility(View.GONE);
+        } else {
+            this.stockChart.setVisibility(View.GONE);
+            this.candleChart.setVisibility(View.VISIBLE);
         }
-        this.fetchInitialData();
+
+        this.isCandleVisible = !this.isCandleVisible;
     }
 
-    public static ArrayList<Pair<Float, Float>> getFakeStockPrices() {
-        ArrayList<Pair<Float, Float>> list = new ArrayList<>();
+    public static ArrayList<Pair<Integer, Float>> getFakeStockPrices() {
+        ArrayList<Pair<Integer, Float>> list = new ArrayList<>();
         Float[] prices = Constants.stockDataPoints;
 
         for (int i = 0; i < prices.length; i += 5) {
-            list.add(new Pair<>((float) i, prices[i]));
+            list.add(new Pair<>(i, prices[i]));
         }
 
         return list;
     }
 
     SpannableString generateChangeString() {
-        return this.generateChangeString(this.stockData.getCurrentPrice());
+        return generateChangeString(this.stockManager.getStockData().getCurrentPrice());
     }
 
     SpannableString generateChangeString(Float price) {
-        float change = price - this.stockData.getOpen();
-        float changePercentage = change * 100 / this.stockData.getOpen();
+        Pair<Float, Float> changePair = this.stockManager.getChange(price);
+        float change = changePair.first;
+        float changePercentage = changePair.second;
 
         String formattedPrice = Formatters.formatPrice(Math.abs(change));
         String changeString =
@@ -375,11 +367,11 @@ public class StockFragment extends BaseFragment {
     }
 
     Drawable getIndicatorDrawable() {
-        return getIndicatorDrawable(stockData.getCurrentPrice());
+        return getIndicatorDrawable(this.stockManager.getStockData().getCurrentPrice());
     }
 
     Drawable getIndicatorDrawable(float value) {
-        float change = value - stockData.getOpen();
+        float change = value - this.stockManager.getStockData().getOpen();
 
         if (change >= 0) {
             return ContextCompat.getDrawable(
@@ -394,57 +386,5 @@ public class StockFragment extends BaseFragment {
     // Hard coded to false for now
     private boolean doesUserPositionExist() {
         return false;
-    }
-
-    public ArrayList<TransactionsListRow> getFakeTransactionsForStock() {
-        ArrayList<TransactionsListRow> list = new ArrayList<>();
-
-        list.add(new TransactionsListRow(LocalDateTime.of(2020, Month.AUGUST, 19, 13, 14)));
-        list.add(
-                new TransactionsListRow(
-                        new Transaction(
-                                "username",
-                                this.symbol,
-                                100,
-                                56.92f,
-                                TransactionMode.BUY,
-                                LocalDateTime.of(2020, Month.AUGUST, 19, 13, 14))));
-        list.add(
-                new TransactionsListRow(
-                        new Transaction(
-                                "username",
-                                this.symbol,
-                                268,
-                                36.47f,
-                                TransactionMode.BUY,
-                                LocalDateTime.of(2020, Month.AUGUST, 1, 9, 52))));
-
-        return list;
-    }
-
-    public static ArrayList<TransactionsListRow> getFakeTransactions() {
-        ArrayList<TransactionsListRow> list = new ArrayList<>();
-
-        list.add(new TransactionsListRow(LocalDateTime.of(2020, Month.AUGUST, 19, 13, 14)));
-        list.add(
-                new TransactionsListRow(
-                        new Transaction(
-                                "username",
-                                "SHOP",
-                                100,
-                                56.92f,
-                                TransactionMode.BUY,
-                                LocalDateTime.of(2020, Month.AUGUST, 19, 13, 14))));
-        list.add(
-                new TransactionsListRow(
-                        new Transaction(
-                                "username",
-                                "SHOP",
-                                268,
-                                36.47f,
-                                TransactionMode.BUY,
-                                LocalDateTime.of(2020, Month.AUGUST, 1, 9, 52))));
-
-        return list;
     }
 }

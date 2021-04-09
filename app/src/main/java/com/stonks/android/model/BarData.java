@@ -21,6 +21,16 @@ public class BarData {
     @SerializedName("v")
     private Integer volume;
 
+    private Integer endTimestamp;
+
+    public BarData(int timestamp, float high, float low, float open, float close) {
+        this.timestamp = timestamp;
+        this.high = high;
+        this.low = low;
+        this.close = close;
+        this.open = open;
+    }
+
     public Integer getVolume() {
         return volume;
     }
@@ -37,35 +47,62 @@ public class BarData {
         this.timestamp = timestamp;
     }
 
-    public Float getOpen() {
+    public Integer getEndTimestamp() {
+        return endTimestamp;
+    }
+
+    public void setEndTimestamp(Integer endTimestamp) {
+        this.endTimestamp = endTimestamp;
+    }
+
+    public float getOpen() {
         return open;
     }
 
-    public void setOpen(Float open) {
+    public void setOpen(float open) {
         this.open = open;
     }
 
-    public Float getClose() {
+    public float getClose() {
         return close;
     }
 
-    public void setClose(Float close) {
+    public void setClose(float close) {
         this.close = close;
     }
 
-    public Float getLow() {
+    public float getLow() {
         return low;
     }
 
-    public void setLow(Float low) {
+    public void setLow(float low) {
         this.low = low;
     }
 
-    public Float getHigh() {
+    public float getHigh() {
         return high;
     }
 
-    public void setHigh(Float high) {
+    public void setHigh(float high) {
         this.high = high;
+    }
+
+    public String toString() {
+        return "BarData{"
+                + "timestamp="
+                + timestamp
+                + ", open="
+                + open
+                + ", close="
+                + close
+                + ", low="
+                + low
+                + ", high="
+                + high
+                + ", volume="
+                + volume
+                + ", endTimestamp="
+                + endTimestamp
+                + '}';
     }
 }

@@ -45,7 +45,7 @@ public class StockListRecyclerViewAdapter
                     Fragment stockFragment = new StockFragment();
                     Bundle bundle = new Bundle();
                     bundle.putString(
-                            view.getContext().getString(R.string.intent_extra_symbol),
+                            StockFragment.SYMBOL_ARG,
                             String.valueOf(stockSymbolTextView.getText()));
                     stockFragment.setArguments(bundle);
 

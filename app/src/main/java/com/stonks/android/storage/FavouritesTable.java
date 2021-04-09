@@ -11,45 +11,52 @@ import com.stonks.android.model.FavouriteStock;
 import java.util.ArrayList;
 
 public class FavouritesTable extends SQLiteOpenHelper {
-    public static final String FAVOURITES_TABLE = "FAVOURITES_TABLE";
+    private static FavouritesTable favouritesTable;
+
+    public static final String TABLE_NAME = "FAVOURITES_TABLE";
     public static final String COLUMN_ID = "id";
     public static final String COLUMN_USERNAME = "username";
     public static final String COLUMN_SYMBOL = "symbol";
+    public static final String CREATE_STRING =
+            "CREATE TABLE "
+                    + TABLE_NAME
+                    + " ("
+                    + COLUMN_USERNAME
+                    + " TEXT, "
+                    + COLUMN_SYMBOL
+                    + " TEXT, "
+                    + " FOREIGN KEY ( "
+                    + COLUMN_USERNAME
+                    + " ) "
+                    + " REFERENCES "
+                    + UserTable.TABLE_NAME
+                    + " ( "
+                    + UserTable.COLUMN_USERNAME
+                    + " )"
+                    + ")";
 
-    public FavouritesTable(@Nullable Context context) {
-        super(context, BuildConfig.DATABASE_NAME, null, 1);
+    private FavouritesTable(@Nullable Context context) {
+        super(context, BuildConfig.DATABASE_NAME, null, 6);
+    }
+
+    public static FavouritesTable getInstance(Context context) {
+        if (favouritesTable == null) {
+            favouritesTable = new FavouritesTable(context);
+        }
+
+        return favouritesTable;
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String createFavouritesTable =
-                "CREATE TABLE "
-                        + FAVOURITES_TABLE
-                        + " ("
-                        + COLUMN_USERNAME
-                        + " TEXT, "
-                        + COLUMN_SYMBOL
-                        + " TEXT, "
-                        + " FOREIGN KEY ( "
-                        + COLUMN_USERNAME
-                        + " ) "
-                        + " REFERENCES "
-                        + UserTable.USER_TABLE
-                        + " ( "
-                        + UserTable.COLUMN_USERNAME
-                        + " )"
-                        + ")";
-
-        db.execSQL(createFavouritesTable);
+        db.execSQL(CREATE_STRING);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        if (oldVersion != newVersion) {
-            String dropStatement =
-                    "DROP TABLE IF EXISTS " + BuildConfig.DATABASE_NAME + "." + FAVOURITES_TABLE;
-            db.execSQL(dropStatement);
-            onCreate(db);
+        if (oldVersion < newVersion) {
+            DatabaseHelper.removeAllTables(db);
+            DatabaseHelper.createAllTables(db);
         }
     }
 
@@ -60,7 +67,7 @@ public class FavouritesTable extends SQLiteOpenHelper {
         cv.put(COLUMN_USERNAME, favourite.getUsername());
         cv.put(COLUMN_SYMBOL, favourite.getSymbol());
 
-        long insert = db.insert(FAVOURITES_TABLE, null, cv);
+        long insert = db.insert(TABLE_NAME, null, cv);
         return insert >= 0;
     }
 
@@ -68,14 +75,25 @@ public class FavouritesTable extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
         String whereArgs = String.format("%s = ? AND %s = ?", COLUMN_USERNAME, COLUMN_SYMBOL);
 
-        return db.delete(FAVOURITES_TABLE, whereArgs, new String[] {username, symbol}) > 0;
+        return db.delete(TABLE_NAME, whereArgs, new String[] {username, symbol}) > 0;
     }
 
     public ArrayList<FavouriteStock> getUserFavourites(String username) {
-        String query =
-                String.format("SELECT * FROM %s WHERE %s = ?", FAVOURITES_TABLE, COLUMN_USERNAME);
+        String query = String.format("SELECT * FROM %s WHERE %s = ?", TABLE_NAME, COLUMN_USERNAME);
 
         return queryFavouritesRows(query, new String[] {username});
+    }
+
+    public Boolean doesFavouriteStockExist(String username, String symbol) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String queryString =
+                String.format(
+                        "SELECT * FROM %s WHERE %s = ? AND %S = ?",
+                        TABLE_NAME, COLUMN_USERNAME, COLUMN_SYMBOL);
+        Cursor cursor = db.rawQuery(queryString, new String[] {username, symbol});
+        boolean exists = cursor.moveToFirst();
+        cursor.close();
+        return exists;
     }
 
     private ArrayList<FavouriteStock> queryFavouritesRows(String query, String[] selectionArgs) {
@@ -85,11 +103,10 @@ public class FavouritesTable extends SQLiteOpenHelper {
 
         if (cursor.moveToFirst()) {
             do {
-                int id = cursor.getInt(cursor.getColumnIndex(COLUMN_ID));
                 String username = cursor.getString(cursor.getColumnIndex(COLUMN_USERNAME));
                 String symbol = cursor.getString(cursor.getColumnIndex(COLUMN_SYMBOL));
 
-                favouriteStocksList.add(new FavouriteStock(id, username, symbol));
+                favouriteStocksList.add(new FavouriteStock(username, symbol));
 
             } while (cursor.moveToNext());
         }

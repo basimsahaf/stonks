@@ -4,10 +4,13 @@ import androidx.databinding.BaseObservable;
 import androidx.databinding.Bindable;
 import androidx.databinding.BindingConversion;
 import com.stonks.android.BR;
+import com.stonks.android.model.alpaca.DateRange;
 import com.stonks.android.utility.Formatters;
 import java.io.Serializable;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class StockData extends BaseObservable implements Serializable, WebSocketObserver {
     private String symbol;
@@ -23,8 +26,11 @@ public class StockData extends BaseObservable implements Serializable, WebSocket
     private Double divYield;
     private String description;
     private List<BarData> graphData;
+    private final Map<DateRange, List<BarData>> cachedGraphData;
 
-    public StockData() {}
+    public StockData() {
+        this.cachedGraphData = new HashMap<>();
+    }
 
     public StockData(List<BarData> barData, QuoteData quoteData) {
         this.symbol = quoteData.getSymbol();
@@ -55,6 +61,8 @@ public class StockData extends BaseObservable implements Serializable, WebSocket
         this.divYield = quoteData.getDivYield();
         this.description = "";
         this.graphData = barData;
+        this.cachedGraphData = new HashMap<>();
+        this.cachedGraphData.put(DateRange.DAY, barData);
     }
 
     @Bindable
@@ -120,9 +128,18 @@ public class StockData extends BaseObservable implements Serializable, WebSocket
     }
 
     @Override
-    public void updateCurrentPrice(float currentPrice) {
-        this.currentPrice = currentPrice;
+    public void updateCurrentPrice(BarData newBar) {
+        this.currentPrice = newBar.getClose();
         notifyPropertyChanged(BR.currentPrice);
+    }
+
+    public List<BarData> getCachedGraphData(DateRange range) {
+        return cachedGraphData.get(range);
+    }
+
+    public void updateCachedGraphData(DateRange range, List<BarData> bars) {
+        this.cachedGraphData.put(range, bars);
+        notifyChange();
     }
 
     public void updateStock(StockData newData) {
@@ -141,6 +158,24 @@ public class StockData extends BaseObservable implements Serializable, WebSocket
         graphData = newData.graphData;
 
         notifyChange();
+    }
+
+    public void updateStock(StockData newData, DateRange range, List<BarData> bars) {
+        symbol = newData.symbol;
+        companyName = newData.companyName;
+        currentPrice = newData.currentPrice;
+        open = newData.open;
+        volume = newData.volume;
+        low = newData.low;
+        high = newData.high;
+        yearlyLow = newData.yearlyLow;
+        yearlyHigh = newData.yearlyHigh;
+        peRatio = newData.peRatio;
+        divYield = newData.divYield;
+        description = newData.description;
+        graphData = newData.graphData;
+
+        updateCachedGraphData(range, bars);
     }
 
     @BindingConversion

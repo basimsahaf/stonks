@@ -11,50 +11,57 @@ import com.stonks.android.model.PortfolioItem;
 import java.util.ArrayList;
 
 public class PortfolioTable extends SQLiteOpenHelper {
-    public static final String PORTFOLIO_TABLE = "PORTFOLIO_TABLE";
+    private static PortfolioTable portfolioTable;
+
+    public static final String TABLE_NAME = "PORTFOLIO_TABLE";
     public static final String COLUMN_USERNAME = "username";
     public static final String COLUMN_QUANTITY = "quantity";
     public static final String COLUMN_SYMBOL = "symbol";
+    public static final String CREATE_STRING =
+            "CREATE TABLE "
+                    + TABLE_NAME
+                    + " ("
+                    + COLUMN_USERNAME
+                    + " TEXT, "
+                    + COLUMN_QUANTITY
+                    + " INTEGER, "
+                    + COLUMN_SYMBOL
+                    + " TEXT, "
+                    + " PRIMARY KEY ( "
+                    + COLUMN_USERNAME
+                    + ", "
+                    + COLUMN_SYMBOL
+                    + "), "
+                    + "FOREIGN KEY("
+                    + COLUMN_USERNAME
+                    + ") REFERENCES "
+                    + UserTable.TABLE_NAME
+                    + "("
+                    + UserTable.COLUMN_USERNAME
+                    + "))";
 
-    public PortfolioTable(@Nullable Context context) {
-        super(context, BuildConfig.DATABASE_NAME, null, 2);
+    private PortfolioTable(@Nullable Context context) {
+        super(context, BuildConfig.DATABASE_NAME, null, 6);
+    }
+
+    public static PortfolioTable getInstance(Context context) {
+        if (portfolioTable == null) {
+            portfolioTable = new PortfolioTable(context);
+        }
+
+        return portfolioTable;
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String createPortfolioTable =
-                "CREATE TABLE "
-                        + PORTFOLIO_TABLE
-                        + " ("
-                        + COLUMN_USERNAME
-                        + " TEXT, "
-                        + COLUMN_QUANTITY
-                        + " INTEGER, "
-                        + COLUMN_SYMBOL
-                        + " TEXT, "
-                        + " PRIMARY KEY ( "
-                        + COLUMN_USERNAME
-                        + ", "
-                        + COLUMN_SYMBOL
-                        + "), "
-                        + "FOREIGN KEY("
-                        + COLUMN_USERNAME
-                        + ") REFERENCES "
-                        + UserTable.USER_TABLE
-                        + "("
-                        + UserTable.COLUMN_USERNAME
-                        + "))";
-        ;
-
-        db.execSQL(createPortfolioTable);
+        db.execSQL(CREATE_STRING);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        if (oldVersion != newVersion) {
-            String dropStatement = "DROP TABLE IF EXISTS " + PORTFOLIO_TABLE;
-            db.execSQL(dropStatement);
-            onCreate(db);
+        if (oldVersion < newVersion) {
+            DatabaseHelper.removeAllTables(db);
+            DatabaseHelper.createAllTables(db);
         }
     }
 
@@ -65,7 +72,7 @@ public class PortfolioTable extends SQLiteOpenHelper {
         cv.put(COLUMN_QUANTITY, portfolioItem.getQuantity());
         cv.put(COLUMN_SYMBOL, portfolioItem.getSymbol());
 
-        long insert = db.insert(PORTFOLIO_TABLE, null, cv);
+        long insert = db.insert(TABLE_NAME, null, cv);
         return insert >= 0;
     }
 
@@ -79,7 +86,7 @@ public class PortfolioTable extends SQLiteOpenHelper {
         cv.put(COLUMN_QUANTITY, portfolioItem.getQuantity());
         cv.put(COLUMN_SYMBOL, symbol);
 
-        long update = db.update(PORTFOLIO_TABLE, cv, whereClause, new String[] {username, symbol});
+        long update = db.update(TABLE_NAME, cv, whereClause, new String[] {username, symbol});
         return update >= 0;
     }
 
@@ -87,7 +94,7 @@ public class PortfolioTable extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         String whereClause = String.format(COLUMN_USERNAME + " = ? AND " + COLUMN_SYMBOL + " = ?");
 
-        long delete = db.delete(PORTFOLIO_TABLE, whereClause, new String[] {username, symbol});
+        long delete = db.delete(TABLE_NAME, whereClause, new String[] {username, symbol});
         return delete >= 0;
     }
 
@@ -96,7 +103,7 @@ public class PortfolioTable extends SQLiteOpenHelper {
         String queryString =
                 String.format(
                         "SELECT * FROM %s WHERE %s = ? AND %S = ?",
-                        PORTFOLIO_TABLE, COLUMN_USERNAME, COLUMN_SYMBOL);
+                        TABLE_NAME, COLUMN_USERNAME, COLUMN_SYMBOL);
         Cursor cursor = db.rawQuery(queryString, new String[] {username, symbol});
         boolean exists = cursor.moveToFirst();
         cursor.close();
@@ -104,8 +111,7 @@ public class PortfolioTable extends SQLiteOpenHelper {
     }
 
     public ArrayList<PortfolioItem> getPortfolioItems(String username) {
-        String query =
-                String.format("SELECT * FROM %s WHERE %s = ?", PORTFOLIO_TABLE, COLUMN_USERNAME);
+        String query = String.format("SELECT * FROM %s WHERE %s = ?", TABLE_NAME, COLUMN_USERNAME);
 
         return queryPortfolioItems(query, new String[] {username});
     }
@@ -114,7 +120,7 @@ public class PortfolioTable extends SQLiteOpenHelper {
         String query =
                 String.format(
                         "SELECT * FROM %s WHERE %s = ? AND %s = ?",
-                        PORTFOLIO_TABLE, COLUMN_USERNAME, COLUMN_SYMBOL);
+                        TABLE_NAME, COLUMN_USERNAME, COLUMN_SYMBOL);
         return queryPortfolioItems(query, new String[] {username, symbol});
     }
 

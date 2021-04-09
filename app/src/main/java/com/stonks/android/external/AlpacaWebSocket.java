@@ -1,5 +1,6 @@
 package com.stonks.android.external;
 
+import com.stonks.android.model.BarData;
 import com.stonks.android.model.WebSocketObserver;
 import com.stonks.android.model.alpaca.WebSocketRequest;
 import java.util.*;
@@ -10,8 +11,8 @@ import okhttp3.WebSocket;
 
 public class AlpacaWebSocket {
     private final WebSocket socket;
-    private final Map<String, List<WebSocketObserver>> subscribedSymbols;
-    private final Map<String, List<WebSocketObserver>> pendingSubscriptions;
+    private final Map<String, WebSocketObserver> subscribedSymbols;
+    private final Map<String, WebSocketObserver> pendingSubscriptions;
 
     public AlpacaWebSocket() {
         OkHttpClient client = new OkHttpClient.Builder().readTimeout(0, TimeUnit.DAYS).build();
@@ -25,26 +26,29 @@ public class AlpacaWebSocket {
     }
 
     public void subscribe(String symbol, WebSocketObserver observer) {
-        this.pendingSubscriptions.put(symbol, Collections.singletonList(observer));
+        this.pendingSubscriptions.put(symbol, observer);
         this.socket.send(
                 WebSocketRequest.getAMStreamRequest(
                         new ArrayList<>(Collections.singletonList(symbol))));
     }
 
-    public void updateCurrentPrice(String symbol, Float price) {
-        subscribedSymbols
-                .getOrDefault(symbol, new ArrayList<>())
-                .forEach(observer -> observer.updateCurrentPrice(price));
+    public void unsubscribe(String symbol) {
+        this.subscribedSymbols.remove(symbol);
+    }
+
+    public void updateCurrentPrice(String symbol, BarData newBar) {
+        WebSocketObserver observer = subscribedSymbols.get(symbol);
+
+        if (observer != null) {
+            observer.updateCurrentPrice(newBar);
+        }
     }
 
     public void confirmSubscription(String symbol) {
-        List<WebSocketObserver> observers =
-                pendingSubscriptions.getOrDefault(symbol, new ArrayList<>());
+        WebSocketObserver pendingObserver = pendingSubscriptions.remove(symbol);
 
-        if (subscribedSymbols.containsKey(symbol)) {
-            subscribedSymbols.get(symbol).addAll(observers);
-        } else {
-            subscribedSymbols.put(symbol, new ArrayList<>(observers));
+        if (pendingObserver != null) {
+            subscribedSymbols.put(symbol, pendingObserver);
         }
     }
 }

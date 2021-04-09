@@ -3,6 +3,7 @@ package com.stonks.android;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -83,6 +84,10 @@ public class MainActivity extends AppCompatActivity {
         this.socket.subscribe(symbol, observer);
     }
 
+    public void unsubscribe(String symbol) {
+        this.socket.unsubscribe(symbol);
+    }
+
     public void setPortfolioValue(float value) {
         globalTitle.setVisibility(View.GONE);
         portfolioTitle.setVisibility(View.VISIBLE);
@@ -115,7 +120,16 @@ public class MainActivity extends AppCompatActivity {
     private void switchFragment(Fragment fragment) {
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.fragment_container, fragment);
-        ft.commit();
+        ft.addToBackStack(fragment.getClass().getCanonicalName()).commit();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            super.onBackPressed();
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     public SlidingUpPanelLayout getSlidingUpPanel() {

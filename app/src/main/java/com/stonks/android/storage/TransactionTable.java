@@ -8,58 +8,68 @@ import android.database.sqlite.SQLiteOpenHelper;
 import androidx.annotation.Nullable;
 import com.stonks.android.BuildConfig;
 import com.stonks.android.model.Transaction;
+import com.stonks.android.model.TransactionFilters;
 import com.stonks.android.model.TransactionMode;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class TransactionTable extends SQLiteOpenHelper {
-    public static final String TRANSACTION_TABLE = "TRANSACTION_TABLE";
+    private static TransactionTable transactionTable;
+
+    public static final String TABLE_NAME = "TRANSACTION_TABLE";
     public static final String COLUMN_USERNAME = "username";
     public static final String COLUMN_SYMBOL = "symbol";
     public static final String COLUMN_SHARES = "shares";
     public static final String COLUMN_PRICE = "price";
     public static final String COLUMN_TRANSACTION_TYPE = "transaction_type";
     public static final String COLUMN_CREATED_AT = "transaction_date";
+    public static final String COLUMN_COMPUTED_AMOUNT = COLUMN_PRICE + " * " + COLUMN_SHARES;
+    public static final String CREATE_STRING =
+            "CREATE TABLE "
+                    + TABLE_NAME
+                    + " ("
+                    + COLUMN_USERNAME
+                    + " TEXT, "
+                    + COLUMN_SHARES
+                    + " INTEGER, "
+                    + COLUMN_SYMBOL
+                    + " TEXT, "
+                    + COLUMN_TRANSACTION_TYPE
+                    + " TEXT, "
+                    + COLUMN_PRICE
+                    + " REAL, "
+                    + COLUMN_CREATED_AT
+                    + " TEXT DEFAULT CURRENT_TIMESTAMP NOT NULL, "
+                    + "FOREIGN KEY("
+                    + COLUMN_USERNAME
+                    + ") REFERENCES "
+                    + UserTable.TABLE_NAME
+                    + "("
+                    + UserTable.COLUMN_USERNAME
+                    + "))";
 
-    public TransactionTable(@Nullable Context context) {
-        super(context, BuildConfig.DATABASE_NAME, null, 3);
+    private TransactionTable(@Nullable Context context) {
+        super(context, BuildConfig.DATABASE_NAME, null, 6);
+    }
+
+    public static TransactionTable getInstance(Context context) {
+        if (transactionTable == null) {
+            transactionTable = new TransactionTable(context);
+        }
+
+        return transactionTable;
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String createPortfolioTable =
-                "CREATE TABLE "
-                        + TRANSACTION_TABLE
-                        + " ("
-                        + COLUMN_USERNAME
-                        + " TEXT, "
-                        + COLUMN_SHARES
-                        + " INTEGER, "
-                        + COLUMN_SYMBOL
-                        + " TEXT, "
-                        + COLUMN_TRANSACTION_TYPE
-                        + " TEXT, "
-                        + COLUMN_PRICE
-                        + " REAL, "
-                        + COLUMN_CREATED_AT
-                        + " TEXT DEFAULT CURRENT_TIMESTAMP NOT NULL, "
-                        + "FOREIGN KEY("
-                        + COLUMN_USERNAME
-                        + ") REFERENCES "
-                        + UserTable.USER_TABLE
-                        + "("
-                        + UserTable.COLUMN_USERNAME
-                        + "))";
-
-        db.execSQL(createPortfolioTable);
+        db.execSQL(CREATE_STRING);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        if (oldVersion != newVersion) {
-            String dropStatement = "DROP TABLE IF EXISTS " + TRANSACTION_TABLE;
-            db.execSQL(dropStatement);
-            onCreate(db);
+        if (oldVersion < newVersion) {
+            DatabaseHelper.removeAllTables(db);
+            DatabaseHelper.createAllTables(db);
         }
     }
 
@@ -72,13 +82,12 @@ public class TransactionTable extends SQLiteOpenHelper {
         cv.put(COLUMN_PRICE, transaction.getPrice());
         cv.put(COLUMN_TRANSACTION_TYPE, transaction.getTransactionTypeString());
 
-        long insert = db.insert(TRANSACTION_TABLE, null, cv);
+        long insert = db.insert(TABLE_NAME, null, cv);
         return insert >= 0;
     }
 
     public ArrayList<Transaction> getTransactions(String username) {
-        String query =
-                String.format("SELECT * FROM %s WHERE %s = ?", TRANSACTION_TABLE, COLUMN_USERNAME);
+        String query = String.format("SELECT * FROM %s WHERE %s = ?", TABLE_NAME, COLUMN_USERNAME);
 
         return queryTransactions(query, new String[] {username});
     }
@@ -87,8 +96,66 @@ public class TransactionTable extends SQLiteOpenHelper {
         String query =
                 String.format(
                         "SELECT * FROM %s WHERE %s = ? AND %s = ?",
-                        TRANSACTION_TABLE, COLUMN_USERNAME, COLUMN_SYMBOL);
+                        TABLE_NAME, COLUMN_USERNAME, COLUMN_SYMBOL);
         return queryTransactions(query, new String[] {username, symbol});
+    }
+
+    public ArrayList<Transaction> filterTransactions(TransactionFilters filters) {
+        String query = String.format("SELECT * FROM %s WHERE %s = ?", TABLE_NAME, COLUMN_USERNAME);
+        ArrayList<String> selectionArgsList = new ArrayList();
+        selectionArgsList.add(filters.getUsername());
+
+        if (filters.isMinAmountFilterApplied()) {
+            query =
+                    query
+                            + String.format(
+                                    "  AND %s >= %s",
+                                    COLUMN_COMPUTED_AMOUNT,
+                                    Integer.toString(filters.getMinAmount()));
+        }
+
+        if (filters.isMaxAmountFilterApplied()) {
+            query =
+                    query
+                            + String.format(
+                                    " AND %s <= %s",
+                                    COLUMN_COMPUTED_AMOUNT,
+                                    Integer.toString(filters.getMaxAmount()));
+        }
+
+        if (filters.isModeFilterApplied()) {
+            query = query + String.format(" AND %s = ?", COLUMN_TRANSACTION_TYPE);
+            selectionArgsList.add(filters.getMode().toString());
+        }
+
+        if (filters.isSymbolFilterApplied()) {
+            query =
+                    query
+                            + String.format(" AND %s IN ", COLUMN_SYMBOL)
+                            + filters.getSymbolsAsQueryString();
+        }
+
+        return queryTransactions(
+                query, selectionArgsList.toArray(new String[selectionArgsList.size()]));
+    }
+
+    public ArrayList<String> getSymbols(String username) {
+        String query =
+                String.format(
+                        "SELECT %s FROM %s WHERE %s = ?",
+                        COLUMN_SYMBOL, TABLE_NAME, COLUMN_USERNAME);
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(query, new String[] {username});
+        ArrayList<String> symbols = new ArrayList<>();
+
+        if (cursor.moveToFirst()) {
+            do {
+                String symbol = cursor.getString(cursor.getColumnIndex(COLUMN_SYMBOL));
+                symbols.add(symbol);
+            } while (cursor.moveToNext());
+        }
+
+        return symbols;
     }
 
     private ArrayList<Transaction> queryTransactions(String query, String[] selectionArgs) {
