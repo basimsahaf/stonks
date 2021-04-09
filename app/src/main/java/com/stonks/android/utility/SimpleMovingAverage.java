@@ -5,7 +5,6 @@ import com.stonks.android.model.BarData;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class SimpleMovingAverage {
     final List<Entry> movingAverage;
@@ -30,9 +29,9 @@ public class SimpleMovingAverage {
         }
     }
 
-    public void setSize(int size) {
+    public void setData(List<BarData> barData, int size) {
         this.size = Math.max(size, 1);
-        this.recalculateMovingAverage();
+        this.setData(barData);
     }
 
     void add(BarData bar, int index) {
@@ -44,31 +43,15 @@ public class SimpleMovingAverage {
             return;
         }
 
-        sum -= chartData.poll().getClose();
+        sum -= chartData.poll().getOpen();
         movingAverage.add(new Entry(index, sum / size));
-    }
-
-    void recalculateMovingAverage() {
-        this.movingAverage.clear();
-
-        AtomicInteger tempSize = new AtomicInteger(0);
-        this.sum = 0f;
-
-        this.chartData.forEach(
-                bar -> {
-                    this.sum += bar.getOpen();
-
-                    if (tempSize.incrementAndGet() <= size) {
-                        this.movingAverage.add(
-                                new Entry(tempSize.get(), this.sum / tempSize.get()));
-                    } else {
-                        this.sum -= this.chartData.getFirst().getOpen();
-                        this.movingAverage.add(new Entry(tempSize.get(), this.sum / this.size));
-                    }
-                });
     }
 
     public List<Entry> getMovingAverage() {
         return movingAverage;
+    }
+
+    public int getSize() {
+        return size;
     }
 }
