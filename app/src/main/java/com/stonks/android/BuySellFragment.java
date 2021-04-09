@@ -128,12 +128,15 @@ public class BuySellFragment extends Fragment {
                 newValue -> {
                     float newEstimatedCost = newValue * currentPrice;
                     costPrice.setText(String.format(Locale.CANADA, "$%.2f", newEstimatedCost));
-                    if (newEstimatedCost > availableToTrade.getValue()) {
-                        disableTradeButton();
-                        errorMessage.setVisibility(View.VISIBLE);
-                    } else {
-                        enableTradeButton();
-                        errorMessage.setVisibility(View.GONE);
+                    switch (mode) {
+                        case BUY:
+                            if (newEstimatedCost > availableToTrade.getValue()) {
+                                disableTradeButton();
+                                errorMessage.setVisibility(View.VISIBLE);
+                            } else {
+                                enableTradeButton();
+                                errorMessage.setVisibility(View.GONE);
+                            }
                     }
                 };
 
