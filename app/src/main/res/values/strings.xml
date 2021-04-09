@@ -69,7 +69,7 @@
     <string name="account_info">Account Information</string>
     <string name="portfolio_settings">Portfolio Settings</string>
     <string name="update_username">Update username</string>
-    <string name="email">Email</string>
+    <string name="username_settings">Username</string>
     <string name="settings_username">Username</string>
     <string name="change_password">Change password</string>
     <string name="use_bio">Sign-in using biometrics</string>
