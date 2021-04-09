@@ -20,7 +20,7 @@ public class Portfolio {
         // TODO: Remove
         if (portfolioItems.isEmpty()) {
             portfolioItems.add(new PortfolioItem("username", "SHOP", 3));
-            portfolioItems.add(new PortfolioItem("username", "UBER", 2));
+//            portfolioItems.add(new PortfolioItem("username", "UBER", 2));
         }
     }
 
@@ -53,7 +53,8 @@ public class Portfolio {
     public void setPrice(String symbol, float price) {
         for (PortfolioItem portfolioItem : portfolioItems) {
             if (portfolioItem.getSymbol().equalsIgnoreCase(symbol)) {
-                portfolioItem.updateCurrentPrice(price);
+                portfolioItem.setCurrentPrice(price);
+                return;
             }
         }
     }

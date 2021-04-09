@@ -35,8 +35,12 @@ public class PortfolioItem extends BaseObservable implements WebSocketObserver {
     }
 
     @Override
-    public void updateCurrentPrice(float currentPrice) {
-        this.currentPrice = currentPrice;
+    public void updateCurrentPrice(BarData data) {
+        this.currentPrice = data.getClose();
         notifyChange();
+    }
+
+    public void setCurrentPrice(float data) {
+        this.currentPrice = data;
     }
 }
