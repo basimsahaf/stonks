@@ -24,6 +24,10 @@ public class FavouriteStocksManager {
         return favouriteStocksManager;
     }
 
+    public Boolean isStockFavourited(String symbol) {
+        return favouritesTable.doesFavouriteStockExist(this.username, symbol);
+    }
+
     public void addFavouriteStock(String symbol) {
         favouritesTable.addFavouritesRow(new FavouriteStock(this.username, symbol));
     }
