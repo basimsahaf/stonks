@@ -403,7 +403,11 @@ public class StockFragment extends BaseFragment {
         this.candleChart.setData(Collections.singletonList(new CandleEntry(1, 4f, 2f, 3f, 2.5f)));
 
         this.tradeButton.setOnClickListener(v -> tradeButton.trigger(this.overlay));
-        this.overlay.setOnClickListener(v -> tradeButton.close(v));
+        this.overlay.setOnClickListener(
+                v -> {
+                    tradeButton.close(v);
+                    this.stockManager.getStockData().notifyChange();
+                });
 
         tryButton.setOnClickListener(
                 v -> {

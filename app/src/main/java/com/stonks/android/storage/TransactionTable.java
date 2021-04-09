@@ -109,7 +109,7 @@ public class TransactionTable extends SQLiteOpenHelper {
     public ArrayList<Transaction> filterTransactions(TransactionFilters filters) {
         String query =
                 String.format(
-                        "SELECT * FROM %s WHERE %s = ? ORDER BY %s DESC",
+                        "SELECT * FROM %s WHERE %s = ?",
                         TABLE_NAME, COLUMN_USERNAME, COLUMN_CREATED_AT);
         ArrayList<String> selectionArgsList = new ArrayList();
         selectionArgsList.add(filters.getUsername());
@@ -143,6 +143,8 @@ public class TransactionTable extends SQLiteOpenHelper {
                             + String.format(" AND %s IN ", COLUMN_SYMBOL)
                             + filters.getSymbolsAsQueryString();
         }
+
+        query += String.format(" ORDER BY %s DESC", COLUMN_CREATED_AT);
 
         return queryTransactions(
                 query, selectionArgsList.toArray(new String[selectionArgsList.size()]));

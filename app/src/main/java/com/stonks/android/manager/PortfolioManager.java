@@ -59,12 +59,23 @@ public class PortfolioManager {
                 new Transaction(
                         loginRepository.getCurrentUser(),
                         "GME",
-                        10,
-                        10f,
+                        1,
+                        51.06f,
                         TransactionMode.BUY,
                         LocalDateTime.now().minusMonths(2)));
+
+        transactionTable.addTransaction(
+                new Transaction(
+                        loginRepository.getCurrentUser(),
+                        "FB",
+                        2,
+                        268.3f,
+                        TransactionMode.BUY,
+                        LocalDateTime.now().minusMonths(4).minusDays(2)));
         portfolioTable.addPortfolioItem(
-                new PortfolioItem(loginRepository.getCurrentUser(), "GME", 10));
+                new PortfolioItem(loginRepository.getCurrentUser(), "GME", 1));
+        portfolioTable.addPortfolioItem(
+                new PortfolioItem(loginRepository.getCurrentUser(), "FB", 2));
     }
 
     public static PortfolioManager getInstance(Context context, HomePageFragment f) {
@@ -379,7 +390,6 @@ public class PortfolioManager {
                             } else {
                                 fragment.updateData();
                             }
-                        },
-                        err -> Log.e("PortfolioManager", err.toString()));
+                        });
     }
 }
