@@ -128,8 +128,8 @@ public class StockData extends BaseObservable implements Serializable, WebSocket
     }
 
     @Override
-    public void updateCurrentPrice(float currentPrice) {
-        this.currentPrice = currentPrice;
+    public void updateCurrentPrice(BarData newBar) {
+        this.currentPrice = newBar.getClose();
         notifyPropertyChanged(BR.currentPrice);
     }
 
