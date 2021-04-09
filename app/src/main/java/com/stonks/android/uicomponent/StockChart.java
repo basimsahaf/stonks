@@ -138,12 +138,12 @@ public class StockChart extends LineChart {
         return dataSet;
     }
 
-    public static LineDataSet buildIndicatorDataSet(List<Entry> data) {
+    public static LineDataSet buildIndicatorDataSet(List<Entry> data, int color) {
         LineDataSet dataSet = new LineDataSet(data, "");
 
         dataSet.setLineWidth(2f);
         dataSet.setDrawValues(false);
-        dataSet.setColor(Color.GREEN);
+        dataSet.setColor(color);
 
         // No indicators for individual data points
         dataSet.setDrawCircles(false);

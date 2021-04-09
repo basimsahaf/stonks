@@ -11,7 +11,8 @@ public class DatabaseHelper {
                         UserTable.TABLE_NAME,
                         FavouritesTable.TABLE_NAME,
                         TransactionTable.TABLE_NAME,
-                        PortfolioTable.TABLE_NAME);
+                        PortfolioTable.TABLE_NAME,
+                        CompanyTable.TABLE_NAME);
         tables.forEach(table -> db.execSQL("DROP TABLE IF EXISTS " + table));
     }
 
@@ -21,7 +22,8 @@ public class DatabaseHelper {
                         UserTable.CREATE_STRING,
                         FavouritesTable.CREATE_STRING,
                         TransactionTable.CREATE_STRING,
-                        PortfolioTable.CREATE_STRING);
+                        PortfolioTable.CREATE_STRING,
+                        CompanyTable.CREATE_STRING);
         createStrings.forEach(db::execSQL);
     }
 }

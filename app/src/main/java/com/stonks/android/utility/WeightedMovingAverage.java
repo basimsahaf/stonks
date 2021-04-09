@@ -6,45 +6,46 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-public class SimpleMovingAverage {
+public class WeightedMovingAverage {
     final List<Entry> movingAverage;
     final LinkedList<BarData> chartData;
     int size;
-    float sum;
 
-    public SimpleMovingAverage(int size) {
+    public WeightedMovingAverage(int size) {
         this.movingAverage = new ArrayList<>();
         this.chartData = new LinkedList<>();
         this.size = Math.max(size, 1);
-        this.sum = 0f;
     }
 
     public void setData(List<BarData> barData) {
         this.movingAverage.clear();
         this.chartData.clear();
-        this.sum = 0f;
 
-        for (int i = 0; i < barData.size(); ++i) {
-            this.add(barData.get(i), i);
-        }
+        this.calculate(barData);
     }
 
     public void setData(List<BarData> barData, int size) {
         this.size = Math.max(size, 1);
-        this.setData(barData);
+        this.calculate(barData);
     }
 
-    void add(BarData bar, int index) {
-        sum += bar.getOpen();
-        chartData.offer(bar);
+    void calculate(List<BarData> barData) {
+        int d = size * (size + 1) / 2;
 
-        if (index < size) {
-            movingAverage.add(new Entry(chartData.size(), sum / chartData.size()));
-            return;
+        for (int i = 0; i < barData.size(); ++i) {
+            if (i < size) {
+                this.movingAverage.add(new Entry(i, barData.get(i).getOpen()));
+                continue;
+            }
+
+            float sum = 0f;
+            for (int j = i - size + 1; j <= i; ++j) {
+                int factor = (j - i + size);
+                sum += barData.get(j).getOpen() * factor;
+            }
+
+            this.movingAverage.add(new Entry(i, sum / d));
         }
-
-        sum -= chartData.poll().getOpen();
-        movingAverage.add(new Entry(index, sum / size));
     }
 
     public List<Entry> getMovingAverage() {
