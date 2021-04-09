@@ -58,7 +58,7 @@
 
     </com.google.android.material.button.MaterialButtonToggleGroup>
 
-    <ImageView
+    <ImageButton
         android:id="@+id/chart_toggle"
         android:layout_width="64dp"
         android:layout_height="wrap_content"
@@ -67,6 +67,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toRightOf="@id/date_range_buttons"
+        android:background="?attr/selectableItemBackgroundBorderless"
         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -171,16 +171,6 @@
                             app:layout_constraintTop_toBottomOf="@id/stock_symbol"
                     />
 
-                    <ImageView
-                            android:id="@+id/fav_icon"
-                            android:layout_width="32dp"
-                            android:layout_height="32dp"
-                            android:src="@drawable/ic_baseline_favorite_border_48"
-                            app:tint="@color/red"
-                            app:layout_constraintTop_toTopOf="@id/stock_name"
-                            app:layout_constraintLeft_toRightOf="@id/stock_name"
-                    />
-
                     <TextView
                             android:id="@+id/current_price"
                             android:layout_width="wrap_content"
@@ -226,14 +216,13 @@
                             android:layout_height="match_parent"
                             android:visibility="gone"
                     />
-
                 </RelativeLayout>
 
                 <LinearLayout
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:id="@+id/date_range_container"
-                        android:orientation="horizontal"
+                        android:orientation="vertical"
                         android:paddingHorizontal="@dimen/page_padding_horizontal"
                         android:layout_marginTop="@dimen/btn_margin"
                         app:layout_constraintTop_toBottomOf="@id/chart_container"
@@ -245,6 +234,15 @@
                         android:layout_height="wrap_content"
                         layout="@layout/stock_date_range"
                     />
+
+                    <com.google.android.material.button.MaterialButton
+                            style="@style/AppTheme.Button.TextButton"
+                            android:paddingVertical="0dp"
+                            android:paddingHorizontal="0dp"
+                            android:id="@+id/indicator_button"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/configure_indicators" />
                 </LinearLayout>
 
                 <include

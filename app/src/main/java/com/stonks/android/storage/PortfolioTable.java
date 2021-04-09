@@ -5,9 +5,12 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+
 import androidx.annotation.Nullable;
+
 import com.stonks.android.BuildConfig;
 import com.stonks.android.model.PortfolioItem;
+
 import java.util.ArrayList;
 
 public class PortfolioTable extends SQLiteOpenHelper {
@@ -41,7 +44,7 @@ public class PortfolioTable extends SQLiteOpenHelper {
                     + "))";
 
     private PortfolioTable(@Nullable Context context) {
-        super(context, BuildConfig.DATABASE_NAME, null, 6);
+        super(context, BuildConfig.DATABASE_NAME, null, 7);
     }
 
     public static PortfolioTable getInstance(Context context) {
