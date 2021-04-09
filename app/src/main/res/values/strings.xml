@@ -42,7 +42,7 @@
     <string name="sell_button_label">Sell</string>
     <string name="price_label">Price per share</string>
     <string name="estimated_cost_label">Estimated cost</string>
-    <string name="estimated_value_label">Estimated value</string>
+    <string name="estimated_value_label">Current value</string>
     <string name="available_to_trade_label">Available to trade</string>
     <string name="available_to_sell_label">Available to sell</string>
     <string name="cancel_button_label">Cancel</string>

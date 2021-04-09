@@ -143,7 +143,11 @@ public class StockManager {
                 portfolioTable.getPortfolioItemsBySymbol(
                         this.loginRepository.getCurrentUser(), this.symbol);
 
-        return positions == null ? null : positions.get(0);
+        if (positions == null || positions.size() == 0) {
+            return null;
+        }
+
+        return positions.get(0);
     }
 
     public ArrayList<TransactionsListRow> getTransactions() {
@@ -209,13 +213,17 @@ public class StockManager {
                             List<BarData> cleanedData =
                                     ChartHelpers.cleanData(newStockData.getGraphData(), timeframe);
 
+                            Log.d("CLean", "cleaned data: " + cleanedData.toString());
+
                             String companyName = this.companyTable.getCompanyName(this.symbol);
 
                             newStockData.setCompanyName(companyName);
                             this.stockData.updateStock(
                                     newStockData, this.currentRange, cleanedData);
-                        },
-                        err -> Log.e(TAG, "fetchInitialData: " + err.toString()));
+                        }
+                        //                        , err -> Log.e(TAG, "fetchInitialData: " +
+                        // err.toString())
+                        );
     }
 
     private void fetchGraphData() {
@@ -311,10 +319,14 @@ public class StockManager {
     }
 
     private List<Entry> getLineData() {
-        List<BarData> cachedBars = this.stockData.getCachedGraphData(this.currentRange);
+        return getLineData(this.currentRange);
+    }
+
+    private List<Entry> getLineData(DateRange range) {
+        List<BarData> cachedBars = this.stockData.getCachedGraphData(range);
         long firstTimeStamp =
                 ChartHelpers.getEpochTimestamp(
-                        this.currentRange, cachedBars.get(cachedBars.size() - 1).getTimestamp());
+                        range, cachedBars.get(cachedBars.size() - 1).getTimestamp());
 
         List<BarData> bars =
                 cachedBars.stream()
@@ -323,7 +335,7 @@ public class StockManager {
 
         int windowSize = 1;
 
-        switch (this.currentRange) {
+        switch (range) {
             case DAY:
                 windowSize = 5;
                 break;
@@ -403,6 +415,14 @@ public class StockManager {
         if (wMovingAverageEnabled && weightedMovingAverage.size() > 0) {
             lineData.addDataSet(StockChart.buildIndicatorDataSet(weightedMovingAverage, Color.RED));
         }
+
+        return lineData;
+    }
+
+    public LineData getHypotheticalLineData() {
+        List<Entry> stockPrices = getLineData(DateRange.YEAR);
+        LineData lineData = new LineData();
+        lineData.addDataSet(StockChart.buildDataSet(stockPrices));
 
         return lineData;
     }

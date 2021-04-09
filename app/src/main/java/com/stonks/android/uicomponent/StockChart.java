@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import androidx.core.widget.NestedScrollView;
 import com.github.mikephil.charting.charts.BarLineChartBase;
@@ -174,13 +175,27 @@ public class StockChart extends LineChart {
 
     public static class CustomGestureListener implements OnChartGestureListener {
         private final BarLineChartBase chart;
-        private final NestedScrollView scrollView;
+        private final NestedScrollView nestedScrollView;
+        private final ScrollView scrollView;
         private OnGestureEnded onGestureEnded;
+        private boolean hideHighlight = true;
 
         public CustomGestureListener(BarLineChartBase c, NestedScrollView s) {
             chart = c;
-            scrollView = s;
+            nestedScrollView = s;
+            scrollView = null;
             onGestureEnded = () -> {};
+        }
+
+        public CustomGestureListener(BarLineChartBase c, ScrollView s) {
+            chart = c;
+            scrollView = s;
+            nestedScrollView = null;
+            onGestureEnded = () -> {};
+        }
+
+        public void setHideHighlight(boolean b) {
+            this.hideHighlight = b;
         }
 
         public void setOnGestureEnded(OnGestureEnded onGestureEnded) {
@@ -194,16 +209,26 @@ public class StockChart extends LineChart {
         @Override
         public void onChartGestureEnd(
                 MotionEvent me, ChartTouchListener.ChartGesture lastPerformedGesture) {
-            chart.highlightValue(null);
+            if (hideHighlight) {
+                chart.highlightValue(null);
+            }
             chart.setHighlightPerDragEnabled(false);
-            scrollView.requestDisallowInterceptTouchEvent(false);
+            if (scrollView == null) {
+                nestedScrollView.requestDisallowInterceptTouchEvent(false);
+            } else {
+                scrollView.requestDisallowInterceptTouchEvent(false);
+            }
 
             this.onGestureEnded.accept();
         }
 
         @Override
         public void onChartLongPressed(MotionEvent me) {
-            scrollView.requestDisallowInterceptTouchEvent(true);
+            if (scrollView == null) {
+                nestedScrollView.requestDisallowInterceptTouchEvent(true);
+            } else {
+                scrollView.requestDisallowInterceptTouchEvent(true);
+            }
             Highlight h = chart.getHighlightByTouchPoint(me.getX(), me.getY());
             chart.highlightValue(h, true);
 

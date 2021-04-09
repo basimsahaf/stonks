@@ -1,5 +1,6 @@
 package com.stonks.android.utility;
 
+import android.util.Log;
 import com.stonks.android.model.BarData;
 import com.stonks.android.model.alpaca.AlpacaTimeframe;
 import com.stonks.android.model.alpaca.DateRange;
@@ -151,7 +152,7 @@ public class ChartHelpers {
                     expectedStart.atZone(TimeZone.getDefault().toZoneId()).toEpochSecond();
 
             int i = data.size() - 1;
-            while (i >= 0 && data.get(i).getTimestamp() > expectedTimestamp) {
+            while (i > 0 && data.get(i).getTimestamp() > expectedTimestamp) {
                 i--;
             }
 
@@ -228,6 +229,8 @@ public class ChartHelpers {
             bar.setEndTimestamp((int) (bar.getTimestamp() + difference));
             correctedData.add(bar);
         }
+
+        Log.d("CLean", "returning");
 
         return correctedData;
     }
