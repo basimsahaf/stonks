@@ -71,7 +71,7 @@ public class LoginRepository {
     // TODO: everything below this goes into the new UserManager
 
     public String getCurrentUser() {
-        return "tmp";
+        return this.user.getUserId();
     }
 
     public Result<LoggedInUser> changeUsername(String newUsername) {

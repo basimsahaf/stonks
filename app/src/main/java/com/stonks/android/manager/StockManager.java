@@ -11,6 +11,7 @@ import com.stonks.android.external.MarketDataService;
 import com.stonks.android.model.*;
 import com.stonks.android.model.alpaca.AlpacaTimeframe;
 import com.stonks.android.model.alpaca.DateRange;
+import com.stonks.android.storage.CompanyTable;
 import com.stonks.android.storage.PortfolioTable;
 import com.stonks.android.storage.TransactionTable;
 import com.stonks.android.uicomponent.StockChart;
@@ -43,6 +44,8 @@ public class StockManager {
     private final Function<Integer, String> lineMarker;
     private final TransactionTable transactionTable;
     private final PortfolioTable portfolioTable;
+    private final CompanyTable companyTable;
+    private final LoginRepository loginRepository;
     private boolean movingAverageEnabled, wMovingAverageEnabled;
 
     private StockManager(Context context) {
@@ -94,6 +97,8 @@ public class StockManager {
         weightedMovingAverage = new WeightedMovingAverage(5);
         transactionTable = TransactionTable.getInstance(context);
         portfolioTable = PortfolioTable.getInstance(context);
+        companyTable = CompanyTable.getInstance(context);
+        loginRepository = LoginRepository.getInstance(context);
         movingAverageEnabled = false;
         wMovingAverageEnabled = false;
     }
@@ -135,25 +140,29 @@ public class StockManager {
 
     public PortfolioItem getPosition() {
         List<PortfolioItem> positions =
-                portfolioTable.getPortfolioItemsBySymbol("username", this.symbol);
-        int quantity = positions.stream().map(PortfolioItem::getQuantity).reduce(0, Integer::sum);
+                portfolioTable.getPortfolioItemsBySymbol(
+                        this.loginRepository.getCurrentUser(), this.symbol);
 
-        return new PortfolioItem("username", this.symbol, quantity);
+        return positions == null ? null : positions.get(0);
     }
 
-    public List<TransactionsListRow> getTransactions() {
-        List<TransactionsListRow> transactionList = new ArrayList<>();
+    public ArrayList<TransactionsListRow> getTransactions() {
+        ArrayList<TransactionsListRow> transactionList = new ArrayList<>();
+        List<Transaction> transactions =
+                this.transactionTable.getTransactions(this.loginRepository.getCurrentUser());
 
-        // TODO: get username from LoginRepository
-        List<Transaction> transactions = this.transactionTable.getTransactions("tmp");
+        List<Transaction> filteredTransactions =
+                transactions.stream()
+                        .filter(transaction -> transaction.getSymbol().equals(this.symbol))
+                        .collect(Collectors.toList());
 
-        if (transactions.size() == 0) {
-            return Collections.emptyList();
+        if (filteredTransactions.size() == 0) {
+            return new ArrayList<>();
         }
 
-        LocalDateTime lastTransactionDate = transactions.get(0).getCreatedAt();
+        LocalDateTime lastTransactionDate = filteredTransactions.get(0).getCreatedAt();
 
-        for (Transaction transaction : transactions) {
+        for (Transaction transaction : filteredTransactions) {
             LocalDateTime createdAt = transaction.getCreatedAt();
             if (!lastTransactionDate.toLocalDate().isEqual(createdAt.toLocalDate())) {
                 transactionList.add(new TransactionsListRow(createdAt));
@@ -200,6 +209,9 @@ public class StockManager {
                             List<BarData> cleanedData =
                                     ChartHelpers.cleanData(newStockData.getGraphData(), timeframe);
 
+                            String companyName = this.companyTable.getCompanyName(this.symbol);
+
+                            newStockData.setCompanyName(companyName);
                             this.stockData.updateStock(
                                     newStockData, this.currentRange, cleanedData);
                         },
