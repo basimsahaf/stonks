@@ -245,6 +245,10 @@ public class PortfolioManager {
         stocksList = new ArrayList<>();
 
         for (String symbol : symbolList) {
+            if (portfolio.getStockQuantity(symbol) == 0) {
+                continue;
+            }
+
             List<BarData> priceList = stocksData.get(symbol);
             float currentPrice = priceList.get(priceList.size() - 1).getOpen();
             float change = currentPrice - priceList.get(0).getOpen();
