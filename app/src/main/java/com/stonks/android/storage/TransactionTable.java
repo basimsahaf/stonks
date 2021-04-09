@@ -16,7 +16,7 @@ import java.util.ArrayList;
 public class TransactionTable extends SQLiteOpenHelper {
     private static TransactionTable transactionTable;
 
-    public static final String TRANSACTION_TABLE = "TRANSACTION_TABLE";
+    public static final String TABLE_NAME = "TRANSACTION_TABLE";
     public static final String COLUMN_USERNAME = "username";
     public static final String COLUMN_SYMBOL = "symbol";
     public static final String COLUMN_SHARES = "shares";
@@ -24,9 +24,32 @@ public class TransactionTable extends SQLiteOpenHelper {
     public static final String COLUMN_TRANSACTION_TYPE = "transaction_type";
     public static final String COLUMN_CREATED_AT = "transaction_date";
     public static final String COLUMN_COMPUTED_AMOUNT = COLUMN_PRICE + " * " + COLUMN_SHARES;
+    public static final String CREATE_STRING =
+            "CREATE TABLE "
+                    + TABLE_NAME
+                    + " ("
+                    + COLUMN_USERNAME
+                    + " TEXT, "
+                    + COLUMN_SHARES
+                    + " INTEGER, "
+                    + COLUMN_SYMBOL
+                    + " TEXT, "
+                    + COLUMN_TRANSACTION_TYPE
+                    + " TEXT, "
+                    + COLUMN_PRICE
+                    + " REAL, "
+                    + COLUMN_CREATED_AT
+                    + " TEXT DEFAULT CURRENT_TIMESTAMP NOT NULL, "
+                    + "FOREIGN KEY("
+                    + COLUMN_USERNAME
+                    + ") REFERENCES "
+                    + UserTable.TABLE_NAME
+                    + "("
+                    + UserTable.COLUMN_USERNAME
+                    + "))";
 
     private TransactionTable(@Nullable Context context) {
-        super(context, BuildConfig.DATABASE_NAME, null, 5);
+        super(context, BuildConfig.DATABASE_NAME, null, 6);
     }
 
     public static TransactionTable getInstance(Context context) {
@@ -39,39 +62,14 @@ public class TransactionTable extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String createPortfolioTable =
-                "CREATE TABLE "
-                        + TRANSACTION_TABLE
-                        + " ("
-                        + COLUMN_USERNAME
-                        + " TEXT, "
-                        + COLUMN_SHARES
-                        + " INTEGER, "
-                        + COLUMN_SYMBOL
-                        + " TEXT, "
-                        + COLUMN_TRANSACTION_TYPE
-                        + " TEXT, "
-                        + COLUMN_PRICE
-                        + " REAL, "
-                        + COLUMN_CREATED_AT
-                        + " TEXT DEFAULT CURRENT_TIMESTAMP NOT NULL, "
-                        + "FOREIGN KEY("
-                        + COLUMN_USERNAME
-                        + ") REFERENCES "
-                        + UserTable.USER_TABLE
-                        + "("
-                        + UserTable.COLUMN_USERNAME
-                        + "))";
-
-        db.execSQL(createPortfolioTable);
+        db.execSQL(CREATE_STRING);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        if (oldVersion != newVersion) {
-            String dropStatement = "DROP TABLE IF EXISTS " + TRANSACTION_TABLE;
-            db.execSQL(dropStatement);
-            onCreate(db);
+        if (oldVersion < newVersion) {
+            DatabaseHelper.removeAllTables(db);
+            DatabaseHelper.createAllTables(db);
         }
     }
 
@@ -84,13 +82,12 @@ public class TransactionTable extends SQLiteOpenHelper {
         cv.put(COLUMN_PRICE, transaction.getPrice());
         cv.put(COLUMN_TRANSACTION_TYPE, transaction.getTransactionTypeString());
 
-        long insert = db.insert(TRANSACTION_TABLE, null, cv);
+        long insert = db.insert(TABLE_NAME, null, cv);
         return insert >= 0;
     }
 
     public ArrayList<Transaction> getTransactions(String username) {
-        String query =
-                String.format("SELECT * FROM %s WHERE %s = ?", TRANSACTION_TABLE, COLUMN_USERNAME);
+        String query = String.format("SELECT * FROM %s WHERE %s = ?", TABLE_NAME, COLUMN_USERNAME);
 
         return queryTransactions(query, new String[] {username});
     }
@@ -99,13 +96,12 @@ public class TransactionTable extends SQLiteOpenHelper {
         String query =
                 String.format(
                         "SELECT * FROM %s WHERE %s = ? AND %s = ?",
-                        TRANSACTION_TABLE, COLUMN_USERNAME, COLUMN_SYMBOL);
+                        TABLE_NAME, COLUMN_USERNAME, COLUMN_SYMBOL);
         return queryTransactions(query, new String[] {username, symbol});
     }
 
     public ArrayList<Transaction> filterTransactions(TransactionFilters filters) {
-        String query =
-                String.format("SELECT * FROM %s WHERE %s = ?", TRANSACTION_TABLE, COLUMN_USERNAME);
+        String query = String.format("SELECT * FROM %s WHERE %s = ?", TABLE_NAME, COLUMN_USERNAME);
         ArrayList<String> selectionArgsList = new ArrayList();
         selectionArgsList.add(filters.getUsername());
 
@@ -147,7 +143,7 @@ public class TransactionTable extends SQLiteOpenHelper {
         String query =
                 String.format(
                         "SELECT %s FROM %s WHERE %s = ?",
-                        COLUMN_SYMBOL, TRANSACTION_TABLE, COLUMN_USERNAME);
+                        COLUMN_SYMBOL, TABLE_NAME, COLUMN_USERNAME);
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(query, new String[] {username});
         ArrayList<String> symbols = new ArrayList<>();

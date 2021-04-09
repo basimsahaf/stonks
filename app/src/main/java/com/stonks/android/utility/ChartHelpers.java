@@ -1,6 +1,5 @@
 package com.stonks.android.utility;
 
-import android.util.Log;
 import com.stonks.android.model.BarData;
 import com.stonks.android.model.alpaca.AlpacaTimeframe;
 import com.stonks.android.model.alpaca.DateRange;
@@ -115,9 +114,7 @@ public class ChartHelpers {
             return true;
         }
 
-        return (endOfDayTime.getHour() - time.getHour() == 1)
-                && (time.getMinute() != 0)
-                && (endOfDayTime.getMinute() - time.getMinute() <= 2 * timeframe.toInt());
+        return endOfDayTime.minusMinutes((2L * timeframe.toInt()) + 1).isBefore(time);
     }
 
     public static List<BarData> cleanData(List<BarData> data, AlpacaTimeframe timeframe) {
@@ -143,24 +140,32 @@ public class ChartHelpers {
 
         List<BarData> cleanData = new ArrayList<>();
         BarData bar = data.get(0);
+        BarData lastBar = data.get(data.size() - 1);
 
+        // insert 9:30am bar if it doesn't exist
         if (timeframe == AlpacaTimeframe.MINUTE) {
-            LocalDateTime dateTime = convertEpochToDateTime(bar.getTimestamp());
+            LocalDateTime dateTime = convertEpochToDateTime(lastBar.getTimestamp());
             LocalDateTime expectedStart = dateTime.withHour(9).withMinute(30);
 
             long expectedTimestamp =
                     expectedStart.atZone(TimeZone.getDefault().toZoneId()).toEpochSecond();
 
-            while (bar.getTimestamp() > expectedTimestamp) {
-                BarData newBar =
+            int i = data.size() - 1;
+            while (i >= 0 && data.get(i).getTimestamp() > expectedTimestamp) {
+                i--;
+            }
+
+            if (data.get(i).getTimestamp() < expectedTimestamp) {
+                BarData newBar = data.get(i + 1);
+
+                data.add(
+                        i + 1,
                         new BarData(
                                 (int) expectedTimestamp,
-                                bar.getHigh(),
-                                bar.getLow(),
-                                bar.getOpen(),
-                                bar.getClose());
-                cleanData.add(newBar);
-                expectedTimestamp += difference;
+                                newBar.getHigh(),
+                                newBar.getLow(),
+                                newBar.getOpen(),
+                                newBar.getClose()));
             }
         }
 
@@ -179,7 +184,6 @@ public class ChartHelpers {
                     LocalTime time = dateTime.toLocalTime();
 
                     if (isEndOfDayTime(time, timeframe)) {
-                        Log.d("Cleaning data", "i=" + i + " was new day");
                         lastTimeStamp = currentBar.getTimestamp();
                         cleanData.add(currentBar);
                         i++;
