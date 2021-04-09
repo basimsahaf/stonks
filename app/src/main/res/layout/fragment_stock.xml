@@ -509,35 +509,6 @@
                         app:layout_constraintTop_toBottomOf="@id/stats_section"
                 />
 
-                <androidx.constraintlayout.widget.ConstraintLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/section_margin"
-                        android:paddingHorizontal="@dimen/page_padding_horizontal"
-                        app:layout_constraintTop_toBottomOf="@id/history_section"
-                        android:paddingBottom="@dimen/section_margin">
-
-                    <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent"
-                            app:layout_constraintBottom_toTopOf="@id/about_company"
-                            android:text="@string/about_title"
-                            style="@style/AppTheme.TextAppearance.XLLabel"
-                            android:layout_marginBottom="@dimen/title_margin"
-                    />
-                    <TextView
-                            android:id="@+id/about_company"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            android:text="@{stock.description}"
-                            style="@style/AppTheme.TextAppearance.Content"
-                    />
-
-                </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.core.widget.NestedScrollView>
 
