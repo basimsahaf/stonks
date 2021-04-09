@@ -259,7 +259,7 @@ public class UserTable extends SQLiteOpenHelper {
         cv.put(COLUMN_USERNAME, username);
         cv.put(COLUMN_TRAINING_START_DATE, LocalDateTime.now().toString());
 
-        long update = db.update(TABLE_NAME, cv, whereClause, new String[]{username});
+        long update = db.update(TABLE_NAME, cv, whereClause, new String[] {username});
         return update >= 0;
     }
 

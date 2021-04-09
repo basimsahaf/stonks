@@ -8,15 +8,14 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.StringRes;
-import androidx.biometric.BiometricPrompt;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.biometric.BiometricPrompt;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputLayout;
 import com.stonks.android.model.AuthMode;
@@ -70,7 +69,7 @@ public class LoginActivity extends BaseActivity {
         setTextWatcher(usernameField);
         setTextWatcher(passwordField);
         // TODO: enable this later
-                setLoginViewModelListeners();
+        setLoginViewModelListeners();
 
         // disable login button initially as no data is entered
         // TODO: change to disable once testing is done
@@ -291,7 +290,7 @@ public class LoginActivity extends BaseActivity {
 
         loginButton.setOnClickListener(
                 view -> {
-//                                        authorizeViaForm();
+                    //                                        authorizeViaForm();
                     authorizeTestLogin();
                     usernameChanged = false;
                     passwordChanged = false;
