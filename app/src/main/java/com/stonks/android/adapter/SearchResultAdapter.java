@@ -12,14 +12,12 @@ import com.stonks.android.model.SearchResult;
 import java.util.ArrayList;
 
 public class SearchResultAdapter extends BaseAdapter {
-    private ArrayList<SearchResult> queryResultList;
     private ArrayList<SearchResult> searchResultList;
     Context context;
     LayoutInflater inflater;
 
-    public SearchResultAdapter(Context context, ArrayList<SearchResult> queryResultList) {
+    public SearchResultAdapter(Context context) {
         this.context = context;
-        this.queryResultList = queryResultList;
         this.searchResultList = new ArrayList<>();
         inflater = LayoutInflater.from(context);
     }
@@ -71,20 +69,8 @@ public class SearchResultAdapter extends BaseAdapter {
         return view;
     }
 
-    public void filterQuery(String searchText) {
-        searchText = searchText.toLowerCase();
-        searchResultList.clear();
-
-        if (searchText.length() != 0) {
-            for (SearchResult queryResultItem : queryResultList) {
-                String queryResultSymbol = queryResultItem.getSymbol().toLowerCase();
-                String queryResultCompanyName = queryResultItem.getCompanyName().toLowerCase();
-                if (queryResultSymbol.contains(searchText)
-                        || queryResultCompanyName.contains(searchText)) {
-                    searchResultList.add(queryResultItem);
-                }
-            }
-        }
+    public void updateSearchResultList(ArrayList<SearchResult> newSearchResultList) {
+        this.searchResultList = newSearchResultList;
         notifyDataSetChanged();
     }
 }
