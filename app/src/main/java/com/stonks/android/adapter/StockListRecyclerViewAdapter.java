@@ -73,6 +73,7 @@ public class StockListRecyclerViewAdapter
         StockListItem item = this.portfolioItems.get(position);
 
         holder.stockSymbol.setText(item.getStockSymbol());
+        holder.companyName.setText(item.getCompanyName());
 
         if (this.isSavedStocksList) {
             // just showing stock symbol and company name if favourite stocks list
@@ -130,6 +131,7 @@ public class StockListRecyclerViewAdapter
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public final View view;
         public final TextView stockSymbol;
+        public final TextView companyName;
         public final TextView price;
         public final TextView priceChange;
         public final ImageView arrowIndicator;
@@ -139,6 +141,7 @@ public class StockListRecyclerViewAdapter
 
             this.view = itemView;
             stockSymbol = this.view.findViewById(R.id.stock_symbol);
+            companyName = this.view.findViewById(R.id.company_name);
             price = this.view.findViewById(R.id.current_price);
             priceChange = this.view.findViewById(R.id.change_desc);
             arrowIndicator = this.view.findViewById(R.id.arrow_indicator);

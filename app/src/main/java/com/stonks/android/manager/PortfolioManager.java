@@ -220,7 +220,7 @@ public class PortfolioManager {
             int quantity = portfolio.getStockQuantity(symbol);
 
             portfolio.setPrice(symbol, currentPrice);
-            stocksList.add(new StockListItem(symbol, currentPrice, quantity, change, changePercentage));
+            stocksList.add(new StockListItem(symbol, "",currentPrice, quantity, change, changePercentage));
 
             accountValue += (currentPrice * quantity);
         }
