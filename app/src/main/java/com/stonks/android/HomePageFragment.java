@@ -12,6 +12,7 @@ import androidx.core.content.ContextCompat;
 import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import com.github.mikephil.charting.data.LineDataSet;
 import com.google.android.material.button.MaterialButton;
 import com.stonks.android.adapter.StockListRecyclerViewAdapter;
 import com.stonks.android.manager.PortfolioManager;
@@ -165,7 +166,9 @@ public class HomePageFragment extends BaseFragment {
         this.priceUpdate.setText(Formatters.formatPriceChange(valueChange, valueChangePercent));
         this.priceUpdateArrow.setImageDrawable(getIndicatorDrawable(valueChange));
 
-        this.stockChart.setData(portfolioManager.getStockChartData());
+        LineDataSet data = portfolioManager.getStockChartData();
+        this.stockChart.setData(data);
+        this.stockChart.setVisibleXRangeMinimum(78);
         this.stockChart.invalidate();
     }
 

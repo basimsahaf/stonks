@@ -54,6 +54,17 @@ public class PortfolioManager {
         portfolioTable = PortfolioTable.getInstance(context);
         transactionTable = TransactionTable.getInstance(context);
         loginRepository = LoginRepository.getInstance(context);
+
+        transactionTable.addTransaction(
+                new Transaction(
+                        loginRepository.getCurrentUser(),
+                        "GME",
+                        10,
+                        10f,
+                        TransactionMode.BUY,
+                        LocalDateTime.now().minusMonths(2)));
+        portfolioTable.addPortfolioItem(
+                new PortfolioItem(loginRepository.getCurrentUser(), "GME", 10));
     }
 
     public static PortfolioManager getInstance(Context context, HomePageFragment f) {
