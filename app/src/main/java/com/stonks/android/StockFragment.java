@@ -43,6 +43,7 @@ import com.stonks.android.uicomponent.SpeedDialExtendedFab;
 import com.stonks.android.uicomponent.StockChart;
 import com.stonks.android.utility.Constants;
 import com.stonks.android.utility.Formatters;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -191,7 +192,20 @@ public class StockFragment extends BaseFragment {
                                     int totalShares = 0;
                                     float cost = 0f;
 
+                                    LocalDate today = LocalDate.now();
+                                    boolean showTodayReturn = false;
+
                                     for (Transaction transaction : realTransactions) {
+                                        LocalDate date =
+                                                transaction
+                                                        .getCreatedAt()
+                                                        .atZone(TimeZone.getDefault().toZoneId())
+                                                        .toLocalDate();
+
+                                        if (date.isBefore(today)) {
+                                            showTodayReturn = true;
+                                        }
+
                                         totalShares += transaction.getShares();
                                         cost += transaction.getShares() * transaction.getPrice();
                                     }
@@ -208,7 +222,10 @@ public class StockFragment extends BaseFragment {
                                                             - stockManager.getStockData().getOpen())
                                                     * totalShares;
 
-                                    todayReturn.setText(Formatters.formatPrice(returnToday));
+                                    todayReturn.setText(
+                                            showTodayReturn
+                                                    ? Formatters.formatPrice(returnToday)
+                                                    : Formatters.formatPrice(returnTotal));
                                     totalReturn.setText(Formatters.formatPrice(returnTotal));
                                 } else {
                                     positionContainer.setVisibility(View.GONE);
@@ -386,7 +403,11 @@ public class StockFragment extends BaseFragment {
         this.candleChart.setData(Collections.singletonList(new CandleEntry(1, 4f, 2f, 3f, 2.5f)));
 
         this.tradeButton.setOnClickListener(v -> tradeButton.trigger(this.overlay));
-        this.overlay.setOnClickListener(v -> tradeButton.close(v));
+        this.overlay.setOnClickListener(
+                v -> {
+                    tradeButton.close(v);
+                    this.stockManager.getStockData().notifyChange();
+                });
 
         tryButton.setOnClickListener(
                 v -> {

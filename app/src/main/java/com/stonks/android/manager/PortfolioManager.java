@@ -54,6 +54,28 @@ public class PortfolioManager {
         portfolioTable = PortfolioTable.getInstance(context);
         transactionTable = TransactionTable.getInstance(context);
         loginRepository = LoginRepository.getInstance(context);
+
+        transactionTable.addTransaction(
+                new Transaction(
+                        loginRepository.getCurrentUser(),
+                        "GME",
+                        1,
+                        51.06f,
+                        TransactionMode.BUY,
+                        LocalDateTime.now().minusMonths(2)));
+
+        transactionTable.addTransaction(
+                new Transaction(
+                        loginRepository.getCurrentUser(),
+                        "FB",
+                        2,
+                        268.3f,
+                        TransactionMode.BUY,
+                        LocalDateTime.now().minusMonths(4).minusDays(2)));
+        portfolioTable.addPortfolioItem(
+                new PortfolioItem(loginRepository.getCurrentUser(), "GME", 1));
+        portfolioTable.addPortfolioItem(
+                new PortfolioItem(loginRepository.getCurrentUser(), "FB", 2));
     }
 
     public static PortfolioManager getInstance(Context context, HomePageFragment f) {
@@ -368,7 +390,6 @@ public class PortfolioManager {
                             } else {
                                 fragment.updateData();
                             }
-                        },
-                        err -> Log.e("PortfolioManager", err.toString()));
+                        });
     }
 }
