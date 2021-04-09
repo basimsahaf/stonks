@@ -7,13 +7,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.google.android.material.button.MaterialButton;
 import com.stonks.android.adapter.StockListRecyclerViewAdapter;
 import com.stonks.android.manager.PortfolioManager;
@@ -21,7 +19,6 @@ import com.stonks.android.model.StockListItem;
 import com.stonks.android.model.alpaca.DateRange;
 import com.stonks.android.uicomponent.StockChart;
 import com.stonks.android.utility.Formatters;
-
 import java.util.ArrayList;
 
 public class HomePageFragment extends BaseFragment {
@@ -144,14 +141,17 @@ public class HomePageFragment extends BaseFragment {
         if (!portfolioManager.getStocksList().isEmpty()) {
             noStocksMsg.setVisibility(View.GONE);
         }
-        ((StockListRecyclerViewAdapter) portfolioListAdapter).setNewStocks(portfolioManager.getStocksList());
+        ((StockListRecyclerViewAdapter) portfolioListAdapter)
+                .setNewStocks(portfolioManager.getStocksList());
         portfolioListAdapter.notifyDataSetChanged();
 
         getMainActivity().setPortfolioValue(portfolioManager.getAccountValue());
         this.moneyLeft.setText(Formatters.formatPrice(portfolioManager.getAccountBalance()));
 
         float soldProfit = portfolioManager.getTransactionProfits();
-        this.totalReturn.setText(Formatters.formatTotalReturn(soldProfit)); // TODO: get training period start form user table
+        this.totalReturn.setText(
+                Formatters.formatTotalReturn(
+                        soldProfit)); // TODO: get training period start form user table
         this.totalReturnArrow.setImageDrawable(getIndicatorDrawable(soldProfit));
 
         updateGraph();
