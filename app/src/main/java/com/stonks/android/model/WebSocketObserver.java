@@ -1,5 +1,5 @@
 package com.stonks.android.model;
 
 public interface WebSocketObserver {
-    void updateCurrentPrice(float currentPrice);
+    void updateCurrentPrice(BarData newBar);
 }
