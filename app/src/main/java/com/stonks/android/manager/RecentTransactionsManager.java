@@ -1,11 +1,7 @@
 package com.stonks.android.manager;
 
 import android.content.Context;
-import com.stonks.android.model.LoginRepository;
-import com.stonks.android.model.Transaction;
-import com.stonks.android.model.TransactionFilters;
-import com.stonks.android.model.TransactionMode;
-import com.stonks.android.model.TransactionsListRow;
+import com.stonks.android.model.*;
 import com.stonks.android.storage.TransactionTable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -15,12 +11,11 @@ public class RecentTransactionsManager {
     private static TransactionTable transactionTable;
     private ArrayList<TransactionsListRow> transactions;
     private static TransactionFilters filters;
-    private String username;
+    private final String username;
 
     private RecentTransactionsManager(Context context) {
         transactionTable = TransactionTable.getInstance(context);
-        //username = LoginRepository.getInstance(context).getCurrentUser();
-        username = "username"; // TODO: Remove when done testing
+        username = LoginRepository.getInstance(context).getCurrentUser();
         filters = new TransactionFilters(username);
     }
 

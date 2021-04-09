@@ -143,7 +143,11 @@ public class StockManager {
                 portfolioTable.getPortfolioItemsBySymbol(
                         this.loginRepository.getCurrentUser(), this.symbol);
 
-        return positions == null ? null : positions.get(0);
+        if (positions == null || positions.size() == 0) {
+            return null;
+        }
+
+        return positions.get(0);
     }
 
     public ArrayList<TransactionsListRow> getTransactions() {
@@ -209,13 +213,17 @@ public class StockManager {
                             List<BarData> cleanedData =
                                     ChartHelpers.cleanData(newStockData.getGraphData(), timeframe);
 
+                            Log.d("CLean", "cleaned data: " + cleanedData.toString());
+
                             String companyName = this.companyTable.getCompanyName(this.symbol);
 
                             newStockData.setCompanyName(companyName);
                             this.stockData.updateStock(
                                     newStockData, this.currentRange, cleanedData);
-                        },
-                        err -> Log.e(TAG, "fetchInitialData: " + err.toString()));
+                        }
+                        //                        , err -> Log.e(TAG, "fetchInitialData: " +
+                        // err.toString())
+                        );
     }
 
     private void fetchGraphData() {

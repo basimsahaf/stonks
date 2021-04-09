@@ -1,7 +1,6 @@
 package com.stonks.android.model;
 
 import com.stonks.android.manager.PortfolioManager;
-
 import java.util.ArrayList;
 
 public class Portfolio {
@@ -10,8 +9,11 @@ public class Portfolio {
     ArrayList<PortfolioItem> portfolioItems;
     PortfolioManager portfolioManager;
 
-
-    public Portfolio(float accountBalance, float accountValue, ArrayList<PortfolioItem> portfolioItems, PortfolioManager portfolioManager) {
+    public Portfolio(
+            float accountBalance,
+            float accountValue,
+            ArrayList<PortfolioItem> portfolioItems,
+            PortfolioManager portfolioManager) {
         this.accountBalance = accountBalance;
         this.accountValue = accountValue;
         this.portfolioItems = portfolioItems;
@@ -20,7 +22,7 @@ public class Portfolio {
         // TODO: Remove
         if (portfolioItems.isEmpty()) {
             portfolioItems.add(new PortfolioItem("username", "SHOP", 3));
-//            portfolioItems.add(new PortfolioItem("username", "UBER", 2));
+            //            portfolioItems.add(new PortfolioItem("username", "UBER", 2));
         }
     }
 
