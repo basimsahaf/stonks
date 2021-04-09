@@ -176,6 +176,16 @@
                 app:layout_constraintTop_toTopOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
+        <TextView
+            android:id="@+id/buy_sell_error"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/AppTheme.TextAppearance.SmallErrorLabel"
+            android:text="@string/amount_exceeded"
+            android:gravity="end"
+            app:layout_constraintTop_toBottomOf="@id/available_info"
+            android:visibility="gone"/>
+
         <com.google.android.material.button.MaterialButton
             android:id="@+id/trade_btn"
             android:layout_width="wrap_content"

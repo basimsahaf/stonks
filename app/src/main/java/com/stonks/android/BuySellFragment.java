@@ -34,8 +34,8 @@ import java.util.Locale;
 
 public class BuySellFragment extends Fragment {
     static final String TRANSACTION_MODE_ARG = "transactionMode";
-    static final String CURRENT_PRICE_ARG = "currentPrice";
     static final String STOCK_DATA_ARG = "stockData";
+    private final int PICKER_MAX = 10000;
     private final String TAG = getClass().getCanonicalName();
     private HorizontalNumberPicker numberPicker;
     private MaterialButton buyBtn, sellBtn, tradeBtn;
@@ -45,7 +45,8 @@ public class BuySellFragment extends Fragment {
             availableLabel,
             costPrice,
             price,
-            available;
+            available,
+            errorMessage;
     private TransactionMode mode;
     private float currentPrice;
     private MutableLiveData<Float> availableToTrade;
@@ -108,6 +109,7 @@ public class BuySellFragment extends Fragment {
         costPrice = getView().findViewById(R.id.cost_price);
         price = getView().findViewById(R.id.price);
         numberPicker = getView().findViewById(R.id.number_picker);
+        errorMessage = getView().findViewById(R.id.buy_sell_error);
 
         // initializing fields retrieved from stock page
         stock_symbol.setText(stockData.getSymbol());
@@ -126,6 +128,13 @@ public class BuySellFragment extends Fragment {
                 newValue -> {
                     float newEstimatedCost = newValue * currentPrice;
                     costPrice.setText(String.format(Locale.CANADA, "$%.2f", newEstimatedCost));
+                    if (newEstimatedCost > availableToTrade.getValue()) {
+                        disableTradeButton();
+                        errorMessage.setVisibility(View.VISIBLE);
+                    } else {
+                        enableTradeButton();
+                        errorMessage.setVisibility(View.GONE);
+                    }
                 };
 
         viewModel.getNumberOfStocks().observe(getViewLifecycleOwner(), numStocksPicked);
@@ -135,14 +144,18 @@ public class BuySellFragment extends Fragment {
         // data binding
         final Observer<Float> totalAmountAvailable =
                 newValue -> {
-                    available.setText(Formatters.formatPrice(newValue));
+                    if (mode == TransactionMode.BUY) {
+                        available.setText(Formatters.formatPrice(newValue));
+                    }
                 };
 
         availableToTrade.observe(getViewLifecycleOwner(), totalAmountAvailable);
 
         final Observer<Integer> numStocksAvailable =
                 newValue -> {
-                    available.setText(String.format("%s", newValue));
+                    if (mode == TransactionMode.SELL) {
+                        available.setText(String.format("%s", newValue));
+                    }
                 };
 
         numSharesOwned.observe(getViewLifecycleOwner(), numStocksAvailable);
@@ -160,7 +173,23 @@ public class BuySellFragment extends Fragment {
         switchView(mode);
     }
 
+    private void enableTradeButton() {
+        tradeBtn.setEnabled(true);
+        tradeBtn.setBackgroundColor(
+                getResources().getColor(R.color.colorPrimary, getContext().getTheme()));
+    }
+
+    private void disableTradeButton() {
+        tradeBtn.setEnabled(false);
+        tradeBtn.setBackgroundColor(getResources().getColor(R.color.grey, getContext().getTheme()));
+    }
+
     private void switchView(TransactionMode mode) {
+        // in case there was error on the previous view, we need to reset the page once its changed
+        errorMessage.setVisibility(View.GONE);
+        numberPicker.setValue(0);
+        enableTradeButton();
+
         if (mode == TransactionMode.BUY) {
             buyBtn.setChecked(true);
             sellBtn.setChecked(false);
@@ -168,6 +197,9 @@ public class BuySellFragment extends Fragment {
             availableLabel.setText(getString(R.string.available_to_trade_label));
             available.setText(Formatters.formatPrice(availableToTrade.getValue()));
             tradeBtn.setText(getString(R.string.buy_button_label));
+
+            // reset picker max here
+            numberPicker.setMax(PICKER_MAX);
         } else {
             sellBtn.setChecked(true);
             buyBtn.setChecked(false);
@@ -175,6 +207,9 @@ public class BuySellFragment extends Fragment {
             availableLabel.setText(getString(R.string.available_to_sell_label));
             available.setText(String.format("%s", numSharesOwned.getValue()));
             tradeBtn.setText(getString(R.string.sell_button_label));
+
+            // can't sell more than owned
+            numberPicker.setMax(numSharesOwned.getValue());
         }
     }
 
