@@ -36,7 +36,7 @@ public class FavouritesTable extends SQLiteOpenHelper {
                     + ")";
 
     private FavouritesTable(@Nullable Context context) {
-        super(context, BuildConfig.DATABASE_NAME, null, 6);
+        super(context, BuildConfig.DATABASE_NAME, null, 9);
     }
 
     public static FavouritesTable getInstance(Context context) {

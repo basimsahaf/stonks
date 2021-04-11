@@ -29,7 +29,7 @@ public class CompanyTable extends SQLiteOpenHelper {
     private static CompanyTable companyTable = null;
 
     private CompanyTable(@Nullable Context context) {
-        super(context, BuildConfig.DATABASE_NAME, null, 4);
+        super(context, BuildConfig.DATABASE_NAME, null, 9);
         mResources = context.getResources();
     }
 
