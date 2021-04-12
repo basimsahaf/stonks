@@ -1,24 +1,25 @@
-package com.stonks.android.model;
+package com.stonks.android.manager;
 
 import android.content.Context;
-import com.stonks.android.manager.UserManager;
+import com.stonks.android.model.Result;
+import com.stonks.android.model.UserModel;
 import com.stonks.android.storage.UserTable;
 
-public class LoginRepository {
+public class LoginManager {
 
-    private static volatile LoginRepository instance;
+    private static volatile LoginManager instance;
     private UserManager userManager;
     private UserTable userTable;
 
     // private constructor : singleton access
-    private LoginRepository(Context context) {
+    private LoginManager(Context context) {
         this.userManager = UserManager.getInstance(context);
         this.userTable = UserTable.getInstance(context);
     }
 
-    public static LoginRepository getInstance(Context context) {
+    public static LoginManager getInstance(Context context) {
         if (instance == null) {
-            instance = new LoginRepository(context);
+            instance = new LoginManager(context);
         }
         return instance;
     }

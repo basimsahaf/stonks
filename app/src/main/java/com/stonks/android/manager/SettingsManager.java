@@ -1,17 +1,16 @@
 package com.stonks.android.manager;
 
 import android.content.Context;
-import com.stonks.android.model.LoginRepository;
 import com.stonks.android.model.Result;
 import com.stonks.android.model.UserModel;
 
 public class SettingsManager {
     private static volatile SettingsManager settingsManager;
-    private final LoginRepository loginRepository;
+    private final LoginManager loginManager;
     private final UserManager userManager;
 
     private SettingsManager(Context context) {
-        loginRepository = LoginRepository.getInstance(context);
+        loginManager = LoginManager.getInstance(context);
         userManager = UserManager.getInstance(context);
     }
 

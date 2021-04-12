@@ -18,8 +18,8 @@ import androidx.appcompat.app.AppCompatDelegate;
 import androidx.biometric.BiometricPrompt;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputLayout;
+import com.stonks.android.manager.LoginManager;
 import com.stonks.android.model.AuthMode;
-import com.stonks.android.model.LoginRepository;
 import com.stonks.android.model.LoginViewModel;
 import com.stonks.android.model.UserModel;
 import java.util.concurrent.Executor;
@@ -44,7 +44,7 @@ public class LoginActivity extends BaseActivity {
     private AuthMode currentAuthMode;
     private BiometricPrompt.PromptInfo promptInfo;
     private BiometricPrompt biometricPrompt;
-    private LoginRepository repo;
+    private LoginManager repo;
     private MainActivity mainActivity;
 
     @RequiresApi(api = Build.VERSION_CODES.P)
@@ -54,7 +54,7 @@ public class LoginActivity extends BaseActivity {
         setContentView(R.layout.activity_login);
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
 
-        repo = LoginRepository.getInstance(getApplicationContext());
+        repo = LoginManager.getInstance(getApplicationContext());
         loginViewModel = new LoginViewModel(repo);
         mainActivity = MainActivity.getInstance();
 
@@ -122,7 +122,7 @@ public class LoginActivity extends BaseActivity {
                     break;
 
                 case SIGNUP:
-                    loginViewModel.signup(username, password, false);
+                    loginViewModel.signup(username, password);
                     break;
             }
         } else {
