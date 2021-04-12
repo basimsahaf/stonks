@@ -27,7 +27,7 @@ public class SettingsManager {
     }
 
     public String getCurrentUsername() {
-        return userManager.getCurrentUsername();
+        return userManager.getCurrentUser().getUsername();
     }
 
     public boolean verifyCurrentPassword(String currentPassword) {
@@ -53,57 +53,4 @@ public class SettingsManager {
     public Result<UserModel> changeTrainingAmount(float amount) {
         return userManager.changeTrainingAmount(amount);
     }
-
-    //
-    //    public String getCurrentUser() {
-    //        return this.user.getUserId();
-    //    }
-    //
-    //    public Result<LoggedInUser> changeUsername(String newUsername) {
-    //        Result<LoggedInUser> result = dataSource.changeUsername(this.user.getUserId(),
-    // newUsername);
-    //        if (result instanceof Result.Success) {
-    //            setLoggedInUser(((Result.Success<LoggedInUser>) result).getData());
-    //        }
-    //        return result;
-    //    }
-    //
-    //    public boolean verifyCurrentPassword(String currentPassword) {
-    //        return dataSource.verifyCurrentPassword(this.user.getUserId(), currentPassword);
-    //    }
-    //
-    //    public Result<LoggedInUser> changePassword(String newPassword) {
-    //        Result<LoggedInUser> result = dataSource.changePassword(this.user.getUserId(),
-    // newPassword);
-    //        if (result instanceof Result.Success) {
-    //            setLoggedInUser(((Result.Success<LoggedInUser>) result).getData());
-    //        }
-    //        return result;
-    //    }
-    //
-    //    public boolean isCurrentUserBiometricsEnabled() {
-    //        Result<LoggedInUser> biometricsUser = dataSource.getBiometricsUser();
-    //        if (biometricsUser instanceof Result.Success) {
-    //            return ((Result.Success<LoggedInUser>) biometricsUser)
-    //                    .getData()
-    //                    .getUserId()
-    //                    .equals(this.user.getUserId());
-    //        }
-    //        return false;
-    //    }
-    //
-    //    public boolean isBiometricsAvailableOnDevice() {
-    //        Result<LoggedInUser> biometricsUser = dataSource.getBiometricsUser();
-    //        return !(biometricsUser instanceof Result.Success);
-    //    }
-    //
-    //    public boolean toggleBiometrics(boolean status) {
-    //        Result<LoggedInUser> result = dataSource.toggleBiometrics(this.user.getUserId(),
-    // status);
-    //        return result instanceof Result.Success;
-    //    }
-    //
-    //    public Result<LoggedInUser> changeTrainingAmount(float amount) {
-    //        return dataSource.changeTrainingAmount(this.user.getUserId(), amount);
-    //    }
 }
