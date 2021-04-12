@@ -14,6 +14,8 @@ import androidx.fragment.app.FragmentTransaction;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.stonks.android.external.AlpacaWebSocket;
+import com.stonks.android.manager.UserManager;
+import com.stonks.android.model.UserModel;
 import com.stonks.android.model.WebSocketObserver;
 import com.stonks.android.utility.Formatters;
 
@@ -22,6 +24,8 @@ public class MainActivity extends AppCompatActivity {
     private LinearLayout portfolioTitle;
     private TextView globalTitle;
     private AlpacaWebSocket socket;
+    private UserManager userManager;
+    private static MainActivity instance;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,6 +82,7 @@ public class MainActivity extends AppCompatActivity {
         slidingUpPanel.setAnchorPoint(1.0f);
 
         this.socket = new AlpacaWebSocket();
+        this.userManager = UserManager.getInstance(getApplicationContext());
     }
 
     public void subscribe(String symbol, WebSocketObserver observer) {
@@ -134,5 +139,13 @@ public class MainActivity extends AppCompatActivity {
 
     public SlidingUpPanelLayout getSlidingUpPanel() {
         return slidingUpPanel;
+    }
+
+    public static MainActivity getInstance() {
+        return instance;
+    }
+
+    public UserModel getCurrentUser() {
+        return this.userManager.getCurrentUser();
     }
 }

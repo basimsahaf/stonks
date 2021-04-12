@@ -21,6 +21,7 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.stonks.android.model.AuthMode;
 import com.stonks.android.model.LoginRepository;
 import com.stonks.android.model.LoginViewModel;
+import com.stonks.android.model.UserModel;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -44,6 +45,7 @@ public class LoginActivity extends BaseActivity {
     private BiometricPrompt.PromptInfo promptInfo;
     private BiometricPrompt biometricPrompt;
     private LoginRepository repo;
+    private MainActivity mainActivity;
 
     @RequiresApi(api = Build.VERSION_CODES.P)
     @Override
@@ -54,6 +56,7 @@ public class LoginActivity extends BaseActivity {
 
         repo = LoginRepository.getInstance(getApplicationContext());
         loginViewModel = new LoginViewModel(repo);
+        mainActivity = MainActivity.getInstance();
 
         loginModeButton = findViewById(R.id.login_mode_button);
         signUpModeButton = findViewById(R.id.signup_mode_button);
@@ -129,10 +132,10 @@ public class LoginActivity extends BaseActivity {
 
     @RequiresApi(api = Build.VERSION_CODES.P)
     private void authorizeViaBiometrics() {
-        String currentUser = repo.getCurrentUser();
-        setupBiometrics(currentUser);
+        UserModel currentUser = mainActivity.getCurrentUser();
+        setupBiometrics(currentUser.getUsername());
         biometricPrompt.authenticate(promptInfo);
-        usernameField.getEditText().setText(currentUser);
+        usernameField.getEditText().setText(currentUser.getUsername());
     }
 
     @RequiresApi(api = Build.VERSION_CODES.P)
