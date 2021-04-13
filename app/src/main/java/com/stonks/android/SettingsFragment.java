@@ -130,6 +130,20 @@ public class SettingsFragment extends BaseFragment {
                 });
     }
 
+    public void handleBackPressed() {
+        if (settingsScreen.getVisibility() == View.GONE) {
+            emailChangeScreen.setVisibility(View.GONE);
+            amountChangeScreen.setVisibility(View.GONE);
+            passwordChangeScreen.setVisibility(View.GONE);
+            submitButton.setVisibility(View.GONE);
+
+            settingsScreen.setVisibility(View.VISIBLE);
+            currentMode = SettingsMode.SETTINGS_HOME;
+        } else {
+            super.getActivity().onBackPressed();
+        }
+    }
+
     private boolean changeSettings() {
         boolean status = false;
         switch (currentMode) {

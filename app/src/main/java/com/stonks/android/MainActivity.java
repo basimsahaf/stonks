@@ -119,14 +119,24 @@ public class MainActivity extends AppCompatActivity {
 
     private void switchFragment(Fragment fragment) {
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.fragment_container, fragment);
-        ft.addToBackStack(fragment.getClass().getCanonicalName()).commit();
+        String tag = fragment.getClass().getCanonicalName();
+
+        ft.replace(R.id.fragment_container, fragment, tag);
+        ft.addToBackStack(tag).commit();
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
-            super.onBackPressed();
+            SettingsFragment settingsFragment =
+                    (SettingsFragment)
+                            getSupportFragmentManager()
+                                    .findFragmentByTag(SettingsFragment.class.getCanonicalName());
+            if (settingsFragment != null && settingsFragment.isVisible()) {
+                settingsFragment.handleBackPressed();
+            } else {
+                super.onBackPressed();
+            }
         }
 
         return super.onOptionsItemSelected(item);

@@ -231,6 +231,7 @@ public class StockFragment extends BaseFragment {
                             .getSupportFragmentManager()
                             .beginTransaction()
                             .replace(R.id.sliding_drawer, hypotheticalFragment, null)
+                            .addToBackStack(null)
                             .commit();
                 });
 
@@ -247,6 +248,7 @@ public class StockFragment extends BaseFragment {
                             .getSupportFragmentManager()
                             .beginTransaction()
                             .replace(R.id.sliding_drawer, buyFrag, null)
+                            .addToBackStack(null)
                             .commit();
                 });
         sellButton.setOnClickListener(
@@ -262,6 +264,7 @@ public class StockFragment extends BaseFragment {
                             .getSupportFragmentManager()
                             .beginTransaction()
                             .replace(R.id.sliding_drawer, sellFrag, null)
+                            .addToBackStack(null)
                             .commit();
                 });
         this.favIcon.setOnClickListener(
