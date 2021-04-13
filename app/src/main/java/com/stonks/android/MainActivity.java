@@ -1,7 +1,16 @@
 package com.stonks.android;
 
+import android.app.DownloadManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,11 +26,18 @@ import com.stonks.android.external.AlpacaWebSocket;
 import com.stonks.android.model.WebSocketObserver;
 import com.stonks.android.utility.Formatters;
 
+import java.io.File;
+import java.time.DateTimeException;
+import java.time.LocalDateTime;
+
 public class MainActivity extends AppCompatActivity {
     private SlidingUpPanelLayout slidingUpPanel;
     private LinearLayout portfolioTitle;
     private TextView globalTitle;
     private AlpacaWebSocket socket;
+
+    private long enqueue;
+    private DownloadManager dm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +77,45 @@ public class MainActivity extends AppCompatActivity {
         LayoutInflater inflator =
                 (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View actionBarView = inflator.inflate(R.layout.actionbar_layout, null);
+
+        // Download company names json
+        SharedPreferences prefs = getSharedPreferences("prefs", MODE_PRIVATE);
+        boolean firstStart = prefs.getBoolean("firstStart", true);
+        firstStart = true; // testing
+
+        Log.d("main activity", "first start is " + firstStart);
+
+        BroadcastReceiver receiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                String action = intent.getAction();
+                if (DownloadManager.ACTION_DOWNLOAD_COMPLETE.equals(action)) {
+                    long downloadID = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, 0);
+                    DownloadManager.Query query = new DownloadManager.Query();
+                    query.setFilterById(enqueue);
+                    Cursor c = dm.query(query);
+                    if (c.moveToFirst()) {
+                        int columnIndex = c.getColumnIndex(DownloadManager.COLUMN_STATUS);
+                        if (DownloadManager.STATUS_SUCCESSFUL == c.getInt(columnIndex)) {
+                            String uriString = c.getString(c.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI));
+
+                            doesSymbolsExist();
+
+                            Log.d("main activity", "what is URI strng " + uriString);
+                            Uri a = Uri.parse(uriString);
+                            File companyData = new File(a.getPath());
+                            Log.d("main activity", "download finished and in local file now " + a.getPath());
+                            // populate DB
+                        }
+                    }
+                }
+            }
+        };
+        registerReceiver(receiver, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
+
+        if (firstStart) {
+            downloadJSON();
+        }
 
         // each fragment can update these properties as needed
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
@@ -134,5 +189,31 @@ public class MainActivity extends AppCompatActivity {
 
     public SlidingUpPanelLayout getSlidingUpPanel() {
         return slidingUpPanel;
+    }
+
+    public void downloadJSON() {
+        Log.d("main activity", "start json download at " + LocalDateTime.now());
+
+        dm = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
+        DownloadManager.Request request = new DownloadManager.Request(
+                Uri.parse("https://finnhub.io/api/v1/stock/symbol?exchange=US&token=c0krmsf48v6und6s0rig"))
+                .setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "symbols.json");
+        enqueue = dm.enqueue(request);
+
+        Log.d("main activity", "finish json download at " + LocalDateTime.now());
+
+        SharedPreferences prefs = getSharedPreferences("prefs", MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putBoolean("firstStart", false);
+        editor.apply();
+    }
+
+    private boolean doesSymbolsExist() {
+        String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "symbols.json";
+//        File file = new File(path);
+
+        Log.d("main activitY", "check if symbols exists" + path);
+
+        return false;
     }
 }
