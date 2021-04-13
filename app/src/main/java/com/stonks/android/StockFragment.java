@@ -230,8 +230,10 @@ public class StockFragment extends BaseFragment {
                     getActivity()
                             .getSupportFragmentManager()
                             .beginTransaction()
-                            .replace(R.id.sliding_drawer, hypotheticalFragment, null)
-                            .addToBackStack(null)
+                            .replace(
+                                    R.id.sliding_drawer,
+                                    hypotheticalFragment,
+                                    hypotheticalFragment.getClass().getCanonicalName())
                             .commit();
                 });
 
@@ -247,8 +249,10 @@ public class StockFragment extends BaseFragment {
                     getActivity()
                             .getSupportFragmentManager()
                             .beginTransaction()
-                            .replace(R.id.sliding_drawer, buyFrag, null)
-                            .addToBackStack(null)
+                            .replace(
+                                    R.id.sliding_drawer,
+                                    buyFrag,
+                                    buyFrag.getClass().getCanonicalName())
                             .commit();
                 });
         sellButton.setOnClickListener(
@@ -257,14 +261,16 @@ public class StockFragment extends BaseFragment {
                     bundle.putSerializable(
                             BuySellFragment.STOCK_DATA_ARG, this.stockManager.getStockData());
                     bundle.putSerializable(
-                            BuySellFragment.TRANSACTION_MODE_ARG, TransactionMode.BUY);
+                            BuySellFragment.TRANSACTION_MODE_ARG, TransactionMode.SELL);
                     Fragment sellFrag = new BuySellFragment();
                     sellFrag.setArguments(bundle);
                     getActivity()
                             .getSupportFragmentManager()
                             .beginTransaction()
-                            .replace(R.id.sliding_drawer, sellFrag, null)
-                            .addToBackStack(null)
+                            .replace(
+                                    R.id.sliding_drawer,
+                                    sellFrag,
+                                    sellFrag.getClass().getCanonicalName())
                             .commit();
                 });
         this.favIcon.setOnClickListener(

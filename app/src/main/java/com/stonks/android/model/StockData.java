@@ -77,7 +77,7 @@ public class StockData extends BaseObservable implements Serializable, WebSocket
 
     @Bindable
     public Float getCurrentPrice() {
-        return currentPrice;
+        return new Float(25.0);
     }
 
     @Bindable

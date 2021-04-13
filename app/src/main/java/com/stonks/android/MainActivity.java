@@ -128,12 +128,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
-            SettingsFragment settingsFragment =
-                    (SettingsFragment)
-                            getSupportFragmentManager()
-                                    .findFragmentByTag(SettingsFragment.class.getCanonicalName());
+
+            SettingsFragment settingsFragment = getSettingsFragment();
             if (settingsFragment != null && settingsFragment.isVisible()) {
                 settingsFragment.handleBackPressed();
+            } else if (isSlidingDrawerVisible()) {
+                slidingUpPanel.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
             } else {
                 super.onBackPressed();
             }
@@ -144,5 +144,26 @@ public class MainActivity extends AppCompatActivity {
 
     public SlidingUpPanelLayout getSlidingUpPanel() {
         return slidingUpPanel;
+    }
+
+    private boolean isSlidingDrawerVisible() {
+        BuySellFragment buySellFragment =
+                (BuySellFragment)
+                        getSupportFragmentManager()
+                                .findFragmentByTag(BuySellFragment.class.getCanonicalName());
+
+        HypotheticalFragment hypotheticalFragment =
+                (HypotheticalFragment)
+                        getSupportFragmentManager()
+                                .findFragmentByTag(HypotheticalFragment.class.getCanonicalName());
+
+        return (buySellFragment != null && buySellFragment.isVisible())
+                || (hypotheticalFragment != null && hypotheticalFragment.isVisible());
+    }
+
+    private SettingsFragment getSettingsFragment() {
+        return (SettingsFragment)
+                getSupportFragmentManager()
+                        .findFragmentByTag(SettingsFragment.class.getCanonicalName());
     }
 }

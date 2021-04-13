@@ -49,7 +49,7 @@ public class TransactionTable extends SQLiteOpenHelper {
                     + "))";
 
     private TransactionTable(@Nullable Context context) {
-        super(context, BuildConfig.DATABASE_NAME, null, 9);
+        super(context, BuildConfig.DATABASE_NAME, null, DatabaseHelper.TABLE_VERSION);
     }
 
     public static TransactionTable getInstance(Context context) {
@@ -137,6 +137,8 @@ public class TransactionTable extends SQLiteOpenHelper {
                             + String.format(" AND %s IN ", COLUMN_SYMBOL)
                             + filters.getSymbolsAsQueryString();
         }
+
+        query = query + String.format(" ORDER BY %s DESC", COLUMN_CREATED_AT);
 
         return queryTransactions(
                 query, selectionArgsList.toArray(new String[selectionArgsList.size()]));
