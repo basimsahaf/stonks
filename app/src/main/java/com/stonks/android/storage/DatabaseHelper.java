@@ -5,6 +5,8 @@ import java.util.Arrays;
 import java.util.List;
 
 public class DatabaseHelper {
+    public static int TABLE_VERSION = 18;
+
     public static void removeAllTables(SQLiteDatabase db) {
         final List<String> tables =
                 Arrays.asList(

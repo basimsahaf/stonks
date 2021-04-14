@@ -43,7 +43,7 @@ public class UserTable extends SQLiteOpenHelper {
                     + ")";
 
     private UserTable(@Nullable Context context) {
-        super(context, BuildConfig.DATABASE_NAME, null, 9);
+        super(context, BuildConfig.DATABASE_NAME, null, DatabaseHelper.TABLE_VERSION);
     }
 
     public static UserTable getInstance(Context context) {
