@@ -25,7 +25,6 @@ public class MainActivity extends AppCompatActivity {
     private TextView globalTitle;
     private AlpacaWebSocket socket;
     private UserManager userManager;
-    private static MainActivity instance;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -139,13 +138,5 @@ public class MainActivity extends AppCompatActivity {
 
     public SlidingUpPanelLayout getSlidingUpPanel() {
         return slidingUpPanel;
-    }
-
-    public static MainActivity getInstance() {
-        return instance;
-    }
-
-    public UserModel getCurrentUser() {
-        return this.userManager.getCurrentUser();
     }
 }
