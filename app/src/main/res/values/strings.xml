@@ -14,6 +14,7 @@
     <string name="trade_button_label">Trade</string>
     <string name="sym_placeholder">SYM</string>
     <string name="company_name_placeholder">Company Name</string>
+    <string name="num_shares">Number of shares: </string>
     <string name="about_title">About</string>
     <string name="na_value">–</string>
     <string name="username">Username</string>
@@ -55,7 +56,7 @@
     <string name="account_value">Account Value</string>
     <string name="current_value_price">$00.00</string>
     <string name="price_update">$00.00 (0.00\% from yesterday)</string>
-    <string name="total_return">$00.00 since Jan 01 2021\n(from stock transactions)</string>
+    <string name="total_return">$00.00 since Jan 01 2021</string>
     <string name="money_left_desc">left to trade</string>
     <string name="money_left">$00.00</string>
     <string name="your_portfolio">Your Portfolio</string>

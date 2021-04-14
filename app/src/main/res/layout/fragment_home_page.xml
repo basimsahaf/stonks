@@ -22,7 +22,7 @@
         android:id="@+id/home_page"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="gone">
+        android:visibility="visible">
 
         <androidx.core.widget.NestedScrollView
             android:id="@+id/scroll_view"
@@ -93,7 +93,7 @@
                             android:layout_height="wrap_content"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@id/price_update_arrow"
-                            android:layout_marginTop="@dimen/row_margin"
+                            android:layout_marginTop="@dimen/btn_margin"
                             android:paddingRight="@dimen/label_margin"
                             android:src="@drawable/ic_baseline_arrow_drop_up_24" />
 
@@ -153,12 +153,14 @@
                     app:layout_constraintTop_toBottomOf="@id/chart_container"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toRightOf="parent"
-                    android:layout_marginBottom="@dimen/section_margin">
+                    android:layout_marginBottom="@dimen/section_margin"
+                    android:gravity="center">
 
                     <include
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        layout="@layout/stock_date_range" />
+                        layout="@layout/stock_date_range"
+                        android:layout_gravity="center"/>
 
                 </LinearLayout>
 

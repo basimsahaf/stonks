@@ -1,5 +1,6 @@
 package com.stonks.android;
 
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -11,6 +12,7 @@ import android.widget.TextView;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -163,10 +165,6 @@ public class HomePageFragment extends BaseFragment {
         getMainActivity().setPortfolioValue(portfolioManager.getAccountValue());
         this.moneyLeft.setText(Formatters.formatPrice(portfolioManager.getAccountBalance()));
 
-        float totalReturn = portfolioManager.getTotalReturn();
-        this.totalReturn.setText(Formatters.formatTotalReturn(totalReturn, portfolioManager.getStartDate())); // TODO: get training period start form user table
-        this.totalReturnArrow.setImageDrawable(getIndicatorDrawable(totalReturn));
-
         updateGraph();
     }
 
@@ -183,7 +181,13 @@ public class HomePageFragment extends BaseFragment {
         }
 
         this.priceUpdate.setText(Formatters.formatPriceChange(valueChange, valueChangePercent));
+        this.priceUpdate.setTextColor(ResourcesCompat.getColor(getResources(), valueChange < 0 ? R.color.red : R.color.green, null));
         this.priceUpdateArrow.setImageDrawable(getIndicatorDrawable(valueChange));
+
+        float totalReturn = portfolioManager.getTotalReturn();
+        this.totalReturn.setText(Formatters.formatTotalReturn(totalReturn, portfolioManager.getStartDate()));
+        this.totalReturn.setTextColor(ResourcesCompat.getColor(getResources(), totalReturn < 0 ? R.color.red : R.color.green, null));
+        this.totalReturnArrow.setImageDrawable(getIndicatorDrawable(totalReturn));
 
         if (!barData.isEmpty()) {
             this.stockChart.setData(portfolioManager.getStockChartData());

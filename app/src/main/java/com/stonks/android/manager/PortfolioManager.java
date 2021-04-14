@@ -248,7 +248,7 @@ public class PortfolioManager {
 
                                 float change = clubbedBars.get(clubbedBars.size() - 1).getClose() - clubbedBars.get(0).getOpen();
                                 int quantity = portfolio.getStockQuantity(symbol);
-                                allTimeChange += (change * quantity);
+                                allTimeChange += (change);
                             }
                         },
                         err -> Log.e("PortfolioManager", err.toString()));

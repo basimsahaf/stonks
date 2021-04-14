@@ -79,11 +79,13 @@ public class StockListRecyclerViewAdapter
             // just showing stock symbol and company name if favourite stocks list
             holder.price.setText("");
             holder.priceChange.setText("");
+            holder.quantityText.setText("");
             holder.arrowIndicator.setVisibility(View.GONE);
             return;
         }
 
-        holder.price.setText(Formatters.formatStockQuantity(item.getPrice(), item.getQuantity()));
+        holder.price.setText(Formatters.formatPrice(item.getPrice()));
+        holder.quantityText.setText(String.format("Qty: " + item.getQuantity()));
         holder.priceChange.setText(generateChangeString(item.getPriceChange(), item.getChangePercent()));
         holder.arrowIndicator.setImageDrawable(getIndicatorDrawable(item.getPriceChange()));
     }
@@ -133,6 +135,7 @@ public class StockListRecyclerViewAdapter
         public final View view;
         public final TextView stockSymbol;
         public final TextView companyName;
+        public final TextView quantityText;
         public final TextView price;
         public final TextView priceChange;
         public final ImageView arrowIndicator;
@@ -143,6 +146,7 @@ public class StockListRecyclerViewAdapter
             this.view = itemView;
             stockSymbol = this.view.findViewById(R.id.stock_symbol);
             companyName = this.view.findViewById(R.id.company_name);
+            quantityText = this.view.findViewById(R.id.quantity);
             price = this.view.findViewById(R.id.current_price);
             priceChange = this.view.findViewById(R.id.change_desc);
             arrowIndicator = this.view.findViewById(R.id.arrow_indicator);
