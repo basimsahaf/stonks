@@ -112,26 +112,31 @@ public class HomePageFragment extends BaseFragment {
                 v -> {
                     portfolioManager.setCurrentRange(DateRange.DAY);
                     this.rangeDayButton.setChecked(true);
+                    disableAllButtons();
                 });
         rangeWeekButton.setOnClickListener(
                 v -> {
                     portfolioManager.setCurrentRange(DateRange.WEEK);
                     this.rangeWeekButton.setChecked(true);
+                    disableAllButtons();
                 });
         rangeMonthButton.setOnClickListener(
                 v -> {
                     portfolioManager.setCurrentRange(DateRange.MONTH);
                     this.rangeMonthButton.setChecked(true);
+                    disableAllButtons();
                 });
         rangeYearButton.setOnClickListener(
                 v -> {
                     portfolioManager.setCurrentRange(DateRange.YEAR);
                     this.rangeYearButton.setChecked(true);
+                    disableAllButtons();
                 });
         rangeAllButton.setOnClickListener(
                 v -> {
-                    this.rangeAllButton.setChecked(true);
                     portfolioManager.setCurrentRange(DateRange.THREE_YEARS);
+                    this.rangeAllButton.setChecked(true);
+                    disableAllButtons();
                 });
 
         portfolioManager.calculateData(false);
@@ -143,16 +148,22 @@ public class HomePageFragment extends BaseFragment {
         super.onPause();
     }
 
-    public static ArrayList<StockListItem> getMockItems() {
-        ArrayList<StockListItem> list = new ArrayList<>();
+    public void disableAllButtons() {
+        spinner.setVisibility(View.VISIBLE);
+        rangeDayButton.setClickable(false);
+        rangeWeekButton.setClickable(false);
+        rangeMonthButton.setClickable(false);
+        rangeYearButton.setClickable(false);
+        rangeAllButton.setClickable(false);
+    }
 
-        list.add(new StockListItem("SHOP", "Shopify Inc.", 19.34f, 103, -2.15f, -1.0f));
-        list.add(new StockListItem("UBER", "Uber Technologies Inc.", 9.22f, 3, 2.23f, 2.85f));
-        list.add(new StockListItem("AMZN", "Amazon.com  Inc.", 20.99f, 1, -8.90f, -4.0f));
-        list.add(new StockListItem("GOOG", "Google", 30.81f, 22, 1.11f, 3.33f));
-        list.add(new StockListItem("SPY", "SPY ETF", 30.81f, 22, 1.11f, 3.33f));
-
-        return list;
+    public void enableAllButtons() {
+        spinner.setVisibility(View.GONE);
+        rangeDayButton.setClickable(true);
+        rangeWeekButton.setClickable(true);
+        rangeMonthButton.setClickable(true);
+        rangeYearButton.setClickable(true);
+        rangeAllButton.setClickable(true);
     }
 
     public void updateData() {
@@ -196,6 +207,7 @@ public class HomePageFragment extends BaseFragment {
 
         this.spinner.setVisibility(View.GONE);
         this.homePage.setVisibility(View.VISIBLE);
+        enableAllButtons();
     }
 
     Drawable getIndicatorDrawable(float change) {

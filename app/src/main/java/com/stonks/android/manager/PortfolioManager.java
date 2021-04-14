@@ -105,19 +105,20 @@ public class PortfolioManager {
     }
 
     public void subscribePortfolioItems() {
-        MainActivity activity = fragment.getMainActivity();
-        for (PortfolioItem item : portfolio.getPortfolioItems()) {
-            activity.subscribe(item.getSymbol(), item);
-
-            item.addOnPropertyChangedCallback(
-                    new androidx.databinding.Observable.OnPropertyChangedCallback() {
-                        @Override
-                        public void onPropertyChanged(
-                                androidx.databinding.Observable observable, int i) {
-                            calculateData(false);
-                        }
-                    });
-        }
+        return;
+//        MainActivity activity = fragment.getMainActivity();
+//        for (PortfolioItem item : portfolio.getPortfolioItems()) {
+//            activity.subscribe(item.getSymbol(), item);
+//
+//            item.addOnPropertyChangedCallback(
+//                    new androidx.databinding.Observable.OnPropertyChangedCallback() {
+//                        @Override
+//                        public void onPropertyChanged(
+//                                androidx.databinding.Observable observable, int i) {
+//                            calculateData(false);
+//                        }
+//                    });
+//        }
     }
 
     public void unsubscribePortfolioItems() {
@@ -144,11 +145,15 @@ public class PortfolioManager {
     }
 
     public void setCurrentRange(DateRange range) {
+        if (this.currentRange == range) {
+            return;
+        }
+
         this.currentRange = range;
         calculateData(true);
     }
 
-    public ArrayList<Float> createGraphData(String symbol, List<BarData> stockPrices) {
+    public ArrayList<Float> createGraphData(String symbol, List<BarData> stockPrices, boolean isCalculatingTotalReturn) {
         ArrayList<Float> stockGraphData = new ArrayList<>();
 
         while (stockGraphData.size() < stockPrices.size()) {
@@ -180,7 +185,7 @@ public class PortfolioManager {
             for (int i = 0; i < stockGraphData.size(); i++) {
                 LocalDateTime localPointDate = ChartHelpers.convertEpochToDateTime(stockPrices.get(i).getTimestamp());
 
-                boolean isBeforeTransactionDate = currentRange == DateRange.YEAR || currentRange == DateRange.THREE_YEARS
+                boolean isBeforeTransactionDate = currentRange == DateRange.YEAR || currentRange == DateRange.THREE_YEARS || isCalculatingTotalReturn
                         ? localPointDate.toLocalDate().isBefore(transactionDate.toLocalDate())
                         : localPointDate.isBefore(transactionDate);
 
@@ -192,13 +197,13 @@ public class PortfolioManager {
                         newValue = stockGraphData.get(i) + (quantity * pricePerStock);
                     }
 
-                    stockGraphData.set(i, totalQuantity == 0.0f ? 0.0f : newValue);
+                    stockGraphData.set(i, totalQuantity == 0 ? 0.0f : newValue);
 
                     continue;
                 }
 
                 float newValue = stockGraphData.get(i) + (quantity * stockPrices.get(i).getClose());
-                stockGraphData.set(i, totalQuantity == 0.0f ? 0.0f : newValue);
+                stockGraphData.set(i, totalQuantity == 0 ? 0.0f : newValue);
             }
         }
 
@@ -221,9 +226,42 @@ public class PortfolioManager {
         return allTimeChange;
     }
 
-    public void calculateTotalReturn() {
-        allTimeChange = 0.0f;
+    public void calculateAccountValue(Map<String, List<BarData>> stocksData) {
+        float accountValue = 0.0f;
+        stocksList = new ArrayList<>();
 
+        for (String symbol : symbolList) {
+            List<BarData> priceList = stocksData.get(symbol);
+            float currentPrice = priceList.get(priceList.size() - 1).getClose();
+            float change = currentPrice - priceList.get(0).getOpen();
+            float changePercentage = change * 100 / priceList.get(0).getOpen();
+            int quantity = portfolio.getStockQuantity(symbol);
+
+            portfolio.setPrice(symbol, currentPrice);
+            stocksList.add(new StockListItem(symbol, "",currentPrice, quantity, change, changePercentage));
+
+            accountValue += (currentPrice * quantity);
+        }
+
+        portfolio.setAccountValue(accountValue);
+    }
+
+    public void calculateTotalReturn(boolean graphOnly) {
+        if (currentRange == DateRange.THREE_YEARS) {
+            allTimeChange = getGraphChange();
+
+            if (graphOnly) {
+                fragment.updateGraph();
+            } else {
+                fragment.updateData();
+            }
+
+            isUpdating = false;
+
+            return;
+        }
+
+        allTimeChange = 0.0f;
         MarketDataService marketDataService = new MarketDataService();
         marketDataService.getBars(new Symbols(symbolList), AlpacaTimeframe.DAY, limit)
                 .observeOn(AndroidSchedulers.mainThread())
@@ -245,33 +283,24 @@ public class PortfolioManager {
 
                                 List<BarData> barData = ChartHelpers.cleanData(symbolData, AlpacaTimeframe.DAY);
                                 List<BarData> clubbedBars = ChartHelpers.mergeBars(barData, 1);
+                                List<Float> stockData = createGraphData(symbol, clubbedBars, true);
 
-                                float change = clubbedBars.get(clubbedBars.size() - 1).getClose() - clubbedBars.get(0).getOpen();
-                                int quantity = portfolio.getStockQuantity(symbol);
-                                allTimeChange += (change);
+                                float change = stockData.get(stockData.size() - 1) - stockData.get(0);
+                                allTimeChange += change;
                             }
+
+                            if (graphOnly) {
+                                fragment.updateGraph();
+                            } else {
+                                fragment.updateData();
+                            }
+
+                            isUpdating = false;
                         },
-                        err -> Log.e("PortfolioManager", err.toString()));
-    }
-
-    public void calculateAccountValue(Map<String, List<BarData>> stocksData) {
-        float accountValue = 0.0f;
-        stocksList = new ArrayList<>();
-
-        for (String symbol : symbolList) {
-            List<BarData> priceList = stocksData.get(symbol);
-            float currentPrice = priceList.get(priceList.size() - 1).getClose();
-            float change = currentPrice - priceList.get(0).getOpen();
-            float changePercentage = change * 100 / priceList.get(0).getOpen();
-            int quantity = portfolio.getStockQuantity(symbol);
-
-            portfolio.setPrice(symbol, currentPrice);
-            stocksList.add(new StockListItem(symbol, "",currentPrice, quantity, change, changePercentage));
-
-            accountValue += (currentPrice * quantity);
-        }
-
-        portfolio.setAccountValue(accountValue);
+                        err -> {
+                            isUpdating = false;
+                            Log.e("PortfolioManager", err.toString());
+                        });
     }
 
     public void calculateData(boolean graphOnly) {
@@ -330,7 +359,7 @@ public class PortfolioManager {
                                 stockData.put(symbol, clubbedBars);
 
                                 BarData lastBar = clubbedBars.get(clubbedBars.size() - 1);
-                                ArrayList<Float> currStockData = createGraphData(symbol, clubbedBars);
+                                ArrayList<Float> currStockData = createGraphData(symbol, clubbedBars, false);
 
                                 while (graphData.size() < currStockData.size()) {
                                     graphData.add(initialPopulation ? 0.0f : graphData.get(graphData.size() - 1));
@@ -352,15 +381,7 @@ public class PortfolioManager {
                             stockChartData = StockChart.buildDataSet(lineData);
 
                             calculateAccountValue(stockData);
-
-                            if (graphOnly) {
-                                fragment.updateGraph();
-                            } else {
-                                calculateTotalReturn();
-                                fragment.updateData();
-                            }
-
-                            isUpdating = false;
+                            calculateTotalReturn(graphOnly);
                         },
                         err -> {
                             isUpdating = false;
