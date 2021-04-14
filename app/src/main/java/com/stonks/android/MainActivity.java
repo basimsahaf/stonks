@@ -21,12 +21,20 @@ import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonParser;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.stonks.android.external.AlpacaWebSocket;
 import com.stonks.android.model.WebSocketObserver;
 import com.stonks.android.utility.Formatters;
 
+import org.json.JSONObject;
+
 import java.io.File;
+import java.io.FileReader;
+import java.io.InputStream;
+import java.nio.file.Files;
 import java.time.DateTimeException;
 import java.time.LocalDateTime;
 
@@ -99,13 +107,27 @@ public class MainActivity extends AppCompatActivity {
                         if (DownloadManager.STATUS_SUCCESSFUL == c.getInt(columnIndex)) {
                             String uriString = c.getString(c.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI));
 
-                            doesSymbolsExist();
-
                             Log.d("main activity", "what is URI strng " + uriString);
                             Uri a = Uri.parse(uriString);
                             File companyData = new File(a.getPath());
                             Log.d("main activity", "download finished and in local file now " + a.getPath());
-                            // populate DB
+
+                            String location = companyData.getPath();
+                            Log.d("main activity", "file is at " + location);
+
+//                            JsonParser parser = new JsonParser();
+//                            try {
+//
+//                                Log.d("main activity", "parsing file " + LocalDateTime.now());
+//
+//                                Object obj = parser.parse(new FileReader(companyData));
+//                                Log.d("main activity", "parsing file done " + LocalDateTime.now());
+//
+//                            } catch (Exception e) {
+//                                e.printStackTrace();
+//                            }
+//
+
                         }
                     }
                 }
@@ -194,6 +216,9 @@ public class MainActivity extends AppCompatActivity {
     public void downloadJSON() {
         Log.d("main activity", "start json download at " + LocalDateTime.now());
 
+        if(doesSymbolsFileExist()) {
+            deletesSymbolsFile();
+        }
         dm = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
         DownloadManager.Request request = new DownloadManager.Request(
                 Uri.parse("https://finnhub.io/api/v1/stock/symbol?exchange=US&token=c0krmsf48v6und6s0rig"))
@@ -208,12 +233,23 @@ public class MainActivity extends AppCompatActivity {
         editor.apply();
     }
 
-    private boolean doesSymbolsExist() {
-        String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "symbols.json";
-//        File file = new File(path);
+    private boolean doesSymbolsFileExist() {
+        String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/"
+                + Environment.DIRECTORY_DOWNLOADS + "/symbols.json";
 
-        Log.d("main activitY", "check if symbols exists" + path);
+        File file = new File(path);
+        boolean exists = file.exists();
+        Log.d("main activity", "does file exist " + exists);
 
-        return false;
+        return exists;
+    }
+
+    private boolean deletesSymbolsFile() {
+        String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/"
+                + Environment.DIRECTORY_DOWNLOADS + "/symbols.json";
+        File file = new File(path);
+        boolean deleted = file.delete();
+        Log.d("main activity" , "file was deleted");
+        return deleted;
     }
 }
