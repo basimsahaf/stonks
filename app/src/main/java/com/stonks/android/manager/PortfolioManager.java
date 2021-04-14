@@ -75,8 +75,8 @@ public class PortfolioManager {
             if (transactions.isEmpty()) {
 //                transactions.add(new Transaction("username", "SHOP", 1, 200.0f, TransactionMode.BUY, java.time.LocalDateTime.now().minusDays(3)));
 //                transactions.add(new Transaction("username", "SHOP", 1, 2000.0f, TransactionMode.SELL, java.time.LocalDateTime.now().minusDays(2)));
-                transactions.add(new Transaction(username, "SHOP", 1, 1000.0f, TransactionMode.BUY, java.time.LocalDateTime.now().withHour(10)));
-                transactions.add(new Transaction(username, "SHOP", 2, 1300.0f, TransactionMode.BUY, java.time.LocalDateTime.now().withHour(13)));
+                transactions.add(new Transaction(username, "SHOP", 1, 800.0f, TransactionMode.BUY, java.time.LocalDateTime.now().withHour(10)));
+                transactions.add(new Transaction(username, "SHOP", 2, 1200.0f, TransactionMode.BUY, java.time.LocalDateTime.now().withHour(13)));
 //                transactions.add(new Transaction("username", "UBER", 2, 20.0f, TransactionMode.BUY, java.time.LocalDateTime.now().withHour(14)));
 
                 symbolList.add("SHOP");
@@ -246,7 +246,7 @@ public class PortfolioManager {
                                 List<BarData> barData = ChartHelpers.cleanData(symbolData, AlpacaTimeframe.DAY);
                                 List<BarData> clubbedBars = ChartHelpers.mergeBars(barData, 1);
 
-                                float change = symbolData.get(clubbedBars.size() - 1).getClose() - clubbedBars.get(0).getOpen();
+                                float change = clubbedBars.get(clubbedBars.size() - 1).getClose() - clubbedBars.get(0).getOpen();
                                 int quantity = portfolio.getStockQuantity(symbol);
                                 allTimeChange += (change * quantity);
                             }
