@@ -21,15 +21,26 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class CompanyTable extends SQLiteOpenHelper {
-    public static final String COMPANY_TABLE = "COMPANY_TABLE";
+    public static final String TABLE_NAME = "COMPANY_TABLE";
     public static final String COLUMN_SYMBOL = "symbol";
     public static final String COLUMN_NAME = "name";
     private Resources mResources;
     private String TAG = CompanyTable.class.getCanonicalName();
     private static CompanyTable companyTable = null;
+    public static String CREATE_STRING =
+            "CREATE TABLE "
+                    + TABLE_NAME
+                    + " ("
+                    + COLUMN_SYMBOL
+                    + " TEXT, "
+                    + COLUMN_NAME
+                    + " TEXT, "
+                    + " PRIMARY KEY ("
+                    + COLUMN_SYMBOL
+                    + "))";
 
     private CompanyTable(@Nullable Context context) {
-        super(context, BuildConfig.DATABASE_NAME, null, 4);
+        super(context, BuildConfig.DATABASE_NAME, null, 9);
         mResources = context.getResources();
     }
 
@@ -43,28 +54,14 @@ public class CompanyTable extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String createCompanyTable =
-                "CREATE TABLE "
-                        + COMPANY_TABLE
-                        + " ("
-                        + COLUMN_SYMBOL
-                        + " TEXT, "
-                        + COLUMN_NAME
-                        + " TEXT, "
-                        + " PRIMARY KEY ("
-                        + COLUMN_SYMBOL
-                        + "))";
-
-        db.execSQL(createCompanyTable);
+        db.execSQL(CREATE_STRING);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        if (oldVersion != newVersion) {
-            String dropStatement =
-                    "DROP TABLE IF EXISTS " + BuildConfig.DATABASE_NAME + "." + COMPANY_TABLE;
-            db.execSQL(dropStatement);
-            onCreate(db);
+        if (oldVersion < newVersion) {
+            DatabaseHelper.removeAllTables(db);
+            DatabaseHelper.createAllTables(db);
         }
     }
 
@@ -75,7 +72,7 @@ public class CompanyTable extends SQLiteOpenHelper {
         cv.put(COLUMN_SYMBOL, company.getSymbol());
         cv.put(COLUMN_NAME, company.getName());
 
-        long insert = db.insert(COMPANY_TABLE, null, cv);
+        long insert = db.insert(TABLE_NAME, null, cv);
         return insert >= 0;
     }
 
@@ -83,8 +80,7 @@ public class CompanyTable extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
         String query =
                 String.format(
-                        "SELECT %s FROM %s WHERE %s = ?",
-                        COLUMN_NAME, COMPANY_TABLE, COLUMN_SYMBOL);
+                        "SELECT %s FROM %s WHERE %s = ?", COLUMN_NAME, TABLE_NAME, COLUMN_SYMBOL);
         Cursor cursor = db.rawQuery(query, new String[] {symbol});
 
         if (cursor.moveToFirst()) {
@@ -97,7 +93,7 @@ public class CompanyTable extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
         String query =
                 "SELECT * FROM "
-                        + COMPANY_TABLE
+                        + TABLE_NAME
                         + " WHERE "
                         + COLUMN_SYMBOL
                         + " LIKE \"%"
@@ -143,7 +139,7 @@ public class CompanyTable extends SQLiteOpenHelper {
                 ContentValues cv = new ContentValues();
                 cv.put(COLUMN_SYMBOL, symbol);
                 cv.put(COLUMN_NAME, name);
-                db.insert(COMPANY_TABLE, null, cv);
+                db.insert(TABLE_NAME, null, cv);
             }
 
         } catch (JSONException e) {
@@ -153,7 +149,7 @@ public class CompanyTable extends SQLiteOpenHelper {
     }
 
     private Boolean isTableNotEmpty() {
-        String query = String.format("SELECT COUNT(*) FROM %s", COMPANY_TABLE);
+        String query = String.format("SELECT COUNT(*) FROM %s", TABLE_NAME);
         String COUNT = "COUNT(*)";
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(query, new String[] {});
