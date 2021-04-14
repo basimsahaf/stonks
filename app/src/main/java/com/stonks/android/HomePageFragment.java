@@ -128,6 +128,12 @@ public class HomePageFragment extends BaseFragment {
         portfolioManager.calculateData(false);
     }
 
+    @Override
+    public void onPause() {
+        portfolioManager.unsubscribePortfolioItems();
+        super.onPause();
+    }
+
     public static ArrayList<StockListItem> getMockItems() {
         ArrayList<StockListItem> list = new ArrayList<>();
 
@@ -150,9 +156,9 @@ public class HomePageFragment extends BaseFragment {
         getMainActivity().setPortfolioValue(portfolioManager.getAccountValue());
         this.moneyLeft.setText(Formatters.formatPrice(portfolioManager.getAccountBalance()));
 
-        float soldProfit = portfolioManager.getTransactionProfits();
-        this.totalReturn.setText(Formatters.formatTotalReturn(soldProfit)); // TODO: get training period start form user table
-        this.totalReturnArrow.setImageDrawable(getIndicatorDrawable(soldProfit));
+        float totalReturn = portfolioManager.getTotalReturn();
+        this.totalReturn.setText(Formatters.formatTotalReturn(totalReturn, portfolioManager.getStartDate())); // TODO: get training period start form user table
+        this.totalReturnArrow.setImageDrawable(getIndicatorDrawable(totalReturn));
 
         updateGraph();
     }
@@ -162,7 +168,7 @@ public class HomePageFragment extends BaseFragment {
 
         ArrayList<Float> barData = portfolioManager.getGraphData();
         float valueChange = portfolioManager.getGraphChange();
-        float valueChangePercent = barData.get(0) == 0.0f ? 0.0f : valueChange / barData.get(0);
+        float valueChangePercent = barData.get(0) == 0.0f ? 0.0f : (valueChange * 100) / barData.get(0);
         this.priceUpdate.setText(Formatters.formatPriceChange(valueChange, valueChangePercent));
         this.priceUpdateArrow.setImageDrawable(getIndicatorDrawable(valueChange));
 

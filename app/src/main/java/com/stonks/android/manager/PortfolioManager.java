@@ -9,6 +9,7 @@ import com.stonks.android.HomePageFragment;
 import com.stonks.android.MainActivity;
 import com.stonks.android.external.MarketDataService;
 import com.stonks.android.model.BarData;
+import com.stonks.android.model.LoginRepository;
 import com.stonks.android.model.Portfolio;
 import com.stonks.android.model.PortfolioItem;
 import com.stonks.android.model.StockListItem;
@@ -41,6 +42,7 @@ public class PortfolioManager {
     private static PortfolioManager portfolioManager = null;
 
     final int limit = 1000;
+    private float allTimeChange;
     private DateRange currentRange;
     private HomePageFragment fragment;
 
@@ -48,6 +50,8 @@ public class PortfolioManager {
     private final PortfolioTable portfolioTable;
     private final TransactionTable transactionTable;
 
+    private static boolean isUpdating = false;
+    private static String username;
     private static Portfolio portfolio;
     private static LineDataSet stockChartData;
     private static ArrayList<Float> graphData;
@@ -63,28 +67,31 @@ public class PortfolioManager {
     }
 
     public static PortfolioManager getInstance(Context context, HomePageFragment f) {
+        username = LoginRepository.getInstance(context).getCurrentUser();
+
         if (portfolioManager == null) {
             portfolioManager = new PortfolioManager(context, f);
 
-            transactions = new ArrayList<>();
-            transactions = portfolioManager.transactionTable.getTransactions("username");
-            symbolList = portfolioManager.transactionTable.getSymbols("username");
+            //  TODO: Remove after testing & move outside if statement
 
-            //  TODO: Remove after testing
-            if (transactions.isEmpty()) {
-//                transactions.add(new Transaction("username", "SHOP", 1, 200.0f, TransactionMode.BUY, java.time.LocalDateTime.now().minusDays(3)));
-//                transactions.add(new Transaction("username", "SHOP", 1, 2000.0f, TransactionMode.SELL, java.time.LocalDateTime.now().minusDays(2)));
-                transactions.add(new Transaction("username", "SHOP", 1, 1000.0f, TransactionMode.BUY, java.time.LocalDateTime.now().withHour(10)));
-                transactions.add(new Transaction("username", "SHOP", 2, 1300.0f, TransactionMode.BUY, java.time.LocalDateTime.now().withHour(12)));
-//                transactions.add(new Transaction("username", "UBER", 2, 20.0f, TransactionMode.BUY, java.time.LocalDateTime.now().withHour(14)));
 
-                symbolList.add("SHOP");
-//                symbolList.add("UBER");
-            }
+//            if (transactions.isEmpty()) {
+////                transactions.add(new Transaction("username", "SHOP", 1, 200.0f, TransactionMode.BUY, java.time.LocalDateTime.now().minusDays(3)));
+////                transactions.add(new Transaction("username", "SHOP", 1, 2000.0f, TransactionMode.SELL, java.time.LocalDateTime.now().minusDays(2)));
+//                transactions.add(new Transaction(username, "SHOP", 1, 1000.0f, TransactionMode.BUY, java.time.LocalDateTime.now().withHour(10)));
+//                transactions.add(new Transaction(username, "SHOP", 2, 1300.0f, TransactionMode.BUY, java.time.LocalDateTime.now().withHour(13)));
+////                transactions.add(new Transaction("username", "UBER", 2, 20.0f, TransactionMode.BUY, java.time.LocalDateTime.now().withHour(14)));
+//
+//                symbolList.add("SHOP");
+////                symbolList.add("UBER");
+//            }
         }
 
-        //String username = LoginRepository.getInstance(new LoginDataSource(userTable)).getCurrentUser();
-        portfolio = new Portfolio(0.0f, 0.0f, portfolioManager.portfolioTable.getPortfolioItems("username"), portfolioManager); // TODO: get user from table
+        transactions = new ArrayList<>();
+        transactions = portfolioManager.transactionTable.getTransactions(username);
+        symbolList = portfolioManager.transactionTable.getSymbols(username);
+
+        portfolio = new Portfolio(portfolioManager.userTable.getFunds(username), 0.0f, portfolioManager.portfolioTable.getPortfolioItems(username), portfolioManager);
         portfolioManager.fragment = f;
         portfolioManager.currentRange = DateRange.DAY;
 
@@ -109,12 +116,23 @@ public class PortfolioManager {
         }
     }
 
+    public void unsubscribePortfolioItems() {
+        MainActivity activity = fragment.getMainActivity();
+        for (PortfolioItem item : portfolio.getPortfolioItems()) {
+            activity.unsubscribe(item.getSymbol());
+        }
+    }
+
     public float getAccountBalance() {
         return portfolio.getAccountBalance();
     }
 
     public float getAccountValue() {
         return portfolio.getAccountValue();
+    }
+
+    public LocalDateTime getStartDate() {
+        return userTable.getTrainingStartDate(username);
     }
 
     public ArrayList<StockListItem> getStocksList() {
@@ -156,12 +174,10 @@ public class PortfolioManager {
 
             LocalDateTime transactionDate = transaction.getCreatedAt();
             for (int i = 0; i < stockGraphData.size(); i++) {
-                Instant pointDate = new Date(stockPrices.get(i).getTimestamp() * 1000L).toInstant();
-                LocalDateTime localPointDate = LocalDateTime.ofInstant(pointDate, ZoneId.systemDefault());
+                LocalDateTime localPointDate = ChartHelpers.convertEpochToDateTime(stockPrices.get(i).getTimestamp());
 
                 if (localPointDate.isBefore(transactionDate)) {
                     float newValue;
-
                     if (transaction.getTransactionType() == TransactionMode.BUY) {
                         newValue = stockGraphData.get(i) + (quantity * transaction.getPrice());
                     } else {
@@ -185,27 +201,49 @@ public class PortfolioManager {
         return graphData;
     }
 
+    public float getGraphChange() {
+        return graphData.get(graphData.size() - 1) - graphData.get(0);
+    }
+
     public LineDataSet getStockChartData() {
         return stockChartData;
     }
 
-    public float getTransactionProfits() {
-        float transactionProfits = 0.0f;
-
-        for (Transaction transaction : transactions) {
-            if (transaction.getTransactionType() == TransactionMode.BUY) {
-                transactionProfits -= (transaction.getPrice() * transaction.getShares());
-                continue;
-            }
-
-            transactionProfits += (transaction.getPrice() * transaction.getShares());
-        }
-
-        return transactionProfits;
+    public float getTotalReturn() {
+        return allTimeChange;
     }
 
-    public float getGraphChange() {
-        return graphData.get(graphData.size() - 1) - graphData.get(0);
+    public void calculateTotalReturn() {
+        allTimeChange = 0.0f;
+
+        MarketDataService marketDataService = new MarketDataService();
+        marketDataService.getBars(new Symbols(symbolList), AlpacaTimeframe.DAY, limit)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(
+                        map -> {
+                            for (int i = 0; i < symbolList.size(); i++) {
+                                String symbol = symbolList.get(i);
+                                if (portfolio.getStockQuantity(symbol) == 0) {
+                                    continue;
+                                }
+
+                                List<BarData> symbolData = map.get(symbol);
+                                long firstTimeStamp = ChartHelpers.getEpochTimestamp(DateRange.THREE_YEARS, symbolData.get(symbolData.size() - 1).getTimestamp());
+                                symbolData =
+                                        symbolData.stream()
+                                                .filter(bar -> bar.getTimestamp() >= firstTimeStamp)
+                                                .collect(Collectors.toList());
+
+                                List<BarData> barData = ChartHelpers.cleanData(symbolData, AlpacaTimeframe.DAY);
+                                List<BarData> clubbedBars = ChartHelpers.mergeBars(barData, 1);
+
+                                float change = symbolData.get(clubbedBars.size() - 1).getClose() - clubbedBars.get(0).getOpen();
+                                int quantity = portfolio.getStockQuantity(symbol);
+                                allTimeChange += (change * quantity);
+                            }
+                        },
+                        err -> Log.e("PortfolioManager", err.toString()));
     }
 
     public void calculateAccountValue(Map<String, List<BarData>> stocksData) {
@@ -215,8 +253,8 @@ public class PortfolioManager {
         for (String symbol : symbolList) {
             List<BarData> priceList = stocksData.get(symbol);
             float currentPrice = priceList.get(priceList.size() - 1).getClose();
-            float change = currentPrice - priceList.get(0).getClose();
-            float changePercentage = change * 100 / priceList.get(0).getClose();
+            float change = currentPrice - priceList.get(0).getOpen();
+            float changePercentage = change * 100 / priceList.get(0).getOpen();
             int quantity = portfolio.getStockQuantity(symbol);
 
             portfolio.setPrice(symbol, currentPrice);
@@ -229,12 +267,11 @@ public class PortfolioManager {
     }
 
     public void calculateData(boolean graphOnly) {
-//        ArrayList<String> symbolList = new ArrayList<>();
-//        for (PortfolioItem item : portfolio.getPortfolioItems()) {
-//            symbolList.add(item.getSymbol());
-//        }
+        if (isUpdating) {
+            return;
+        }
+        isUpdating = true;
 
-        // Information for graph data
         Symbols symbols = new Symbols(symbolList);
         AlpacaTimeframe timeframe = ChartHelpers.getDataPointTimeframe(this.currentRange);
         int windowSize = 1;
@@ -246,14 +283,15 @@ public class PortfolioManager {
                 windowSize = 4;
                 break;
         }
+        final int finalWindowSize = windowSize;
 
         MarketDataService marketDataService = new MarketDataService();
-        int finalWindowSize = windowSize;
         marketDataService.getBars(symbols, timeframe, limit)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(
                         map -> {
+                            boolean initialPopulation = true;
                             graphData = new ArrayList<>();
                             Map<String, List<BarData>> stockData = new HashMap<>();
 
@@ -279,11 +317,15 @@ public class PortfolioManager {
                                 ArrayList<Float> currStockData = createGraphData(symbol, clubbedBars);
 
                                 while (graphData.size() < currStockData.size()) {
-                                    graphData.add(0.0f);
-                                    graphData.add(0.0f);
+                                    graphData.add(initialPopulation ? 0.0f : graphData.get(graphData.size() - 1));
                                 }
 
-                                for (int j = 0; j < currStockData.size(); j++) {
+                                for (int j = 0; j < graphData.size(); j++) {
+                                    if (j >= currStockData.size()) {
+                                        graphData.set(j, graphData.get(j) + currStockData.get(currStockData.size() - 1)); // TODO: verify adjustment?
+                                        continue;
+                                    }
+
                                     graphData.set(j, graphData.get(j) + currStockData.get(j));
                                 }
                             }
@@ -297,8 +339,11 @@ public class PortfolioManager {
                             if (graphOnly) {
                                 fragment.updateGraph();
                             } else {
+                                calculateTotalReturn();
                                 fragment.updateData();
                             }
+
+                            isUpdating = false;
                         },
                         err -> Log.e("PortfolioManager", err.toString()));
     }

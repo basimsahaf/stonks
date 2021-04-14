@@ -1,6 +1,9 @@
 package com.stonks.android.utility;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Locale;
 
@@ -22,14 +25,10 @@ public class Formatters {
     }
 
     public static String formatPriceChange(Float priceChange, Float changePercent) {
-        if (priceChange < 0) {
-            priceChange *= -1.0f;
-        }
-
         if (changePercent < 0.01) {
-            return String.format(Locale.CANADA, "$%.2f (<0.01%%)", priceChange);
+            return String.format(Locale.CANADA, "$%.2f (0.01%%)", Math.abs(priceChange));
         }
-        return String.format(Locale.CANADA, "$%.2f (%.2f%%)", priceChange, changePercent);
+        return String.format(Locale.CANADA, "$%.2f (%.2f%%)", Math.abs(priceChange), Math.abs(changePercent));
     }
 
     public static String formatPriceChange(Double priceChange, Double changePercent) {
@@ -49,13 +48,15 @@ public class Formatters {
         return sdf.format(date);
     }
 
-    public static String formatTotalReturn(Float amount) {
+    public static String formatTotalReturn(Float amount, LocalDateTime date) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MMM YYYY", Locale.CANADA);
+        String dateString = formatter.format(date);
+
         if (amount < 0) {
             amount *= -1.0f;
-            return String.format(Locale.CANADA, "$%.2f loss made since Mar 2021\n(in stock transactions)", amount);
+            return String.format(Locale.CANADA, "$%.2f loss made since %s", amount, dateString);
         }
 
-        return String.format(Locale.CANADA, "$%.2f profit made since Mar 2021\n(in stocks transactions)", amount);
+        return String.format(Locale.CANADA, "$%.2f profit made since %s", amount, dateString);
     }
-
 }
