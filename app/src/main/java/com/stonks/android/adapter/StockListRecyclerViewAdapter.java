@@ -85,7 +85,7 @@ public class StockListRecyclerViewAdapter
         }
 
         holder.price.setText(Formatters.formatPrice(item.getPrice()));
-        holder.quantityText.setText(String.format("Qty: " + item.getQuantity()));
+        holder.quantityText.setText(String.format("%d shares", item.getQuantity()));
         holder.priceChange.setText(generateChangeString(item.getPriceChange(), item.getChangePercent()));
         holder.arrowIndicator.setImageDrawable(getIndicatorDrawable(item.getPriceChange()));
     }
