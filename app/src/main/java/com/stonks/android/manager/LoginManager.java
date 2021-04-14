@@ -33,7 +33,7 @@ public class LoginManager {
         if (result instanceof Result.Success) {
             setLoggedInUser(((Result.Success<UserModel>) result).getData());
         }
-        return userTable.login(username, password);
+        return result;
     }
 
     public Result<UserModel> signUp(String username, String password) {

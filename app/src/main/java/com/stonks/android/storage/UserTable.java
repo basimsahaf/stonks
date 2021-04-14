@@ -78,15 +78,6 @@ public class UserTable extends SQLiteOpenHelper {
         return insert >= 0;
     }
 
-    public boolean checkIfUserExists(String username) {
-        SQLiteDatabase db = this.getReadableDatabase();
-        String queryString = "SELECT * FROM " + TABLE_NAME + " WHERE username = '" + username + "'";
-        Cursor cursor = db.rawQuery(queryString, null);
-        boolean exists = cursor.moveToFirst();
-        cursor.close();
-        return exists;
-    }
-
     public Result<UserModel> login(String username, String password) {
         String query =
                 String.format(
@@ -226,40 +217,6 @@ public class UserTable extends SQLiteOpenHelper {
             return userModel.getTrainingAmount();
         }
         return -1.0f;
-    }
-
-    public boolean verifyCurrentPassword(String currentUsername, String currentPassword) {
-        String query =
-                String.format(
-                        "SELECT * FROM %s WHERE %s = '%s' AND %s = '%s'",
-                        TABLE_NAME,
-                        COLUMN_USERNAME,
-                        currentUsername,
-                        COLUMN_PASSWORD,
-                        currentPassword);
-
-        UserModel userModel = getUserModel(query);
-        if (userModel != null) {
-            return true;
-        }
-        return false;
-    }
-
-    public boolean checkUsernamePassword(String username, String password) {
-        SQLiteDatabase db = this.getReadableDatabase();
-        String queryString =
-                "SELECT * FROM "
-                        + TABLE_NAME
-                        + " WHERE username = '"
-                        + username
-                        + "' AND password = '"
-                        + password
-                        + "'";
-
-        Cursor cursor = db.rawQuery(queryString, null);
-        boolean exists = cursor.moveToFirst();
-        cursor.close();
-        return exists;
     }
 
     private UserModel getUserModel(String query) {

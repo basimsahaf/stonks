@@ -19,6 +19,7 @@ import androidx.biometric.BiometricPrompt;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputLayout;
 import com.stonks.android.manager.LoginManager;
+import com.stonks.android.manager.UserManager;
 import com.stonks.android.model.AuthMode;
 import com.stonks.android.model.LoginViewModel;
 import com.stonks.android.model.UserModel;
@@ -44,8 +45,7 @@ public class LoginActivity extends BaseActivity {
     private AuthMode currentAuthMode;
     private BiometricPrompt.PromptInfo promptInfo;
     private BiometricPrompt biometricPrompt;
-    private LoginManager repo;
-    private MainActivity mainActivity;
+    private LoginManager loginManager;
 
     @RequiresApi(api = Build.VERSION_CODES.P)
     @Override
@@ -54,9 +54,8 @@ public class LoginActivity extends BaseActivity {
         setContentView(R.layout.activity_login);
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
 
-        repo = LoginManager.getInstance(getApplicationContext());
-        loginViewModel = new LoginViewModel(repo);
-        mainActivity = MainActivity.getInstance();
+        loginManager = LoginManager.getInstance(getApplicationContext());
+        loginViewModel = new LoginViewModel(loginManager);
 
         loginModeButton = findViewById(R.id.login_mode_button);
         signUpModeButton = findViewById(R.id.signup_mode_button);
@@ -87,7 +86,7 @@ public class LoginActivity extends BaseActivity {
         // toggle login mode by default
         switchView(AuthMode.LOGIN);
 
-        if (repo.initializeBiometricsUser()) {
+        if (loginManager.initializeBiometricsUser()) {
             biometricsButton.setVisibility(View.VISIBLE);
             authorizeViaBiometrics();
         } else {
@@ -132,7 +131,7 @@ public class LoginActivity extends BaseActivity {
 
     @RequiresApi(api = Build.VERSION_CODES.P)
     private void authorizeViaBiometrics() {
-        UserModel currentUser = mainActivity.getCurrentUser();
+        UserModel currentUser = UserManager.getInstance(getApplicationContext()).getCurrentUser();
         setupBiometrics(currentUser.getUsername());
         biometricPrompt.authenticate(promptInfo);
         usernameField.getEditText().setText(currentUser.getUsername());
