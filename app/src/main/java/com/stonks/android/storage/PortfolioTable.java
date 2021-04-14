@@ -41,7 +41,7 @@ public class PortfolioTable extends SQLiteOpenHelper {
                     + "))";
 
     private PortfolioTable(@Nullable Context context) {
-        super(context, BuildConfig.DATABASE_NAME, null, 6);
+        super(context, BuildConfig.DATABASE_NAME, null, DatabaseHelper.TABLE_VERSION);
     }
 
     public static PortfolioTable getInstance(Context context) {
