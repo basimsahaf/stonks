@@ -7,14 +7,17 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.stonks.android.external.AlpacaWebSocket;
 import com.stonks.android.model.WebSocketObserver;
+import com.stonks.android.storage.CompanyTable;
 import com.stonks.android.utility.Formatters;
 
 public class MainActivity extends AppCompatActivity {
@@ -22,9 +25,12 @@ public class MainActivity extends AppCompatActivity {
     private LinearLayout portfolioTitle;
     private TextView globalTitle;
     private AlpacaWebSocket socket;
+    private OnBackPressedCallback backPressedCallback;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        CompanyTable.populateCompanyTableIfEmpty(getApplicationContext());
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
@@ -77,6 +83,32 @@ public class MainActivity extends AppCompatActivity {
         slidingUpPanel.setPanelHeight(0);
         slidingUpPanel.setAnchorPoint(1.0f);
 
+        backPressedCallback =
+                new OnBackPressedCallback(true) {
+                    @Override
+                    public void handleOnBackPressed() {
+                        SettingsFragment settingsFragment = getSettingsFragment();
+                        StockFragment stockFragment = getStockFragment();
+                        FragmentManager fm = getSupportFragmentManager();
+
+                        if (settingsFragment != null
+                                && settingsFragment.shouldHandleBackPressed()) {
+                            settingsFragment.handleBackPressed();
+                        } else if (stockFragment != null
+                                && stockFragment.shouldHandleBackPressed()) {
+                            stockFragment.handleBackPressedForOverlay();
+                        }
+                        if (isSlidingDrawerVisible()) {
+                            slidingUpPanel.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+                        } else if (fm.getBackStackEntryCount() > 1) {
+                            fm.popBackStack();
+                        } else {
+                            finish();
+                        }
+                    }
+                };
+        getOnBackPressedDispatcher().addCallback(this, backPressedCallback);
+
         this.socket = new AlpacaWebSocket();
     }
 
@@ -128,15 +160,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
-
-            SettingsFragment settingsFragment = getSettingsFragment();
-            if (settingsFragment != null && settingsFragment.isVisible()) {
-                settingsFragment.handleBackPressed();
-            } else if (isSlidingDrawerVisible()) {
-                slidingUpPanel.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
-            } else {
-                super.onBackPressed();
-            }
+            backPressedCallback.handleOnBackPressed();
         }
 
         return super.onOptionsItemSelected(item);
@@ -165,5 +189,11 @@ public class MainActivity extends AppCompatActivity {
         return (SettingsFragment)
                 getSupportFragmentManager()
                         .findFragmentByTag(SettingsFragment.class.getCanonicalName());
+    }
+
+    private StockFragment getStockFragment() {
+        return (StockFragment)
+                getSupportFragmentManager()
+                        .findFragmentByTag(StockFragment.class.getCanonicalName());
     }
 }

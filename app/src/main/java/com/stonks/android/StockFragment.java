@@ -326,6 +326,14 @@ public class StockFragment extends BaseFragment {
         this.stockManager.fetchInitialData();
     }
 
+    public Boolean shouldHandleBackPressed() {
+        return isVisible() && this.overlay.getVisibility() == View.VISIBLE;
+    }
+
+    public void handleBackPressedForOverlay() {
+        this.tradeButton.close(this.overlay);
+    }
+
     private void toggleCandleVisible() {
         if (this.isCandleVisible) {
             this.stockChart.setVisibility(View.VISIBLE);

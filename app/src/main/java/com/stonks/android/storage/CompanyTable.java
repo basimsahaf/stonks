@@ -47,9 +47,15 @@ public class CompanyTable extends SQLiteOpenHelper {
     public static CompanyTable getInstance(Context context) {
         if (companyTable == null) {
             companyTable = new CompanyTable(context);
-            companyTable.populateTableIfNotEmpty();
         }
         return companyTable;
+    }
+
+    public static void populateCompanyTableIfEmpty(Context context) {
+        CompanyTable companyTable = CompanyTable.getInstance(context);
+        if (companyTable.isEmpty()) {
+            companyTable.populateTableInThread();
+        }
     }
 
     @Override
@@ -59,11 +65,9 @@ public class CompanyTable extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        if (oldVersion != newVersion) {
-            String dropStatement =
-                    "DROP TABLE IF EXISTS " + BuildConfig.DATABASE_NAME + "." + TABLE_NAME;
-            db.execSQL(dropStatement);
-            onCreate(db);
+        if (oldVersion < newVersion) {
+            DatabaseHelper.removeAllTables(db);
+            DatabaseHelper.createAllTables(db);
         }
     }
 
@@ -108,33 +112,40 @@ public class CompanyTable extends SQLiteOpenHelper {
         Cursor cursor = db.rawQuery(query, new String[] {});
 
         ArrayList<CompanyModel> companies = new ArrayList<>();
+        int symbolColumnIndex = cursor.getColumnIndex(COLUMN_SYMBOL);
+        int nameColumnIndex = cursor.getColumnIndex(COLUMN_NAME);
 
         if (cursor.moveToFirst()) {
             do {
-                String symbol = cursor.getString(cursor.getColumnIndex(COLUMN_SYMBOL));
-                String name = cursor.getString(cursor.getColumnIndex(COLUMN_NAME));
+                String symbol = cursor.getString(symbolColumnIndex);
+                String name = cursor.getString(nameColumnIndex);
                 companies.add(new CompanyModel(symbol, name));
             } while (cursor.moveToNext());
         }
         return companies;
     }
 
-    private void populateTableIfNotEmpty() {
-        if (isTableNotEmpty()) {
-            return;
-        }
+    private void populateTableInThread() {
+        new Thread(
+                        () -> {
+                            populateTable();
+                        })
+                .start();
+    }
 
+    private void populateTable() {
         SQLiteDatabase db = this.getWritableDatabase();
         String SYMBOL = "symbol";
         String NAME = "description";
 
         try {
             String jsonDataString = readJsonDataFromFile();
-            JSONArray menuItemsJsonArray = new JSONArray(jsonDataString);
+            JSONArray companyJsonArray = new JSONArray(jsonDataString);
+            db.beginTransaction();
 
-            for (int i = 0; i < menuItemsJsonArray.length(); ++i) {
+            for (int i = 0; i < companyJsonArray.length(); ++i) {
 
-                JSONObject item = menuItemsJsonArray.getJSONObject(i);
+                JSONObject item = companyJsonArray.getJSONObject(i);
                 String symbol = item.getString(SYMBOL);
                 String name = item.getString(NAME);
 
@@ -143,6 +154,8 @@ public class CompanyTable extends SQLiteOpenHelper {
                 cv.put(COLUMN_NAME, name);
                 db.insert(TABLE_NAME, null, cv);
             }
+            db.setTransactionSuccessful();
+            db.endTransaction();
 
         } catch (JSONException e) {
             Log.e(TAG, e.getMessage(), e);
@@ -150,7 +163,7 @@ public class CompanyTable extends SQLiteOpenHelper {
         }
     }
 
-    private Boolean isTableNotEmpty() {
+    private Boolean isEmpty() {
         String query = String.format("SELECT COUNT(*) FROM %s", TABLE_NAME);
         String COUNT = "COUNT(*)";
         SQLiteDatabase db = this.getReadableDatabase();
@@ -160,7 +173,7 @@ public class CompanyTable extends SQLiteOpenHelper {
         if (cursor.moveToFirst()) {
             count = cursor.getInt(cursor.getColumnIndex(COUNT));
         }
-        return count > 0;
+        return count == 0;
     }
 
     private String readJsonDataFromFile() {

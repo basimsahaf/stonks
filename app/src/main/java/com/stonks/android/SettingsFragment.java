@@ -130,18 +130,18 @@ public class SettingsFragment extends BaseFragment {
                 });
     }
 
-    public void handleBackPressed() {
-        if (settingsScreen.getVisibility() == View.GONE) {
-            emailChangeScreen.setVisibility(View.GONE);
-            amountChangeScreen.setVisibility(View.GONE);
-            passwordChangeScreen.setVisibility(View.GONE);
-            submitButton.setVisibility(View.GONE);
+    public boolean shouldHandleBackPressed() {
+        return isVisible() && settingsScreen.getVisibility() == View.GONE;
+    }
 
-            settingsScreen.setVisibility(View.VISIBLE);
-            currentMode = SettingsMode.SETTINGS_HOME;
-        } else {
-            super.getActivity().onBackPressed();
-        }
+    public void handleBackPressed() {
+        emailChangeScreen.setVisibility(View.GONE);
+        amountChangeScreen.setVisibility(View.GONE);
+        passwordChangeScreen.setVisibility(View.GONE);
+        submitButton.setVisibility(View.GONE);
+
+        settingsScreen.setVisibility(View.VISIBLE);
+        currentMode = SettingsMode.SETTINGS_HOME;
     }
 
     private boolean changeSettings() {
