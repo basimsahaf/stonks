@@ -66,11 +66,12 @@ public class PortfolioManager {
     public static PortfolioManager getInstance(Context context, HomePageFragment f) {
         if (portfolioManager == null) {
             portfolioManager = new PortfolioManager(context, f);
+
+            graphData = new ArrayList<>();
+            stocksList = new ArrayList<>();
         }
 
         username = LoginRepository.getInstance(context).getCurrentUser();
-        stocksList = new ArrayList<>();
-        graphData = new ArrayList<>();
         transactions = portfolioManager.transactionTable.getTransactions(username);
         symbolList = portfolioManager.transactionTable.getSymbols(username);
 
