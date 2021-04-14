@@ -402,11 +402,13 @@ public class StockManager {
         }
 
         if (movingAverageEnabled && simpleMovingAverage.size() > 0) {
-            lineData.addDataSet(StockChart.buildIndicatorDataSet(simpleMovingAverage, Color.GREEN));
+            lineData.addDataSet(
+                    StockChart.buildIndicatorDataSet(simpleMovingAverage, Color.YELLOW));
         }
 
         if (wMovingAverageEnabled && weightedMovingAverage.size() > 0) {
-            lineData.addDataSet(StockChart.buildIndicatorDataSet(weightedMovingAverage, Color.RED));
+            lineData.addDataSet(
+                    StockChart.buildIndicatorDataSet(weightedMovingAverage, Color.BLUE));
         }
 
         return lineData;

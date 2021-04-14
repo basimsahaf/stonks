@@ -120,7 +120,11 @@ public class StockChart extends LineChart {
 
         dataSet.setLineWidth(3f);
         dataSet.setDrawValues(false);
-        dataSet.setColor(Constants.primaryColor);
+
+        float diff = data.get(data.size() - 1).getY() - data.get(0).getY();
+        int color = diff >= 0 ? Constants.greenColor : Constants.redColor;
+
+        dataSet.setColor(color);
 
         // No indicators for individual data points
         dataSet.setDrawCircles(false);
