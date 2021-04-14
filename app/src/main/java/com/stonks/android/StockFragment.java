@@ -259,29 +259,28 @@ public class StockFragment extends BaseFragment {
         final ConstraintLayout buyButtonContainer = view.findViewById(R.id.buy_button_container);
         final ConstraintLayout sellButtonContainer = view.findViewById(R.id.sell_button_container);
         final ConstraintLayout tryButtonContainer = view.findViewById(R.id.try_button_container);
+        final FloatingActionButton tryButton = view.findViewById(R.id.try_button);
+        final FloatingActionButton buyButton = view.findViewById(R.id.buy_button);
+        final FloatingActionButton sellButton = view.findViewById(R.id.sell_button);
+        final ImageButton chartToggleButton = view.findViewById(R.id.chart_toggle);
+        final MaterialButton indicatorButton = view.findViewById(R.id.indicator_button);
+        final NestedScrollView scrollView = view.findViewById(R.id.scroll_view);
+
         this.positionContainer = view.findViewById(R.id.position_container);
         this.numShares = view.findViewById(R.id.num_shares);
         this.marketVal = view.findViewById(R.id.mkt_value);
         this.avgCost = view.findViewById(R.id.avg_cost);
         this.todayReturn = view.findViewById(R.id.day_return);
         this.totalReturn = view.findViewById(R.id.total_return);
-        final FloatingActionButton tryButton = view.findViewById(R.id.try_button);
-        final FloatingActionButton buyButton = view.findViewById(R.id.buy_button);
-        final FloatingActionButton sellButton = view.findViewById(R.id.sell_button);
-        final ImageButton chartToggleButton = view.findViewById(R.id.chart_toggle);
-        final MaterialButton indicatorButton = view.findViewById(R.id.indicator_button);
-
         this.overlay = view.findViewById(R.id.screen_overlay);
         this.tradeButton = view.findViewById(R.id.trade_button);
         this.transactionList = view.findViewById(R.id.history_list);
-        NestedScrollView scrollView = view.findViewById(R.id.scroll_view);
         this.currentPrice = view.findViewById(R.id.current_price);
         this.priceChange = view.findViewById(R.id.change);
         this.changeIndicator = view.findViewById(R.id.change_indicator);
         this.stockChart = view.findViewById(R.id.stock_chart);
         this.candleChart = view.findViewById(R.id.stock_chart_candle);
         this.historySection = view.findViewById(R.id.history_section);
-
         this.rangeDayButton = view.findViewById(R.id.range_day);
         this.rangeWeekButton = view.findViewById(R.id.range_week);
         this.rangeMonthButton = view.findViewById(R.id.range_month);
@@ -477,10 +476,6 @@ public class StockFragment extends BaseFragment {
         // default date range is daily
         this.rangeDayButton.setChecked(true);
 
-        if (!this.doesUserPositionExist()) {
-            positionContainer.setVisibility(View.GONE);
-        }
-
         this.stockManager.fetchInitialData();
     }
 
@@ -548,11 +543,5 @@ public class StockFragment extends BaseFragment {
             return ContextCompat.getDrawable(
                     getMainActivity(), R.drawable.ic_baseline_arrow_drop_down_24);
         }
-    }
-
-    // Determines whether the user owns shares of the stock
-    // Hard coded to false for now
-    private boolean doesUserPositionExist() {
-        return false;
     }
 }

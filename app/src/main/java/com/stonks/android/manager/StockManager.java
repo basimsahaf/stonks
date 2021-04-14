@@ -143,7 +143,11 @@ public class StockManager {
                 portfolioTable.getPortfolioItemsBySymbol(
                         this.loginRepository.getCurrentUser(), this.symbol);
 
-        return positions == null ? null : positions.get(0);
+        if (positions == null || positions.size() == 0) {
+            return null;
+        }
+
+        return positions.get(0);
     }
 
     public ArrayList<TransactionsListRow> getTransactions() {
@@ -161,6 +165,7 @@ public class StockManager {
         }
 
         LocalDateTime lastTransactionDate = filteredTransactions.get(0).getCreatedAt();
+        transactionList.add(new TransactionsListRow(lastTransactionDate));
 
         for (Transaction transaction : filteredTransactions) {
             LocalDateTime createdAt = transaction.getCreatedAt();
