@@ -1,6 +1,5 @@
 package com.stonks.android;
 
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -20,7 +19,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.button.MaterialButton;
 import com.stonks.android.adapter.StockListRecyclerViewAdapter;
 import com.stonks.android.manager.PortfolioManager;
-import com.stonks.android.model.StockListItem;
 import com.stonks.android.model.alpaca.DateRange;
 import com.stonks.android.uicomponent.StockChart;
 import com.stonks.android.utility.Formatters;
@@ -177,10 +175,10 @@ public class HomePageFragment extends BaseFragment {
         getMainActivity().setPortfolioValue(portfolioManager.getAccountValue());
         this.moneyLeft.setText(Formatters.formatPrice(portfolioManager.getAccountBalance()));
 
-        updateGraph();
+        updateGraphData();
     }
 
-    public void updateGraph() {
+    public void updateGraphData() {
         this.accountValue.setText(Formatters.formatPrice(portfolioManager.getAccountValue()));
 
         ArrayList<Float> barData = portfolioManager.getGraphData();
@@ -211,7 +209,7 @@ public class HomePageFragment extends BaseFragment {
         enableAllButtons();
     }
 
-    Drawable getIndicatorDrawable(float change) {
+    private Drawable getIndicatorDrawable(float change) {
         if (change >= 0) {
             return ContextCompat.getDrawable(
                     this.getContext(), R.drawable.ic_baseline_arrow_drop_up_24);
