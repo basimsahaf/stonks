@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -26,6 +27,9 @@ import java.util.ArrayList;
 
 public class HomePageFragment extends BaseFragment {
     private int currentInfoHeaderHeight = -1;
+
+    private FrameLayout spinner;
+    private ConstraintLayout homePage;
 
     private TextView accountValue;
     private TextView moneyLeft;
@@ -53,6 +57,9 @@ public class HomePageFragment extends BaseFragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         portfolioManager = PortfolioManager.getInstance(this.getContext(), this);
+
+        this.spinner = view.findViewById(R.id.spinner);
+        this.homePage = view.findViewById(R.id.home_page);
 
         this.accountValue = view.findViewById(R.id.current_value_price);
         this.priceUpdate = view.findViewById(R.id.price_update);
@@ -168,12 +175,23 @@ public class HomePageFragment extends BaseFragment {
 
         ArrayList<Float> barData = portfolioManager.getGraphData();
         float valueChange = portfolioManager.getGraphChange();
-        float valueChangePercent = barData.get(0) == 0.0f ? 0.0f : (valueChange * 100) / barData.get(0);
+        float valueChangePercent;
+        if (barData.isEmpty()) {
+            valueChangePercent = 0.0f;
+        } else {
+            valueChangePercent = barData.get(0) == 0.0f ? 0.0f : (valueChange * 100) / barData.get(0);
+        }
+
         this.priceUpdate.setText(Formatters.formatPriceChange(valueChange, valueChangePercent));
         this.priceUpdateArrow.setImageDrawable(getIndicatorDrawable(valueChange));
 
-        this.stockChart.setData(portfolioManager.getStockChartData());
-        this.stockChart.invalidate();
+        if (!barData.isEmpty()) {
+            this.stockChart.setData(portfolioManager.getStockChartData());
+            this.stockChart.invalidate();
+        }
+
+        this.spinner.setVisibility(View.GONE);
+        this.homePage.setVisibility(View.VISIBLE);
     }
 
     Drawable getIndicatorDrawable(float change) {

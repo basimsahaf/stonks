@@ -87,6 +87,8 @@ public class PortfolioManager {
 //            }
         }
 
+        stocksList = new ArrayList<>();
+        graphData = new ArrayList<>();
         transactions = new ArrayList<>();
         transactions = portfolioManager.transactionTable.getTransactions(username);
         symbolList = portfolioManager.transactionTable.getSymbols(username);
@@ -202,7 +204,7 @@ public class PortfolioManager {
     }
 
     public float getGraphChange() {
-        return graphData.get(graphData.size() - 1) - graphData.get(0);
+        return graphData.isEmpty() ? 0 : graphData.get(graphData.size() - 1) - graphData.get(0);
     }
 
     public LineDataSet getStockChartData() {
@@ -270,9 +272,16 @@ public class PortfolioManager {
         if (isUpdating) {
             return;
         }
+
+        if (symbolList.isEmpty()) {
+            fragment.updateData();
+            return;
+        }
+
         isUpdating = true;
 
         Symbols symbols = new Symbols(symbolList);
+
         AlpacaTimeframe timeframe = ChartHelpers.getDataPointTimeframe(this.currentRange);
         int windowSize = 1;
         switch (currentRange) {
@@ -345,6 +354,9 @@ public class PortfolioManager {
 
                             isUpdating = false;
                         },
-                        err -> Log.e("PortfolioManager", err.toString()));
+                        err -> {
+                            isUpdating = false;
+                            Log.e("PortfolioManager", err.getStackTrace().toString());
+                        });
     }
 }

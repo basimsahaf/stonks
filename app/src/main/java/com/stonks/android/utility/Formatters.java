@@ -25,7 +25,7 @@ public class Formatters {
     }
 
     public static String formatPriceChange(Float priceChange, Float changePercent) {
-        if (changePercent < 0.01) {
+        if (changePercent != 0.0f && Math.abs(changePercent) < 0.01) {
             return String.format(Locale.CANADA, "$%.2f (0.01%%)", Math.abs(priceChange));
         }
         return String.format(Locale.CANADA, "$%.2f (%.2f%%)", Math.abs(priceChange), Math.abs(changePercent));
