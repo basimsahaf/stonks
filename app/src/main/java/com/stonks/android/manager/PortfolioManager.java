@@ -24,11 +24,8 @@ import com.stonks.android.storage.UserTable;
 import com.stonks.android.uicomponent.StockChart;
 import com.stonks.android.utility.ChartHelpers;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -73,27 +70,32 @@ public class PortfolioManager {
             portfolioManager = new PortfolioManager(context, f);
 
             //  TODO: Remove after testing & move outside if statement
+            transactions = new ArrayList<>();
+            symbolList = new ArrayList<>();
+            if (transactions.isEmpty()) {
+//                transactions.add(new Transaction("username", "SHOP", 1, 200.0f, TransactionMode.BUY, java.time.LocalDateTime.now().minusDays(3)));
+//                transactions.add(new Transaction("username", "SHOP", 1, 2000.0f, TransactionMode.SELL, java.time.LocalDateTime.now().minusDays(2)));
+                transactions.add(new Transaction(username, "SHOP", 1, 1000.0f, TransactionMode.BUY, java.time.LocalDateTime.now().withHour(10)));
+                transactions.add(new Transaction(username, "SHOP", 2, 1300.0f, TransactionMode.BUY, java.time.LocalDateTime.now().withHour(13)));
+//                transactions.add(new Transaction("username", "UBER", 2, 20.0f, TransactionMode.BUY, java.time.LocalDateTime.now().withHour(14)));
 
-
-//            if (transactions.isEmpty()) {
-////                transactions.add(new Transaction("username", "SHOP", 1, 200.0f, TransactionMode.BUY, java.time.LocalDateTime.now().minusDays(3)));
-////                transactions.add(new Transaction("username", "SHOP", 1, 2000.0f, TransactionMode.SELL, java.time.LocalDateTime.now().minusDays(2)));
-//                transactions.add(new Transaction(username, "SHOP", 1, 1000.0f, TransactionMode.BUY, java.time.LocalDateTime.now().withHour(10)));
-//                transactions.add(new Transaction(username, "SHOP", 2, 1300.0f, TransactionMode.BUY, java.time.LocalDateTime.now().withHour(13)));
-////                transactions.add(new Transaction("username", "UBER", 2, 20.0f, TransactionMode.BUY, java.time.LocalDateTime.now().withHour(14)));
-//
-//                symbolList.add("SHOP");
-////                symbolList.add("UBER");
-//            }
+                symbolList.add("SHOP");
+//                symbolList.add("UBER");
+            }
         }
 
         stocksList = new ArrayList<>();
         graphData = new ArrayList<>();
-        transactions = new ArrayList<>();
-        transactions = portfolioManager.transactionTable.getTransactions(username);
-        symbolList = portfolioManager.transactionTable.getSymbols(username);
+//        transactions = portfolioManager.transactionTable.getTransactions(username);
+//        symbolList = portfolioManager.transactionTable.getSymbols(username);
 
-        portfolio = new Portfolio(portfolioManager.userTable.getFunds(username), 0.0f, portfolioManager.portfolioTable.getPortfolioItems(username), portfolioManager);
+        // TODO: remove after testing
+        ArrayList<PortfolioItem> items = portfolioManager.portfolioTable.getPortfolioItems(username);
+        if (items.isEmpty()) {
+            items.add(new PortfolioItem(username, "SHOP", 3));
+        }
+
+        portfolio = new Portfolio(portfolioManager.userTable.getFunds(username), 0.0f, items, portfolioManager);
         portfolioManager.fragment = f;
         portfolioManager.currentRange = DateRange.DAY;
 
@@ -178,7 +180,11 @@ public class PortfolioManager {
             for (int i = 0; i < stockGraphData.size(); i++) {
                 LocalDateTime localPointDate = ChartHelpers.convertEpochToDateTime(stockPrices.get(i).getTimestamp());
 
-                if (localPointDate.isBefore(transactionDate)) {
+                boolean isBeforeTransactionDate = currentRange == DateRange.YEAR || currentRange == DateRange.THREE_YEARS
+                        ? localPointDate.toLocalDate().isBefore(transactionDate.toLocalDate())
+                        : localPointDate.isBefore(transactionDate);
+
+                if (isBeforeTransactionDate) {
                     float newValue;
                     if (transaction.getTransactionType() == TransactionMode.BUY) {
                         newValue = stockGraphData.get(i) + (quantity * transaction.getPrice());
@@ -323,11 +329,13 @@ public class PortfolioManager {
                                 List<BarData> clubbedBars = ChartHelpers.mergeBars(barData, finalWindowSize);
                                 stockData.put(symbol, clubbedBars);
 
+                                BarData lastBar = clubbedBars.get(clubbedBars.size() - 1);
                                 ArrayList<Float> currStockData = createGraphData(symbol, clubbedBars);
 
                                 while (graphData.size() < currStockData.size()) {
                                     graphData.add(initialPopulation ? 0.0f : graphData.get(graphData.size() - 1));
                                 }
+                                initialPopulation = false;
 
                                 for (int j = 0; j < graphData.size(); j++) {
                                     if (j >= currStockData.size()) {
