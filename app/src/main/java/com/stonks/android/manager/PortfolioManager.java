@@ -372,7 +372,7 @@ public class PortfolioManager {
                         },
                         err -> {
                             isUpdating = false;
-                            Log.e("PortfolioManager", err.getStackTrace().toString());
+                            Log.e("PortfolioManager", err.toString());
                         });
     }
 }
