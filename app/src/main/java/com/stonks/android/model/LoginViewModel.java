@@ -29,7 +29,7 @@ public class LoginViewModel extends ViewModel {
         Result<UserModel> result = loginManager.login(username, password);
 
         if (result instanceof Result.Success) {
-            loginResult.setValue(new LoginResult(new LoggedInUserView("Hello!")));
+            loginResult.setValue(new LoginResult(true));
         } else {
             Integer error = ((Result.Error) result).getError();
             loginResult.setValue(new LoginResult(error));
@@ -40,7 +40,7 @@ public class LoginViewModel extends ViewModel {
         Result<UserModel> result = loginManager.signUp(username, password);
 
         if (result instanceof Result.Success) {
-            loginResult.setValue(new LoginResult(new LoggedInUserView("Hello!")));
+            loginResult.setValue(new LoginResult(true));
         } else {
             Integer error = ((Result.Error) result).getError();
             loginResult.setValue(new LoginResult(error));

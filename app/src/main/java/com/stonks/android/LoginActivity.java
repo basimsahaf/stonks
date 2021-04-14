@@ -265,7 +265,7 @@ public class LoginActivity extends BaseActivity {
                             if (loginResult.getError() != null) {
                                 showLoginFailed(loginResult.getError());
                             }
-                            if (loginResult.getSuccess() != null) {
+                            if (loginResult.getSuccess()) {
                                 Toast.makeText(
                                                 getApplicationContext(),
                                                 R.string.welcome,
