@@ -2,8 +2,6 @@ package com.stonks.android.model;
 
 import androidx.databinding.BaseObservable;
 
-import com.stonks.android.BR;
-
 public class PortfolioItem extends BaseObservable implements WebSocketObserver {
     private final String username;
     private final String symbol;
@@ -28,7 +26,6 @@ public class PortfolioItem extends BaseObservable implements WebSocketObserver {
     public int getQuantity() {
         return quantity;
     }
-
 
     public float getCurrentPrice() {
         return currentPrice;

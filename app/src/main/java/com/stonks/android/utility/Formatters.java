@@ -1,6 +1,5 @@
 package com.stonks.android.utility;
 
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -28,7 +27,8 @@ public class Formatters {
         if (changePercent != 0.0f && Math.abs(changePercent) < 0.01) {
             return String.format(Locale.CANADA, "$%.2f (0.01%%)", Math.abs(priceChange));
         }
-        return String.format(Locale.CANADA, "$%.2f (%.2f%%)", Math.abs(priceChange), Math.abs(changePercent));
+        return String.format(
+                Locale.CANADA, "$%.2f (%.2f%%)", Math.abs(priceChange), Math.abs(changePercent));
     }
 
     public static String formatPriceChange(Double priceChange, Double changePercent) {

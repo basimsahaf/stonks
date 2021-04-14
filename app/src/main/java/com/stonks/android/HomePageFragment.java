@@ -8,21 +8,18 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.google.android.material.button.MaterialButton;
 import com.stonks.android.adapter.StockListRecyclerViewAdapter;
 import com.stonks.android.manager.PortfolioManager;
 import com.stonks.android.model.alpaca.DateRange;
 import com.stonks.android.uicomponent.StockChart;
 import com.stonks.android.utility.Formatters;
-
 import java.util.ArrayList;
 
 public class HomePageFragment extends BaseFragment {
@@ -169,7 +166,8 @@ public class HomePageFragment extends BaseFragment {
         if (!portfolioManager.getStocksList().isEmpty()) {
             noStocksMsg.setVisibility(View.GONE);
         }
-        ((StockListRecyclerViewAdapter) portfolioListAdapter).setNewStocks(portfolioManager.getStocksList());
+        ((StockListRecyclerViewAdapter) portfolioListAdapter)
+                .setNewStocks(portfolioManager.getStocksList());
         portfolioListAdapter.notifyDataSetChanged();
 
         getMainActivity().setPortfolioValue(portfolioManager.getAccountValue());
@@ -187,16 +185,22 @@ public class HomePageFragment extends BaseFragment {
         if (barData.isEmpty()) {
             valueChangePercent = 0.0f;
         } else {
-            valueChangePercent = barData.get(0) == 0.0f ? 0.0f : (valueChange * 100) / barData.get(0);
+            valueChangePercent =
+                    barData.get(0) == 0.0f ? 0.0f : (valueChange * 100) / barData.get(0);
         }
 
         this.priceUpdate.setText(Formatters.formatPriceChange(valueChange, valueChangePercent));
-        this.priceUpdate.setTextColor(ResourcesCompat.getColor(getResources(), valueChange < 0 ? R.color.red : R.color.green, null));
+        this.priceUpdate.setTextColor(
+                ResourcesCompat.getColor(
+                        getResources(), valueChange < 0 ? R.color.red : R.color.green, null));
         this.priceUpdateArrow.setImageDrawable(getIndicatorDrawable(valueChange));
 
         float totalReturn = portfolioManager.getTotalReturn();
-        this.totalReturn.setText(Formatters.formatTotalReturn(totalReturn, portfolioManager.getStartDate()));
-        this.totalReturn.setTextColor(ResourcesCompat.getColor(getResources(), totalReturn < 0 ? R.color.red : R.color.green, null));
+        this.totalReturn.setText(
+                Formatters.formatTotalReturn(totalReturn, portfolioManager.getStartDate()));
+        this.totalReturn.setTextColor(
+                ResourcesCompat.getColor(
+                        getResources(), totalReturn < 0 ? R.color.red : R.color.green, null));
         this.totalReturnArrow.setImageDrawable(getIndicatorDrawable(totalReturn));
 
         if (!barData.isEmpty()) {

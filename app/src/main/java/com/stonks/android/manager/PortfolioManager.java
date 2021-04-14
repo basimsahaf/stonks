@@ -2,7 +2,6 @@ package com.stonks.android.manager;
 
 import android.content.Context;
 import android.util.Log;
-
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.stonks.android.HomePageFragment;
@@ -23,7 +22,8 @@ import com.stonks.android.storage.TransactionTable;
 import com.stonks.android.storage.UserTable;
 import com.stonks.android.uicomponent.StockChart;
 import com.stonks.android.utility.ChartHelpers;
-
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,9 +31,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
-
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
-import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class PortfolioManager {
     private static PortfolioManager portfolioManager = null;
@@ -75,7 +72,12 @@ public class PortfolioManager {
         transactions = portfolioManager.transactionTable.getTransactions(username);
         symbolList = portfolioManager.transactionTable.getSymbols(username);
 
-        portfolio = new Portfolio(portfolioManager.userTable.getFunds(username), 0.0f, portfolioManager.portfolioTable.getPortfolioItems(username), portfolioManager);
+        portfolio =
+                new Portfolio(
+                        portfolioManager.userTable.getFunds(username),
+                        0.0f,
+                        portfolioManager.portfolioTable.getPortfolioItems(username),
+                        portfolioManager);
         portfolioManager.fragment = f;
         portfolioManager.currentRange = DateRange.DAY;
 
@@ -148,7 +150,8 @@ public class PortfolioManager {
         calculateData(true);
     }
 
-    public ArrayList<Float> createGraphData(String symbol, List<BarData> stockPrices, boolean isCalculatingTotalReturn) {
+    public ArrayList<Float> createGraphData(
+            String symbol, List<BarData> stockPrices, boolean isCalculatingTotalReturn) {
         ArrayList<Float> stockGraphData = new ArrayList<>();
         while (stockGraphData.size() < stockPrices.size()) {
             stockGraphData.add(0.0f);
@@ -169,7 +172,9 @@ public class PortfolioManager {
                 }
 
                 totalQuantity += transaction.getShares();
-                pricePerStock = (pricePerStock + (transaction.getPrice() * transaction.getShares())) / totalQuantity;
+                pricePerStock =
+                        (pricePerStock + (transaction.getPrice() * transaction.getShares()))
+                                / totalQuantity;
             } else if (transaction.getTransactionType() == TransactionMode.SELL) {
                 totalQuantity -= transaction.getShares();
                 quantity *= -1;
@@ -177,11 +182,15 @@ public class PortfolioManager {
 
             LocalDateTime transactionDate = transaction.getCreatedAt();
             for (int i = 0; i < stockGraphData.size(); i++) {
-                LocalDateTime localPointDate = ChartHelpers.convertEpochToDateTime(stockPrices.get(i).getTimestamp());
+                LocalDateTime localPointDate =
+                        ChartHelpers.convertEpochToDateTime(stockPrices.get(i).getTimestamp());
 
                 boolean isBeforeTransactionDate;
-                if (currentRange == DateRange.YEAR || currentRange == DateRange.THREE_YEARS || isCalculatingTotalReturn) {
-                    isBeforeTransactionDate =  localPointDate.toLocalDate().isBefore(transactionDate.toLocalDate());
+                if (currentRange == DateRange.YEAR
+                        || currentRange == DateRange.THREE_YEARS
+                        || isCalculatingTotalReturn) {
+                    isBeforeTransactionDate =
+                            localPointDate.toLocalDate().isBefore(transactionDate.toLocalDate());
                 } else {
                     isBeforeTransactionDate = localPointDate.isBefore(transactionDate);
                 }
@@ -219,7 +228,9 @@ public class PortfolioManager {
             int quantity = portfolio.getStockQuantity(symbol);
 
             portfolio.setPrice(symbol, currentPrice);
-            stocksList.add(new StockListItem(symbol, "",currentPrice, quantity, change, changePercentage));
+            stocksList.add(
+                    new StockListItem(
+                            symbol, "", currentPrice, quantity, change, changePercentage));
 
             accountValue += (currentPrice * quantity);
         }
@@ -243,7 +254,8 @@ public class PortfolioManager {
         }
 
         MarketDataService marketDataService = new MarketDataService();
-        marketDataService.getBars(new Symbols(symbolList), AlpacaTimeframe.DAY, limit)
+        marketDataService
+                .getBars(new Symbols(symbolList), AlpacaTimeframe.DAY, limit)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(
@@ -257,17 +269,24 @@ public class PortfolioManager {
                                 }
 
                                 List<BarData> symbolData = map.get(symbol);
-                                long firstTimeStamp = ChartHelpers.getEpochTimestamp(DateRange.THREE_YEARS, symbolData.get(symbolData.size() - 1).getTimestamp());
+                                long firstTimeStamp =
+                                        ChartHelpers.getEpochTimestamp(
+                                                DateRange.THREE_YEARS,
+                                                symbolData
+                                                        .get(symbolData.size() - 1)
+                                                        .getTimestamp());
                                 symbolData =
                                         symbolData.stream()
                                                 .filter(bar -> bar.getTimestamp() >= firstTimeStamp)
                                                 .collect(Collectors.toList());
 
-                                List<BarData> barData = ChartHelpers.cleanData(symbolData, AlpacaTimeframe.DAY);
+                                List<BarData> barData =
+                                        ChartHelpers.cleanData(symbolData, AlpacaTimeframe.DAY);
                                 List<BarData> clubbedBars = ChartHelpers.mergeBars(barData, 1);
                                 List<Float> stockData = createGraphData(symbol, clubbedBars, true);
 
-                                float change = stockData.get(stockData.size() - 1) - stockData.get(0);
+                                float change =
+                                        stockData.get(stockData.size() - 1) - stockData.get(0);
                                 allTimeChange += change;
                             }
 
@@ -312,7 +331,8 @@ public class PortfolioManager {
         final int finalWindowSize = windowSize;
 
         MarketDataService marketDataService = new MarketDataService();
-        marketDataService.getBars(symbols, timeframe, limit)
+        marketDataService
+                .getBars(symbols, timeframe, limit)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(
@@ -330,14 +350,19 @@ public class PortfolioManager {
                                 List<BarData> symbolData = map.get(symbol);
                                 long firstTimeStamp =
                                         ChartHelpers.getEpochTimestamp(
-                                                currentRange, symbolData.get(symbolData.size() - 1).getTimestamp());
+                                                currentRange,
+                                                symbolData
+                                                        .get(symbolData.size() - 1)
+                                                        .getTimestamp());
                                 symbolData =
                                         symbolData.stream()
                                                 .filter(bar -> bar.getTimestamp() >= firstTimeStamp)
                                                 .collect(Collectors.toList());
 
-                                List<BarData> barData = ChartHelpers.cleanData(symbolData, timeframe);
-                                List<BarData> clubbedBars = ChartHelpers.mergeBars(barData, finalWindowSize);
+                                List<BarData> barData =
+                                        ChartHelpers.cleanData(symbolData, timeframe);
+                                List<BarData> clubbedBars =
+                                        ChartHelpers.mergeBars(barData, finalWindowSize);
                                 stockData.put(symbol, clubbedBars);
 
                                 if (clubbedBars.size() > biggestList.size()) {
@@ -350,22 +375,39 @@ public class PortfolioManager {
                             }
 
                             for (String symbol : symbolList) {
-                                ArrayList<Float> currStockData = createGraphData(symbol, stockData.get(symbol), false);
+                                ArrayList<Float> currStockData =
+                                        createGraphData(symbol, stockData.get(symbol), false);
 
                                 int currStockIndex = 0;
                                 for (int j = 0; j < graphData.size(); j++) {
-                                    LocalDateTime graphDate = ChartHelpers.convertEpochToDateTime(biggestList.get(j).getTimestamp());
-                                    LocalDateTime currStockIndexDate = ChartHelpers.convertEpochToDateTime(stockData.get(symbol).get(currStockIndex).getTimestamp());
-                                    if (graphDate.isAfter(currStockIndexDate) && currStockIndex < currStockData.size() - 1) {
+                                    LocalDateTime graphDate =
+                                            ChartHelpers.convertEpochToDateTime(
+                                                    biggestList.get(j).getTimestamp());
+                                    LocalDateTime currStockIndexDate =
+                                            ChartHelpers.convertEpochToDateTime(
+                                                    stockData
+                                                            .get(symbol)
+                                                            .get(currStockIndex)
+                                                            .getTimestamp());
+                                    if (graphDate.isAfter(currStockIndexDate)
+                                            && currStockIndex < currStockData.size() - 1) {
                                         currStockIndex++;
                                     }
 
-                                    graphData.set(j, graphData.get(j) + currStockData.get(currStockIndex));
+                                    graphData.set(
+                                            j,
+                                            graphData.get(j) + currStockData.get(currStockIndex));
                                 }
                             }
 
                             AtomicInteger x = new AtomicInteger(1);
-                            List<Entry> lineData = graphData.stream().map(floatVal -> new Entry(x.getAndIncrement(), floatVal)).collect(Collectors.toList());
+                            List<Entry> lineData =
+                                    graphData.stream()
+                                            .map(
+                                                    floatVal ->
+                                                            new Entry(
+                                                                    x.getAndIncrement(), floatVal))
+                                            .collect(Collectors.toList());
                             stockChartData = StockChart.buildDataSet(lineData);
 
                             calculateAccountValue(stockData);
