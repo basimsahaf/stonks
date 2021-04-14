@@ -122,6 +122,22 @@ public class PortfolioManager {
         return stocksList;
     }
 
+    public ArrayList<Float> getGraphData() {
+        return graphData;
+    }
+
+    public float getGraphChange() {
+        return graphData.isEmpty() ? 0 : graphData.get(graphData.size() - 1) - graphData.get(0);
+    }
+
+    public LineDataSet getStockChartData() {
+        return stockChartData;
+    }
+
+    public float getTotalReturn() {
+        return allTimeChange;
+    }
+
     public void setCurrentRange(DateRange range) {
         if (this.currentRange == range) {
             return;
@@ -133,7 +149,6 @@ public class PortfolioManager {
 
     public ArrayList<Float> createGraphData(String symbol, List<BarData> stockPrices, boolean isCalculatingTotalReturn) {
         ArrayList<Float> stockGraphData = new ArrayList<>();
-
         while (stockGraphData.size() < stockPrices.size()) {
             stockGraphData.add(0.0f);
         }
@@ -163,9 +178,12 @@ public class PortfolioManager {
             for (int i = 0; i < stockGraphData.size(); i++) {
                 LocalDateTime localPointDate = ChartHelpers.convertEpochToDateTime(stockPrices.get(i).getTimestamp());
 
-                boolean isBeforeTransactionDate = currentRange == DateRange.YEAR || currentRange == DateRange.THREE_YEARS || isCalculatingTotalReturn
-                        ? localPointDate.toLocalDate().isBefore(transactionDate.toLocalDate())
-                        : localPointDate.isBefore(transactionDate);
+                boolean isBeforeTransactionDate;
+                if (currentRange == DateRange.YEAR || currentRange == DateRange.THREE_YEARS || isCalculatingTotalReturn) {
+                    isBeforeTransactionDate =  localPointDate.toLocalDate().isBefore(transactionDate.toLocalDate());
+                } else {
+                    isBeforeTransactionDate = localPointDate.isBefore(transactionDate);
+                }
 
                 if (isBeforeTransactionDate) {
                     float newValue;
@@ -186,22 +204,6 @@ public class PortfolioManager {
         }
 
         return stockGraphData;
-    }
-
-    public ArrayList<Float> getGraphData() {
-        return graphData;
-    }
-
-    public float getGraphChange() {
-        return graphData.isEmpty() ? 0 : graphData.get(graphData.size() - 1) - graphData.get(0);
-    }
-
-    public LineDataSet getStockChartData() {
-        return stockChartData;
-    }
-
-    public float getTotalReturn() {
-        return allTimeChange;
     }
 
     public void calculateAccountValue(Map<String, List<BarData>> stocksData) {
@@ -229,7 +231,7 @@ public class PortfolioManager {
             allTimeChange = getGraphChange();
 
             if (graphOnly) {
-                fragment.updateGraph();
+                fragment.updateGraphData();
             } else {
                 fragment.updateData();
             }
@@ -239,13 +241,14 @@ public class PortfolioManager {
             return;
         }
 
-        allTimeChange = 0.0f;
         MarketDataService marketDataService = new MarketDataService();
         marketDataService.getBars(new Symbols(symbolList), AlpacaTimeframe.DAY, limit)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(
                         map -> {
+                            allTimeChange = 0.0f;
+
                             for (int i = 0; i < symbolList.size(); i++) {
                                 String symbol = symbolList.get(i);
                                 if (portfolio.getStockQuantity(symbol) == 0) {
@@ -268,7 +271,7 @@ public class PortfolioManager {
                             }
 
                             if (graphOnly) {
-                                fragment.updateGraph();
+                                fragment.updateGraphData();
                             } else {
                                 fragment.updateData();
                             }
@@ -314,8 +317,8 @@ public class PortfolioManager {
                 .subscribe(
                         map -> {
                             graphData = new ArrayList<>();
-                            Map<String, List<BarData>> stockData = new HashMap<>();
                             List<BarData> biggestList = new ArrayList<>();
+                            Map<String, List<BarData>> stockData = new HashMap<>();
 
                             // Calculate all clubbed bars first
                             for (String symbol : symbolList) {
