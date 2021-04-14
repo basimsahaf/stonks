@@ -21,50 +21,53 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class CompanyTable extends SQLiteOpenHelper {
-    public static final String COMPANY_TABLE = "COMPANY_TABLE";
+    public static final String TABLE_NAME = "COMPANY_TABLE";
     public static final String COLUMN_SYMBOL = "symbol";
     public static final String COLUMN_NAME = "name";
     private Resources mResources;
     private String TAG = CompanyTable.class.getCanonicalName();
     private static CompanyTable companyTable = null;
+    public static String CREATE_STRING =
+            "CREATE TABLE "
+                    + TABLE_NAME
+                    + " ("
+                    + COLUMN_SYMBOL
+                    + " TEXT, "
+                    + COLUMN_NAME
+                    + " TEXT, "
+                    + " PRIMARY KEY ("
+                    + COLUMN_SYMBOL
+                    + "))";
 
     private CompanyTable(@Nullable Context context) {
-        super(context, BuildConfig.DATABASE_NAME, null, 4);
+        super(context, BuildConfig.DATABASE_NAME, null, DatabaseHelper.TABLE_VERSION);
         mResources = context.getResources();
     }
 
     public static CompanyTable getInstance(Context context) {
         if (companyTable == null) {
             companyTable = new CompanyTable(context);
-            companyTable.populateTableIfNotEmpty();
         }
         return companyTable;
     }
 
+    public static void populateCompanyTableIfNotEmpty(Context context) {
+        CompanyTable companyTable = CompanyTable.getInstance(context);
+        if (companyTable.isEmpty()) {
+            companyTable.populateTableInThread();
+        }
+    }
+
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String createCompanyTable =
-                "CREATE TABLE "
-                        + COMPANY_TABLE
-                        + " ("
-                        + COLUMN_SYMBOL
-                        + " TEXT, "
-                        + COLUMN_NAME
-                        + " TEXT, "
-                        + " PRIMARY KEY ("
-                        + COLUMN_SYMBOL
-                        + "))";
-
-        db.execSQL(createCompanyTable);
+        db.execSQL(CREATE_STRING);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        if (oldVersion != newVersion) {
-            String dropStatement =
-                    "DROP TABLE IF EXISTS " + BuildConfig.DATABASE_NAME + "." + COMPANY_TABLE;
-            db.execSQL(dropStatement);
-            onCreate(db);
+        if (oldVersion < newVersion) {
+            DatabaseHelper.removeAllTables(db);
+            DatabaseHelper.createAllTables(db);
         }
     }
 
@@ -75,7 +78,7 @@ public class CompanyTable extends SQLiteOpenHelper {
         cv.put(COLUMN_SYMBOL, company.getSymbol());
         cv.put(COLUMN_NAME, company.getName());
 
-        long insert = db.insert(COMPANY_TABLE, null, cv);
+        long insert = db.insert(TABLE_NAME, null, cv);
         return insert >= 0;
     }
 
@@ -83,8 +86,7 @@ public class CompanyTable extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
         String query =
                 String.format(
-                        "SELECT %s FROM %s WHERE %s = ?",
-                        COLUMN_NAME, COMPANY_TABLE, COLUMN_SYMBOL);
+                        "SELECT %s FROM %s WHERE %s = ?", COLUMN_NAME, TABLE_NAME, COLUMN_SYMBOL);
         Cursor cursor = db.rawQuery(query, new String[] {symbol});
 
         if (cursor.moveToFirst()) {
@@ -97,7 +99,7 @@ public class CompanyTable extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
         String query =
                 "SELECT * FROM "
-                        + COMPANY_TABLE
+                        + TABLE_NAME
                         + " WHERE "
                         + COLUMN_SYMBOL
                         + " LIKE \"%"
@@ -110,41 +112,50 @@ public class CompanyTable extends SQLiteOpenHelper {
         Cursor cursor = db.rawQuery(query, new String[] {});
 
         ArrayList<CompanyModel> companies = new ArrayList<>();
+        int symbolColumnIndex = cursor.getColumnIndex(COLUMN_SYMBOL);
+        int nameColumnIndex = cursor.getColumnIndex(COLUMN_NAME);
 
         if (cursor.moveToFirst()) {
             do {
-                String symbol = cursor.getString(cursor.getColumnIndex(COLUMN_SYMBOL));
-                String name = cursor.getString(cursor.getColumnIndex(COLUMN_NAME));
+                String symbol = cursor.getString(symbolColumnIndex);
+                String name = cursor.getString(nameColumnIndex);
                 companies.add(new CompanyModel(symbol, name));
             } while (cursor.moveToNext());
         }
         return companies;
     }
 
-    private void populateTableIfNotEmpty() {
-        if (isTableNotEmpty()) {
-            return;
-        }
+    private void populateTableInThread() {
+        new Thread(
+                        () -> {
+                            populateTable();
+                        })
+                .start();
+    }
 
+    private void populateTable() {
         SQLiteDatabase db = this.getWritableDatabase();
         String SYMBOL = "symbol";
         String NAME = "description";
 
         try {
             String jsonDataString = readJsonDataFromFile();
-            JSONArray menuItemsJsonArray = new JSONArray(jsonDataString);
+            JSONArray companyJsonArray = new JSONArray(jsonDataString);
+            db.beginTransaction();
 
-            for (int i = 0; i < menuItemsJsonArray.length(); ++i) {
+            for (int i = 0; i < companyJsonArray.length(); ++i) {
 
-                JSONObject item = menuItemsJsonArray.getJSONObject(i);
+                JSONObject item = companyJsonArray.getJSONObject(i);
                 String symbol = item.getString(SYMBOL);
                 String name = item.getString(NAME);
 
                 ContentValues cv = new ContentValues();
                 cv.put(COLUMN_SYMBOL, symbol);
                 cv.put(COLUMN_NAME, name);
-                db.insert(COMPANY_TABLE, null, cv);
+                db.insert(TABLE_NAME, null, cv);
             }
+            db.setTransactionSuccessful();
+            db.endTransaction();
 
         } catch (JSONException e) {
             Log.e(TAG, e.getMessage(), e);
@@ -152,8 +163,8 @@ public class CompanyTable extends SQLiteOpenHelper {
         }
     }
 
-    private Boolean isTableNotEmpty() {
-        String query = String.format("SELECT COUNT(*) FROM %s", COMPANY_TABLE);
+    private Boolean isEmpty() {
+        String query = String.format("SELECT COUNT(*) FROM %s", TABLE_NAME);
         String COUNT = "COUNT(*)";
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(query, new String[] {});
@@ -162,7 +173,7 @@ public class CompanyTable extends SQLiteOpenHelper {
         if (cursor.moveToFirst()) {
             count = cursor.getInt(cursor.getColumnIndex(COUNT));
         }
-        return count > 0;
+        return count == 0;
     }
 
     private String readJsonDataFromFile() {
