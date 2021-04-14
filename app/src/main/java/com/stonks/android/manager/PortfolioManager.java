@@ -84,20 +84,19 @@ public class PortfolioManager {
     }
 
     public void subscribePortfolioItems() {
-        return;
-//        MainActivity activity = fragment.getMainActivity();
-//        for (PortfolioItem item : portfolio.getPortfolioItems()) {
-//            activity.subscribe(item.getSymbol(), item);
-//
-//            item.addOnPropertyChangedCallback(
-//                    new androidx.databinding.Observable.OnPropertyChangedCallback() {
-//                        @Override
-//                        public void onPropertyChanged(
-//                                androidx.databinding.Observable observable, int i) {
-//                            calculateData(false);
-//                        }
-//                    });
-//        }
+        MainActivity activity = fragment.getMainActivity();
+        for (PortfolioItem item : portfolio.getPortfolioItems()) {
+            activity.subscribe(item.getSymbol(), item);
+
+            item.addOnPropertyChangedCallback(
+                    new androidx.databinding.Observable.OnPropertyChangedCallback() {
+                        @Override
+                        public void onPropertyChanged(
+                                androidx.databinding.Observable observable, int i) {
+                            calculateData(false);
+                        }
+                    });
+        }
     }
 
     public void unsubscribePortfolioItems() {
