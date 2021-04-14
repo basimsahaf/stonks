@@ -77,6 +77,7 @@ public class HomePageFragment extends BaseFragment {
         this.rangeMonthButton = view.findViewById(R.id.range_month);
         this.rangeYearButton = view.findViewById(R.id.range_year);
         this.rangeAllButton = view.findViewById(R.id.range_all);
+        disableAllButtons();
 
         view.findViewById(R.id.chart_toggle).setVisibility(View.GONE);
 

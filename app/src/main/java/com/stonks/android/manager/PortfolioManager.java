@@ -335,12 +335,12 @@ public class PortfolioManager {
                 .subscribeOn(Schedulers.io())
                 .subscribe(
                         map -> {
-                            boolean initialPopulation = true;
                             graphData = new ArrayList<>();
                             Map<String, List<BarData>> stockData = new HashMap<>();
+                            List<BarData> biggestList = new ArrayList<>();
 
-                            for (int i = 0; i < symbolList.size(); i++) {
-                                String symbol = symbolList.get(i);
+                            // Calculate all clubbed bars first
+                            for (String symbol : symbolList) {
                                 if (portfolio.getStockQuantity(symbol) == 0) {
                                     continue;
                                 }
@@ -358,21 +358,27 @@ public class PortfolioManager {
                                 List<BarData> clubbedBars = ChartHelpers.mergeBars(barData, finalWindowSize);
                                 stockData.put(symbol, clubbedBars);
 
-                                BarData lastBar = clubbedBars.get(clubbedBars.size() - 1);
-                                ArrayList<Float> currStockData = createGraphData(symbol, clubbedBars, false);
-
-                                while (graphData.size() < currStockData.size()) {
-                                    graphData.add(initialPopulation ? 0.0f : graphData.get(graphData.size() - 1));
+                                if (clubbedBars.size() > biggestList.size()) {
+                                    biggestList = clubbedBars;
                                 }
-                                initialPopulation = false;
+                            }
 
+                            while (graphData.size() < biggestList.size()) {
+                                graphData.add(0.0f);
+                            }
+
+                            for (String symbol : symbolList) {
+                                ArrayList<Float> currStockData = createGraphData(symbol, stockData.get(symbol), false);
+
+                                int currStockIndex = 0;
                                 for (int j = 0; j < graphData.size(); j++) {
-                                    if (j >= currStockData.size()) {
-                                        graphData.set(j, graphData.get(j) + currStockData.get(currStockData.size() - 1)); // TODO: verify adjustment?
-                                        continue;
+                                    LocalDateTime graphDate = ChartHelpers.convertEpochToDateTime(biggestList.get(j).getTimestamp());
+                                    LocalDateTime currStockIndexDate = ChartHelpers.convertEpochToDateTime(stockData.get(symbol).get(currStockIndex).getTimestamp());
+                                    if (graphDate.isAfter(currStockIndexDate) && currStockIndex < currStockData.size() - 1) {
+                                        currStockIndex++;
                                     }
 
-                                    graphData.set(j, graphData.get(j) + currStockData.get(j));
+                                    graphData.set(j, graphData.get(j) + currStockData.get(currStockIndex));
                                 }
                             }
 
