@@ -111,33 +111,33 @@ public class HomePageFragment extends BaseFragment {
         rangeDayButton.setChecked(true);
         rangeDayButton.setOnClickListener(
                 v -> {
-                    portfolioManager.setCurrentRange(DateRange.DAY);
-                    this.rangeDayButton.setChecked(true);
                     disableAllButtons();
+                    this.rangeDayButton.setChecked(true);
+                    portfolioManager.setCurrentRange(DateRange.DAY);
                 });
         rangeWeekButton.setOnClickListener(
                 v -> {
-                    portfolioManager.setCurrentRange(DateRange.WEEK);
-                    this.rangeWeekButton.setChecked(true);
                     disableAllButtons();
+                    this.rangeWeekButton.setChecked(true);
+                    portfolioManager.setCurrentRange(DateRange.WEEK);
                 });
         rangeMonthButton.setOnClickListener(
                 v -> {
-                    portfolioManager.setCurrentRange(DateRange.MONTH);
-                    this.rangeMonthButton.setChecked(true);
                     disableAllButtons();
+                    this.rangeMonthButton.setChecked(true);
+                    portfolioManager.setCurrentRange(DateRange.MONTH);
                 });
         rangeYearButton.setOnClickListener(
                 v -> {
-                    portfolioManager.setCurrentRange(DateRange.YEAR);
-                    this.rangeYearButton.setChecked(true);
                     disableAllButtons();
+                    this.rangeYearButton.setChecked(true);
+                    portfolioManager.setCurrentRange(DateRange.YEAR);
                 });
         rangeAllButton.setOnClickListener(
                 v -> {
-                    portfolioManager.setCurrentRange(DateRange.THREE_YEARS);
-                    this.rangeAllButton.setChecked(true);
                     disableAllButtons();
+                    this.rangeAllButton.setChecked(true);
+                    portfolioManager.setCurrentRange(DateRange.THREE_YEARS);
                 });
 
         portfolioManager.calculateData(false);

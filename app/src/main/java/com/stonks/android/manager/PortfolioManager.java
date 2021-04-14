@@ -64,38 +64,17 @@ public class PortfolioManager {
     }
 
     public static PortfolioManager getInstance(Context context, HomePageFragment f) {
-        username = LoginRepository.getInstance(context).getCurrentUser();
-
         if (portfolioManager == null) {
             portfolioManager = new PortfolioManager(context, f);
-
-            //  TODO: Remove after testing & move outside if statement
-            transactions = new ArrayList<>();
-            symbolList = new ArrayList<>();
-            if (transactions.isEmpty()) {
-//                transactions.add(new Transaction("username", "SHOP", 1, 200.0f, TransactionMode.BUY, java.time.LocalDateTime.now().minusDays(3)));
-//                transactions.add(new Transaction("username", "SHOP", 1, 2000.0f, TransactionMode.SELL, java.time.LocalDateTime.now().minusDays(2)));
-                transactions.add(new Transaction(username, "SHOP", 1, 800.0f, TransactionMode.BUY, java.time.LocalDateTime.now().withHour(10)));
-                transactions.add(new Transaction(username, "SHOP", 2, 1200.0f, TransactionMode.BUY, java.time.LocalDateTime.now().withHour(13)));
-//                transactions.add(new Transaction("username", "UBER", 2, 20.0f, TransactionMode.BUY, java.time.LocalDateTime.now().withHour(14)));
-
-                symbolList.add("SHOP");
-//                symbolList.add("UBER");
-            }
         }
 
+        username = LoginRepository.getInstance(context).getCurrentUser();
         stocksList = new ArrayList<>();
         graphData = new ArrayList<>();
-//        transactions = portfolioManager.transactionTable.getTransactions(username);
-//        symbolList = portfolioManager.transactionTable.getSymbols(username);
+        transactions = portfolioManager.transactionTable.getTransactions(username);
+        symbolList = portfolioManager.transactionTable.getSymbols(username);
 
-        // TODO: remove after testing
-        ArrayList<PortfolioItem> items = portfolioManager.portfolioTable.getPortfolioItems(username);
-        if (items.isEmpty()) {
-            items.add(new PortfolioItem(username, "SHOP", 3));
-        }
-
-        portfolio = new Portfolio(portfolioManager.userTable.getFunds(username), 0.0f, items, portfolioManager);
+        portfolio = new Portfolio(portfolioManager.userTable.getFunds(username), 0.0f, portfolioManager.portfolioTable.getPortfolioItems(username), portfolioManager);
         portfolioManager.fragment = f;
         portfolioManager.currentRange = DateRange.DAY;
 
