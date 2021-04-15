@@ -14,6 +14,7 @@
     <string name="trade_button_label">Trade</string>
     <string name="sym_placeholder">SYM</string>
     <string name="company_name_placeholder">Company Name</string>
+    <string name="num_shares">Number of shares: </string>
     <string name="about_title">About</string>
     <string name="na_value">–</string>
     <string name="username">Username</string>
@@ -53,12 +54,13 @@
     <string name="title_activity_home_page">ScrollingActivity</string>
     <string name="action_settings">Settings</string>
     <string name="account_value">Account Value</string>
-    <string name="current_value_price">$7,644.86</string>
-    <string name="price_update">$646.30 (14.31\% from yesterday)</string>
-    <string name="total_return">$1337.64 since Mar 29 2021</string>
+    <string name="current_value_price">$00.00</string>
+    <string name="price_update">$00.00 (0.00\% from yesterday)</string>
+    <string name="total_return">$00.00 since Jan 01 2021</string>
     <string name="money_left_desc">left to trade</string>
-    <string name="money_left">$19,032.23</string>
+    <string name="money_left">$00.00</string>
     <string name="your_portfolio">Your Portfolio</string>
+    <string name="no_stocks_msg">No stocks right now.\nTrying buying some!</string>
 
     <!-- Activity Screen -->
     <string name="activity">Activity</string>
