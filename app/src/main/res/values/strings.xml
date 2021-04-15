@@ -36,6 +36,7 @@
     <string name="month">1M</string>
     <string name="year">1Y</string>
     <string name="three_years">3Y</string>
+    <string name="configure_indicators">Configure Indicators</string>
 
     <!-- Buy/Sell fragment strings -->
     <string name="buy_button_label">Buy</string>

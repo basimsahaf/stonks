@@ -2,9 +2,7 @@ package com.stonks.android;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.MenuItem;
-import android.view.View;
+import android.view.*;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.activity.OnBackPressedCallback;
@@ -28,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
     private AlpacaWebSocket socket;
     private OnBackPressedCallback backPressedCallback;
     private UserManager userManager;
+    private Menu menu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

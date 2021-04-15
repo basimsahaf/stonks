@@ -127,6 +127,10 @@ public class StockData extends BaseObservable implements Serializable, WebSocket
         return graphData;
     }
 
+    public void setCompanyName(String companyName) {
+        this.companyName = companyName;
+    }
+
     @Override
     public void updateCurrentPrice(BarData newBar) {
         this.currentPrice = newBar.getClose();
@@ -138,8 +142,12 @@ public class StockData extends BaseObservable implements Serializable, WebSocket
     }
 
     public void updateCachedGraphData(DateRange range, List<BarData> bars) {
-        this.cachedGraphData.put(range, bars);
+        updateCachedGraphDataWithoutNotify(range, bars);
         notifyChange();
+    }
+
+    public void updateCachedGraphDataWithoutNotify(DateRange range, List<BarData> bars) {
+        this.cachedGraphData.put(range, bars);
     }
 
     public void updateStock(StockData newData) {
