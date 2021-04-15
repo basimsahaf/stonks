@@ -2,11 +2,12 @@ package com.stonks.android.manager;
 
 import android.content.Context;
 import com.stonks.android.model.PortfolioItem;
+import com.stonks.android.model.Result;
 import com.stonks.android.model.Transaction;
 import com.stonks.android.model.TransactionMode;
+import com.stonks.android.model.UserModel;
 import com.stonks.android.storage.PortfolioTable;
 import com.stonks.android.storage.TransactionTable;
-import com.stonks.android.storage.UserTable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
@@ -15,12 +16,12 @@ public class BuySellManager {
     private static BuySellManager buySellManager;
     private PortfolioTable portfolioTable;
     private TransactionTable transactionTable;
-    private UserTable userTable;
+    private UserManager userManager;
 
     private BuySellManager(Context context) {
         portfolioTable = PortfolioTable.getInstance(context);
         transactionTable = TransactionTable.getInstance(context);
-        userTable = UserTable.getInstance(context);
+        userManager = UserManager.getInstance(context);
     }
 
     public static BuySellManager getInstance(Context context) {
@@ -83,7 +84,10 @@ public class BuySellManager {
                 float change =
                         availableFunds
                                 + numberOfShares * price * (mode == TransactionMode.BUY ? -1 : 1);
-                return userTable.updateTotalAmount(username, change);
+                Result<UserModel> user = userManager.changeTrainingAmount(change);
+                if (user instanceof Result.Success) {
+                    return true;
+                }
             }
         }
 

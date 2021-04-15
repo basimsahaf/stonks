@@ -2,7 +2,6 @@ package com.stonks.android.manager;
 
 import android.content.Context;
 import com.stonks.android.model.FavouriteStock;
-import com.stonks.android.model.LoginRepository;
 import com.stonks.android.model.StockListItem;
 import com.stonks.android.storage.FavouritesTable;
 import java.util.ArrayList;
@@ -14,7 +13,7 @@ public class FavouriteStocksManager {
 
     private FavouriteStocksManager(Context context) {
         this.favouritesTable = FavouritesTable.getInstance(context);
-        this.username = LoginRepository.getInstance(context).getCurrentUser();
+        this.username = UserManager.getInstance(context).getCurrentUser().getUsername();
     }
 
     public static FavouriteStocksManager getInstance(Context context) {

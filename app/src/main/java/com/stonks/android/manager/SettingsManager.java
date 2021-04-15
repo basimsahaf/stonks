@@ -1,16 +1,17 @@
 package com.stonks.android.manager;
 
 import android.content.Context;
-import com.stonks.android.model.LoggedInUser;
-import com.stonks.android.model.LoginRepository;
 import com.stonks.android.model.Result;
+import com.stonks.android.model.UserModel;
 
 public class SettingsManager {
     private static volatile SettingsManager settingsManager;
-    private LoginRepository loginRepository;
+    private final LoginManager loginManager;
+    private final UserManager userManager;
 
     private SettingsManager(Context context) {
-        loginRepository = LoginRepository.getInstance(context);
+        loginManager = LoginManager.getInstance(context);
+        userManager = UserManager.getInstance(context);
     }
 
     public static SettingsManager getInstance(Context context) {
@@ -20,35 +21,35 @@ public class SettingsManager {
         return settingsManager;
     }
 
-    public Result<LoggedInUser> changeUsername(String newUsername) {
-        return loginRepository.changeUsername(newUsername);
+    public Result<UserModel> changeUsername(String newUsername) {
+        return userManager.changeUsername(newUsername);
     }
 
     public String getCurrentUsername() {
-        return loginRepository.getCurrentUser();
+        return userManager.getCurrentUser().getUsername();
     }
 
     public boolean verifyCurrentPassword(String currentPassword) {
-        return loginRepository.verifyCurrentPassword(currentPassword);
+        return userManager.verifyCurrentPassword(currentPassword);
     }
 
-    public Result<LoggedInUser> changePassword(String newPassword) {
-        return loginRepository.changePassword(newPassword);
+    public Result<UserModel> changePassword(String newPassword) {
+        return userManager.changePassword(newPassword);
     }
 
     public boolean isCurrentUserBiometricsEnabled() {
-        return loginRepository.isCurrentUserBiometricsEnabled();
+        return userManager.isCurrentUserBiometricsEnabled();
     }
 
     public boolean isBiometricsAvailableOnDevice() {
-        return loginRepository.isBiometricsAvailableOnDevice();
+        return userManager.isBiometricsAvailableOnDevice();
     }
 
     public boolean toggleBiometrics(boolean status) {
-        return loginRepository.toggleBiometrics(status);
+        return userManager.toggleBiometrics(status);
     }
 
-    public Result<LoggedInUser> changeTrainingAmount(float amount) {
-        return loginRepository.changeTrainingAmount(amount);
+    public Result<UserModel> changeTrainingAmount(float amount) {
+        return userManager.changeTrainingAmount(amount);
     }
 }
