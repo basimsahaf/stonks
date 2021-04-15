@@ -43,7 +43,7 @@ public class BuySellManager {
                 return quantity * price <= amountAvailable;
             case SELL:
                 int totalStocks = getStocksOwnedBySymbol(username, symbol);
-                return totalStocks <= quantity;
+                return totalStocks >= quantity;
             default:
                 return false;
         }

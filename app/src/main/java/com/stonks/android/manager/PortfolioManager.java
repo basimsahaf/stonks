@@ -21,6 +21,7 @@ import com.stonks.android.storage.TransactionTable;
 import com.stonks.android.storage.UserTable;
 import com.stonks.android.uicomponent.StockChart;
 import com.stonks.android.utility.ChartHelpers;
+import com.stonks.android.utility.Formatters;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import java.time.LocalDateTime;
@@ -29,6 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class PortfolioManager {
@@ -42,6 +44,7 @@ public class PortfolioManager {
     private final UserTable userTable;
     private final PortfolioTable portfolioTable;
     private final TransactionTable transactionTable;
+    private static Function<Integer, String> lineMarker;
 
     private static boolean isUpdating = false;
     private static String username;
@@ -57,6 +60,14 @@ public class PortfolioManager {
         userTable = UserTable.getInstance(context);
         portfolioTable = PortfolioTable.getInstance(context);
         transactionTable = TransactionTable.getInstance(context);
+
+        lineMarker =
+                (x) -> {
+                    if (x >= graphData.size()) {
+                        return "";
+                    }
+                    return Formatters.formatPrice(graphData.get(x));
+                };
     }
 
     public static PortfolioManager getInstance(Context context, HomePageFragment f) {
@@ -69,7 +80,7 @@ public class PortfolioManager {
 
         username = UserManager.getInstance(context).getCurrentUser().getUsername();
         transactions = portfolioManager.transactionTable.getTransactions(username);
-        symbolList = portfolioManager.transactionTable.getSymbols(username);
+        symbolList = portfolioManager.portfolioTable.getSymbols(username);
 
         portfolio =
                 new Portfolio(
@@ -138,6 +149,10 @@ public class PortfolioManager {
 
     public float getTotalReturn() {
         return allTimeChange;
+    }
+
+    public Function<Integer, String> getLineMarker() {
+        return lineMarker;
     }
 
     public void setCurrentRange(DateRange range) {
@@ -220,6 +235,10 @@ public class PortfolioManager {
         stocksList = new ArrayList<>();
 
         for (String symbol : symbolList) {
+            if (portfolio.getStockQuantity(symbol) == 0) {
+                continue;
+            }
+
             List<BarData> priceList = stocksData.get(symbol);
             float currentPrice = priceList.get(priceList.size() - 1).getClose();
             float change = currentPrice - priceList.get(0).getOpen();
@@ -374,6 +393,10 @@ public class PortfolioManager {
                             }
 
                             for (String symbol : symbolList) {
+                                if (portfolio.getStockQuantity(symbol) == 0) {
+                                    continue;
+                                }
+
                                 ArrayList<Float> currStockData =
                                         createGraphData(symbol, stockData.get(symbol), false);
 

@@ -124,6 +124,25 @@ public class PortfolioTable extends SQLiteOpenHelper {
         return queryPortfolioItems(query, new String[] {username, symbol});
     }
 
+    public ArrayList<String> getSymbols(String username) {
+        String query =
+                String.format(
+                        "SELECT %s FROM %s WHERE %s = ?",
+                        COLUMN_SYMBOL, TABLE_NAME, COLUMN_USERNAME);
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(query, new String[] {username});
+        ArrayList<String> symbols = new ArrayList<>();
+
+        if (cursor.moveToFirst()) {
+            do {
+                String symbol = cursor.getString(cursor.getColumnIndex(COLUMN_SYMBOL));
+                symbols.add(symbol);
+            } while (cursor.moveToNext());
+        }
+
+        return symbols;
+    }
+
     private ArrayList<PortfolioItem> queryPortfolioItems(String query, String[] selectionArgs) {
         SQLiteDatabase db = this.getReadableDatabase();
         ArrayList<PortfolioItem> portfolioItems = new ArrayList<>();
