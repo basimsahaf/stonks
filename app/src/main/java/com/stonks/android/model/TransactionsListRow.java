@@ -1,6 +1,7 @@
 package com.stonks.android.model;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
 public class TransactionsListRow {
@@ -24,7 +25,7 @@ public class TransactionsListRow {
 
     public String getDateString() {
         DateTimeFormatter format = DateTimeFormatter.ofPattern("dd MMM yy");
-        return date.format(format);
+        return date.atZone(ZoneId.systemDefault()).format(format);
     }
 
     public Transaction getTransaction() {

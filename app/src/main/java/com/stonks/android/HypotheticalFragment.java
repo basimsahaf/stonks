@@ -68,7 +68,7 @@ public class HypotheticalFragment extends BaseFragment {
         stockName.setText(stockManager.getStockData().getCompanyName());
         stockSymbol.setText(stockManager.getStockData().getSymbol());
         LocalTime now = LocalTime.now();
-        time.setText(String.format("%d:%d", now.getHour(), now.getMinute()));
+        time.setText(String.format("%02d:%02d", now.getHour(), now.getMinute()));
 
         final TextView costPerShare = view.findViewById(R.id.cost_per_share);
         this.estimatedCost = view.findViewById(R.id.estimated_cost);

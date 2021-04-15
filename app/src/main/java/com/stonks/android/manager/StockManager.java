@@ -429,7 +429,7 @@ public class StockManager {
 
         if (wMovingAverageEnabled && weightedMovingAverage.size() > 0) {
             lineData.addDataSet(
-                    StockChart.buildIndicatorDataSet(weightedMovingAverage, Color.BLUE));
+                    StockChart.buildIndicatorDataSet(weightedMovingAverage, Color.CYAN));
         }
 
         return lineData;
