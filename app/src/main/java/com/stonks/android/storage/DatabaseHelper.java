@@ -1,16 +1,18 @@
 package com.stonks.android.storage;
 
+import android.content.ComponentName;
 import android.database.sqlite.SQLiteDatabase;
 import java.util.Arrays;
 import java.util.List;
 
 public class DatabaseHelper {
-    public static int TABLE_VERSION = 18;
+    public static int TABLE_VERSION = 29;
 
     public static void removeAllTables(SQLiteDatabase db) {
         final List<String> tables =
                 Arrays.asList(
                         UserTable.TABLE_NAME,
+                        CompanyTable.TABLE_NAME,
                         FavouritesTable.TABLE_NAME,
                         TransactionTable.TABLE_NAME,
                         PortfolioTable.TABLE_NAME,
@@ -21,6 +23,7 @@ public class DatabaseHelper {
     public static void createAllTables(SQLiteDatabase db) {
         final List<String> createStrings =
                 Arrays.asList(
+                        CompanyTable.CREATE_STRING,
                         UserTable.CREATE_STRING,
                         FavouritesTable.CREATE_STRING,
                         TransactionTable.CREATE_STRING,
