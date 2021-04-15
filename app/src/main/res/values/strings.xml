@@ -83,6 +83,7 @@
     <string name="use_bio">Sign-in using biometrics</string>
     <string name="training_settings">Training Settings</string>
     <string name="amount_to_trade">Amount to start trading with</string>
+    <string name="logout">Logout</string>
     <string name="settings">Settings</string>
     <string name="arrow">></string>
     <string name="sample_email">sample@sample.com</string>
