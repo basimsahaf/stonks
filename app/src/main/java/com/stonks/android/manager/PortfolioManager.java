@@ -89,11 +89,11 @@ public class PortfolioManager {
         transactions = portfolioManager.transactionTable.getTransactions(username);
         symbolList = portfolioManager.portfolioTable.getSymbols(username);
 
-        transactions.add(new Transaction(username, "SHOP", 2, 1000.0f, TransactionMode.BUY, LocalDateTime.now().minusMonths(6)));
-        symbolList.add("SHOP");
+//        transactions.add(new Transaction(username, "SHOP", 2, 1000.0f, TransactionMode.BUY, LocalDateTime.now().minusMonths(6)));
+//        symbolList.add("SHOP");
 
-        ArrayList<PortfolioItem> items = new ArrayList<PortfolioItem>();
-//        ArrayList<PortfolioItem> items = portfolioManager.portfolioTable.getPortfolioItems(username);
+//        ArrayList<PortfolioItem> items = new ArrayList<PortfolioItem>();
+        ArrayList<PortfolioItem> items = portfolioManager.portfolioTable.getPortfolioItems(username);
         items.add(new PortfolioItem(username, "SHOP", 2));
 
         portfolio =
@@ -249,6 +249,10 @@ public class PortfolioManager {
         stocksList = new ArrayList<>();
 
         for (String symbol : symbolList) {
+            if (portfolio.getStockQuantity(symbol) == 0) {
+                continue;
+            }
+
             List<BarData> priceList = stocksData.get(symbol);
             float currentPrice = priceList.get(priceList.size() - 1).getClose();
             float change = currentPrice - priceList.get(0).getOpen();
@@ -403,6 +407,10 @@ public class PortfolioManager {
                             }
 
                             for (String symbol : symbolList) {
+                                if (portfolio.getStockQuantity(symbol) == 0) {
+                                    continue;
+                                }
+
                                 ArrayList<Float> currStockData =
                                         createGraphData(symbol, stockData.get(symbol), false);
 
