@@ -45,7 +45,8 @@ public class HypotheticalFragment extends BaseFragment {
 
         this.slidingUpPanel = getMainActivity().getSlidingUpPanel();
         // TODO: Set custom sliding drawer height
-        slidingUpPanel.setPanelState(SlidingUpPanelLayout.PanelState.ANCHORED);
+        slidingUpPanel.post(
+                () -> slidingUpPanel.setPanelState(SlidingUpPanelLayout.PanelState.ANCHORED));
 
         viewModel = ViewModelProviders.of(this).get(PickerLiveDataModel.class);
         final Observer<Integer> observer =
