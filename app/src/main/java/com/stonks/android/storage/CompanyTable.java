@@ -10,8 +10,11 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 import com.stonks.android.BuildConfig;
 import com.stonks.android.R;
+import com.stonks.android.external.CompanyDataManager;
 import com.stonks.android.model.CompanyModel;
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -56,6 +59,11 @@ public class CompanyTable extends SQLiteOpenHelper {
         if (companyTable.isEmpty()) {
             companyTable.populateTableInThread();
         }
+    }
+
+    public void emptyTable() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        db.delete(TABLE_NAME, null, null);
     }
 
     @Override
@@ -181,9 +189,18 @@ public class CompanyTable extends SQLiteOpenHelper {
         InputStream inputStream = null;
         StringBuilder builder = new StringBuilder();
 
+        File symbolsJson = new File(CompanyDataManager.FILE_PATH);
+
         try {
             String jsonDataString = null;
             inputStream = mResources.openRawResource(R.raw.symbols);
+            Log.d("populating company table", "now");
+            if(symbolsJson.length() != 0) {
+                inputStream = new FileInputStream(symbolsJson);
+            }
+            else {
+                inputStream = mResources.openRawResource(R.raw.symbols);
+            }
             BufferedReader bufferedReader =
                     new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
             while ((jsonDataString = bufferedReader.readLine()) != null) {
