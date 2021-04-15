@@ -194,7 +194,7 @@ public class PortfolioManager {
                 quantity *= -1;
             }
 
-            LocalDateTime transactionDate = transaction.getCreatedAt();
+            LocalDateTime transactionDate = transaction.getCreatedAt().minusHours(4);
             for (int i = 0; i < stockGraphData.size(); i++) {
                 LocalDateTime localPointDate =
                         ChartHelpers.convertEpochToDateTime(stockPrices.get(i).getTimestamp());

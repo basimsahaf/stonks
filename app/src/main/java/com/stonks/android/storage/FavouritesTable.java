@@ -18,7 +18,7 @@ public class FavouritesTable extends SQLiteOpenHelper {
     public static final String COLUMN_USERNAME = "username";
     public static final String COLUMN_SYMBOL = "symbol";
     public static final String CREATE_STRING =
-            "CREATE TABLE "
+            "CREATE TABLE IF NOT EXISTS "
                     + TABLE_NAME
                     + " ("
                     + COLUMN_USERNAME

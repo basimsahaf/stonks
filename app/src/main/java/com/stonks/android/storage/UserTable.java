@@ -25,7 +25,7 @@ public class UserTable extends SQLiteOpenHelper {
     public static final String COLUMN_TOTAL_AMOUNT = "total_amount";
     public static final String COLUMN_TRAINING_START_DATE = "training_start_date";
     public static final String CREATE_STRING =
-            "CREATE TABLE "
+            "CREATE TABLE IF NOT EXISTS "
                     + TABLE_NAME
                     + " ("
                     + COLUMN_USERNAME
@@ -55,6 +55,7 @@ public class UserTable extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(CREATE_STRING);
+        DatabaseHelper.createAllTables(db);
     }
 
     @Override
