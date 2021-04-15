@@ -19,7 +19,7 @@ import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.stonks.android.databinding.FragmentBuySellBinding;
 import com.stonks.android.manager.BuySellManager;
 import com.stonks.android.manager.StockManager;
-import com.stonks.android.model.LoginRepository;
+import com.stonks.android.manager.UserManager;
 import com.stonks.android.model.PickerLiveDataModel;
 import com.stonks.android.model.StockData;
 import com.stonks.android.model.TransactionMode;
@@ -53,10 +53,10 @@ public class BuySellFragment extends Fragment {
     private MutableLiveData<Integer> numSharesOwned;
     private PickerLiveDataModel viewModel;
     private SlidingUpPanelLayout slidingUpPanel;
-    private LoginRepository repo;
     private StockData stockData;
     private BuySellManager buySellManager;
     private StockManager stockManager;
+    private UserManager userManager;
 
     @Nullable
     @Override
@@ -74,6 +74,7 @@ public class BuySellFragment extends Fragment {
         stockData = (StockData) arg.getSerializable(STOCK_DATA_ARG);
         currentPrice = stockData.getCurrentPrice();
         stockManager = StockManager.getInstance(getContext());
+        userManager = UserManager.getInstance(getContext());
         binding.setStock(this.stockManager.getStockData());
 
         return binding.getRoot();
@@ -86,7 +87,8 @@ public class BuySellFragment extends Fragment {
 
         slidingUpPanel = mainActivity.getSlidingUpPanel();
         // TODO: Set custom sliding drawer height
-        slidingUpPanel.setPanelState(SlidingUpPanelLayout.PanelState.ANCHORED);
+        slidingUpPanel.post(
+                () -> slidingUpPanel.setPanelState(SlidingUpPanelLayout.PanelState.ANCHORED));
 
         buyBtn = getView().findViewById(R.id.buy_mode_button);
         sellBtn = getView().findViewById(R.id.sell_mode_button);
@@ -115,13 +117,12 @@ public class BuySellFragment extends Fragment {
         stock_symbol.setText(stockData.getSymbol());
         companyName.setText(stockData.getCompanyName());
         price.setText(Formatters.formatPrice(currentPrice));
-        repo = LoginRepository.getInstance(getContext());
         buySellManager = BuySellManager.getInstance(getContext());
-        availableToTrade = new MutableLiveData<>(repo.getTotalAmountAvailable());
+        availableToTrade = new MutableLiveData<>(userManager.getCurrentUser().getTrainingAmount());
         numSharesOwned =
                 new MutableLiveData<>(
                         buySellManager.getStocksOwnedBySymbol(
-                                repo.getCurrentUser(), stockData.getSymbol()));
+                                userManager.getCurrentUser().getUsername(), stockData.getSymbol()));
 
         viewModel = ViewModelProviders.of(this).get(PickerLiveDataModel.class);
         final Observer<Integer> numStocksPicked =
@@ -214,7 +215,7 @@ public class BuySellFragment extends Fragment {
     }
 
     private void handleTransaction() {
-        String username = repo.getCurrentUser();
+        String username = userManager.getCurrentUser().getUsername();
         String stockSymbol = stockData.getSymbol();
         int numberOfShares = numberPicker.getValue();
         float price = stockData.getCurrentPrice();
@@ -223,7 +224,7 @@ public class BuySellFragment extends Fragment {
         if (buySellManager.isTransactionValid(
                 username,
                 stockSymbol,
-                repo.getTotalAmountAvailable(),
+                userManager.getCurrentUser().getTrainingAmount(),
                 numberOfShares,
                 price,
                 mode)) {

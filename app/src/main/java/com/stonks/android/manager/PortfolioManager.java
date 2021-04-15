@@ -8,7 +8,6 @@ import com.stonks.android.HomePageFragment;
 import com.stonks.android.MainActivity;
 import com.stonks.android.external.MarketDataService;
 import com.stonks.android.model.BarData;
-import com.stonks.android.model.LoginRepository;
 import com.stonks.android.model.Portfolio;
 import com.stonks.android.model.PortfolioItem;
 import com.stonks.android.model.StockListItem;
@@ -68,7 +67,7 @@ public class PortfolioManager {
             stocksList = new ArrayList<>();
         }
 
-        username = LoginRepository.getInstance(context).getCurrentUser();
+        username = UserManager.getInstance(context).getCurrentUser().getUsername();
         transactions = portfolioManager.transactionTable.getTransactions(username);
         symbolList = portfolioManager.transactionTable.getSymbols(username);
 

@@ -2,18 +2,19 @@ package com.stonks.android;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.MenuItem;
-import android.view.View;
+import android.view.*;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.stonks.android.external.AlpacaWebSocket;
+import com.stonks.android.manager.UserManager;
 import com.stonks.android.model.WebSocketObserver;
 import com.stonks.android.storage.CompanyTable;
 import com.stonks.android.utility.Formatters;
@@ -23,10 +24,13 @@ public class MainActivity extends AppCompatActivity {
     private LinearLayout portfolioTitle;
     private TextView globalTitle;
     private AlpacaWebSocket socket;
+    private OnBackPressedCallback backPressedCallback;
+    private UserManager userManager;
+    private Menu menu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        CompanyTable.populateCompanyTableIfNotEmpty(getApplicationContext());
+        CompanyTable.populateCompanyTableIfEmpty(getApplicationContext());
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -80,7 +84,34 @@ public class MainActivity extends AppCompatActivity {
         slidingUpPanel.setPanelHeight(0);
         slidingUpPanel.setAnchorPoint(1.0f);
 
+        backPressedCallback =
+                new OnBackPressedCallback(true) {
+                    @Override
+                    public void handleOnBackPressed() {
+                        SettingsFragment settingsFragment = getSettingsFragment();
+                        StockFragment stockFragment = getStockFragment();
+                        FragmentManager fm = getSupportFragmentManager();
+
+                        if (settingsFragment != null
+                                && settingsFragment.shouldHandleBackPressed()) {
+                            settingsFragment.handleBackPressed();
+                        } else if (stockFragment != null
+                                && stockFragment.shouldHandleBackPressed()) {
+                            stockFragment.handleBackPressedForOverlay();
+                        }
+                        if (isSlidingDrawerVisible()) {
+                            slidingUpPanel.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+                        } else if (fm.getBackStackEntryCount() > 1) {
+                            fm.popBackStack();
+                        } else {
+                            finish();
+                        }
+                    }
+                };
+        getOnBackPressedDispatcher().addCallback(this, backPressedCallback);
+
         this.socket = new AlpacaWebSocket();
+        this.userManager = UserManager.getInstance(getApplicationContext());
     }
 
     public void subscribe(String symbol, WebSocketObserver observer) {
@@ -122,14 +153,16 @@ public class MainActivity extends AppCompatActivity {
 
     private void switchFragment(Fragment fragment) {
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.fragment_container, fragment);
-        ft.addToBackStack(fragment.getClass().getCanonicalName()).commit();
+        String tag = fragment.getClass().getCanonicalName();
+
+        ft.replace(R.id.fragment_container, fragment, tag);
+        ft.addToBackStack(tag).commit();
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
-            super.onBackPressed();
+            backPressedCallback.handleOnBackPressed();
         }
 
         return super.onOptionsItemSelected(item);
@@ -137,5 +170,32 @@ public class MainActivity extends AppCompatActivity {
 
     public SlidingUpPanelLayout getSlidingUpPanel() {
         return slidingUpPanel;
+    }
+
+    private boolean isSlidingDrawerVisible() {
+        BuySellFragment buySellFragment =
+                (BuySellFragment)
+                        getSupportFragmentManager()
+                                .findFragmentByTag(BuySellFragment.class.getCanonicalName());
+
+        HypotheticalFragment hypotheticalFragment =
+                (HypotheticalFragment)
+                        getSupportFragmentManager()
+                                .findFragmentByTag(HypotheticalFragment.class.getCanonicalName());
+
+        return (buySellFragment != null && buySellFragment.isVisible())
+                || (hypotheticalFragment != null && hypotheticalFragment.isVisible());
+    }
+
+    private SettingsFragment getSettingsFragment() {
+        return (SettingsFragment)
+                getSupportFragmentManager()
+                        .findFragmentByTag(SettingsFragment.class.getCanonicalName());
+    }
+
+    private StockFragment getStockFragment() {
+        return (StockFragment)
+                getSupportFragmentManager()
+                        .findFragmentByTag(StockFragment.class.getCanonicalName());
     }
 }

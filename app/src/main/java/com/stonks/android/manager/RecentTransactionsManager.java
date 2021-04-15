@@ -1,7 +1,6 @@
 package com.stonks.android.manager;
 
 import android.content.Context;
-import com.stonks.android.model.LoginRepository;
 import com.stonks.android.model.Transaction;
 import com.stonks.android.model.TransactionFilters;
 import com.stonks.android.model.TransactionMode;
@@ -19,7 +18,7 @@ public class RecentTransactionsManager {
 
     private RecentTransactionsManager(Context context) {
         transactionTable = TransactionTable.getInstance(context);
-        username = LoginRepository.getInstance(context).getCurrentUser();
+        username = UserManager.getInstance(context).getCurrentUser().getUsername();
         filters = new TransactionFilters(username);
     }
 
@@ -92,6 +91,28 @@ public class RecentTransactionsManager {
     public void resetMinMaxAmount() {
         filters.setMinAmount(TransactionFilters.UNINITIALIZED_AMOUNT);
         filters.setMaxAmount(TransactionFilters.UNINITIALIZED_AMOUNT);
+    }
+
+    public String getMinAmountFilterString() {
+        if (filters.isMinAmountFilterApplied()) {
+            return Integer.toString(filters.getMinAmount());
+        }
+        return "";
+    }
+
+    public String getMaxAmountFilterString() {
+        if (filters.isMaxAmountFilterApplied()) {
+            return Integer.toString(filters.getMaxAmount());
+        }
+        return "";
+    }
+
+    public TransactionMode getTransactionModeFilter() {
+        return filters.getMode();
+    }
+
+    public ArrayList<String> getSymbolsFilter() {
+        return filters.getSymbols();
     }
 
     private Boolean datesAreOnDifferentDays(LocalDateTime date1, LocalDateTime date2) {

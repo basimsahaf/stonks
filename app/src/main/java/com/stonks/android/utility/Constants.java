@@ -7,6 +7,8 @@ public class Constants {
     // defined this constant for use in Java code
     // TODO: figure out why @colors/primaryColor doesn't work
     public static int primaryColor = Color.rgb(7, 78, 232);
+    public static int greenColor = Color.rgb(76, 175, 80);
+    public static int redColor = Color.rgb(244, 67, 54);
 
     public static Float[] stockDataPoints =
             new Float[] {

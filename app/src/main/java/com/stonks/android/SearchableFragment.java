@@ -46,14 +46,15 @@ public class SearchableFragment extends BaseFragment implements SearchView.OnQue
                     SearchResult item = searchResultAdapter.getItem(position);
 
                     Fragment stockFragment = new StockFragment();
+                    String stockFragmentTag = stockFragment.getClass().getCanonicalName();
                     Bundle bundle = new Bundle();
                     bundle.putString(StockFragment.SYMBOL_ARG, item.getSymbol());
                     stockFragment.setArguments(bundle);
                     getActivity()
                             .getSupportFragmentManager()
                             .beginTransaction()
-                            .replace(R.id.fragment_container, stockFragment)
-                            .addToBackStack(null)
+                            .replace(R.id.fragment_container, stockFragment, stockFragmentTag)
+                            .addToBackStack(stockFragmentTag)
                             .commit();
                 });
     }
