@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class DatabaseHelper {
-    public static int TABLE_VERSION = 22;
+    public static int TABLE_VERSION = 23;
 
     public static void removeAllTables(SQLiteDatabase db) {
         final List<String> tables =

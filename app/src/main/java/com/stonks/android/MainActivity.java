@@ -95,16 +95,15 @@ public class MainActivity extends AppCompatActivity {
                         if (settingsFragment != null
                                 && settingsFragment.shouldHandleBackPressed()) {
                             settingsFragment.handleBackPressed();
-                        } else if (stockFragment != null
-                                && stockFragment.shouldHandleBackPressed()) {
-                            stockFragment.handleBackPressedForOverlay();
-                        }
-                        if (isSlidingDrawerVisible()) {
+                        } else if (isSlidingDrawerVisible()) {
                             slidingUpPanel.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+                        } else if (stockFragment != null
+                                && stockFragment.shouldHandleBackPressed()
+                                && slidingUpPanel.getPanelState()
+                                        != SlidingUpPanelLayout.PanelState.ANCHORED) {
+                            stockFragment.handleBackPressedForOverlay();
                         } else if (fm.getBackStackEntryCount() > 1) {
                             fm.popBackStack();
-                        } else {
-                            finish();
                         }
                     }
                 };
@@ -173,6 +172,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private boolean isSlidingDrawerVisible() {
+        Boolean panelAnchored =
+                slidingUpPanel.getPanelState() == SlidingUpPanelLayout.PanelState.ANCHORED;
         BuySellFragment buySellFragment =
                 (BuySellFragment)
                         getSupportFragmentManager()
@@ -183,8 +184,10 @@ public class MainActivity extends AppCompatActivity {
                         getSupportFragmentManager()
                                 .findFragmentByTag(HypotheticalFragment.class.getCanonicalName());
 
-        return (buySellFragment != null && buySellFragment.isVisible())
-                || (hypotheticalFragment != null && hypotheticalFragment.isVisible());
+        Boolean drawerFragmentVisible =
+                (buySellFragment != null && buySellFragment.isVisible())
+                        || (hypotheticalFragment != null && hypotheticalFragment.isVisible());
+        return panelAnchored || drawerFragmentVisible;
     }
 
     private SettingsFragment getSettingsFragment() {
