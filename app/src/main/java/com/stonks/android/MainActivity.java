@@ -145,6 +145,25 @@ public class MainActivity extends AppCompatActivity {
                 Log.d(TAG, "download company info job scheduling failed");
             }
 
+            // set up jobscheduler to fill table
+            ComponentName tableSchedulerName = new ComponentName(this,
+                    StockJobDownloadScheduler.class);
+            JobInfo tableSchedulerInfo = new JobInfo.Builder(2, tableSchedulerName)
+                    .setRequiredNetworkType(JobInfo.NETWORK_TYPE_UNMETERED)
+                    .setPersisted(true)
+                    .setPeriodic(1440 * 60 * 1000)
+                    .setMinimumLatency(60 * 1000)
+                    .build();
+            JobScheduler tableJobScheduler = (JobScheduler)
+                    getSystemService(JOB_SCHEDULER_SERVICE);
+            int tableSchedulerResult = tableJobScheduler.schedule(tableSchedulerInfo);
+            if (tableSchedulerResult == JobScheduler.RESULT_SUCCESS) {
+                Log.d(TAG, "download company info scheduled");
+            }
+            else {
+                Log.d(TAG, "download company info job scheduling failed");
+            }
+        }
 
         // each fragment can update these properties as needed
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);

@@ -196,6 +196,7 @@ public class CompanyTable extends SQLiteOpenHelper {
             inputStream = mResources.openRawResource(R.raw.symbols);
             Log.d("populating company table", "now");
             if(symbolsJson.length() != 0) {
+            if(symbolsJson.exists() && symbolsJson.length() != 0) {
                 inputStream = new FileInputStream(symbolsJson);
             }
             else {
