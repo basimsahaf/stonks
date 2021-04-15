@@ -45,7 +45,7 @@ public class StockManager {
     private final TransactionTable transactionTable;
     private final PortfolioTable portfolioTable;
     private final CompanyTable companyTable;
-    private final LoginRepository loginRepository;
+    private final UserManager userManager;
     private boolean movingAverageEnabled, wMovingAverageEnabled;
 
     private StockManager(Context context) {
@@ -98,7 +98,7 @@ public class StockManager {
         transactionTable = TransactionTable.getInstance(context);
         portfolioTable = PortfolioTable.getInstance(context);
         companyTable = CompanyTable.getInstance(context);
-        loginRepository = LoginRepository.getInstance(context);
+        userManager = UserManager.getInstance(context);
         movingAverageEnabled = false;
         wMovingAverageEnabled = false;
     }
@@ -158,7 +158,7 @@ public class StockManager {
     public PortfolioItem getPosition() {
         List<PortfolioItem> positions =
                 portfolioTable.getPortfolioItemsBySymbol(
-                        this.loginRepository.getCurrentUser(), this.symbol);
+                        this.userManager.getCurrentUser().getUsername(), this.symbol);
 
         if (positions == null || positions.size() == 0) {
             return null;
@@ -170,7 +170,8 @@ public class StockManager {
     public ArrayList<TransactionsListRow> getTransactions() {
         ArrayList<TransactionsListRow> transactionList = new ArrayList<>();
         List<Transaction> transactions =
-                this.transactionTable.getTransactions(this.loginRepository.getCurrentUser());
+                this.transactionTable.getTransactions(
+                        this.userManager.getCurrentUser().getUsername());
 
         List<Transaction> filteredTransactions =
                 transactions.stream()
