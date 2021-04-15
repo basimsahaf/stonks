@@ -4,8 +4,8 @@ import android.content.Context;
 import android.graphics.Color;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
+import android.view.ViewGroup;
 import android.widget.TextView;
-import androidx.core.widget.NestedScrollView;
 import com.github.mikephil.charting.charts.BarLineChartBase;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.LimitLine;
@@ -178,13 +178,15 @@ public class StockChart extends LineChart {
 
     public static class CustomGestureListener implements OnChartGestureListener {
         private final BarLineChartBase chart;
-        private final NestedScrollView scrollView;
+        private final ViewGroup scrollView;
+        private boolean hideHighlight;
         private OnGestureEnded onGestureEnded;
 
-        public CustomGestureListener(BarLineChartBase c, NestedScrollView s) {
+        public CustomGestureListener(BarLineChartBase c, ViewGroup s) {
             chart = c;
             scrollView = s;
             onGestureEnded = () -> {};
+            hideHighlight = true;
         }
 
         public void setOnGestureEnded(OnGestureEnded onGestureEnded) {
@@ -198,7 +200,9 @@ public class StockChart extends LineChart {
         @Override
         public void onChartGestureEnd(
                 MotionEvent me, ChartTouchListener.ChartGesture lastPerformedGesture) {
-            chart.highlightValue(null);
+            if (this.hideHighlight) {
+                chart.highlightValue(null);
+            }
             chart.setHighlightPerDragEnabled(false);
             scrollView.requestDisallowInterceptTouchEvent(false);
 
@@ -229,6 +233,10 @@ public class StockChart extends LineChart {
 
         @Override
         public void onChartTranslate(MotionEvent me, float dX, float dY) {}
+
+        public void setHideHighlight(boolean b) {
+            this.hideHighlight = b;
+        }
 
         @FunctionalInterface
         public interface OnGestureEnded {

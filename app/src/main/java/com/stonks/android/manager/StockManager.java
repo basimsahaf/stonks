@@ -129,6 +129,23 @@ public class StockManager {
         return lineMarker;
     }
 
+    public Function<Integer, String> getHypotheticalLineMarker() {
+        return (x) -> {
+            BarData bar = this.lineData.get(x);
+            if (bar == null) {
+                return "";
+            }
+
+            long timeStamp = x == this.lineData.size() ? bar.getEndTimestamp() : bar.getTimestamp();
+
+            LocalDateTime date =
+                    LocalDateTime.ofInstant(
+                            Instant.ofEpochSecond(timeStamp), TimeZone.getDefault().toZoneId());
+
+            return ChartHelpers.getMarkerDateFormatter(DateRange.YEAR).format(date);
+        };
+    }
+
     public StockData getStockData() {
         return stockData;
     }
@@ -316,10 +333,14 @@ public class StockManager {
     }
 
     private List<Entry> getLineData() {
-        List<BarData> cachedBars = this.stockData.getCachedGraphData(this.currentRange);
+        return getLineData(this.currentRange);
+    }
+
+    private List<Entry> getLineData(DateRange range) {
+        List<BarData> cachedBars = this.stockData.getCachedGraphData(range);
         long firstTimeStamp =
                 ChartHelpers.getEpochTimestamp(
-                        this.currentRange, cachedBars.get(cachedBars.size() - 1).getTimestamp());
+                        range, cachedBars.get(cachedBars.size() - 1).getTimestamp());
 
         List<BarData> bars =
                 cachedBars.stream()
@@ -328,7 +349,7 @@ public class StockManager {
 
         int windowSize = 1;
 
-        switch (this.currentRange) {
+        switch (range) {
             case DAY:
                 windowSize = 5;
                 break;
@@ -414,6 +435,33 @@ public class StockManager {
         return lineData;
     }
 
+    public void loadHypotheticalData() {
+        final int limit = 1000;
+        final Symbols symbols = new Symbols(Collections.singletonList(this.symbol));
+        final AlpacaTimeframe timeframe = ChartHelpers.getDataPointTimeframe(DateRange.YEAR);
+
+        marketDataService
+                .getBars(symbols, timeframe, limit)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(
+                        stockBars -> {
+                            List<BarData> bars = stockBars.get(symbol);
+                            List<BarData> cleanedData = ChartHelpers.cleanData(bars, timeframe);
+
+                            this.stockData.updateCachedGraphData(DateRange.YEAR, cleanedData);
+                        },
+                        err -> Log.e(TAG, "getHypotheticalLineData: " + err.toString()));
+    }
+
+    public LineData getHypotheticalLineData() {
+        List<Entry> stockPrices = getLineData(DateRange.YEAR);
+        LineData lineData = new LineData();
+        lineData.addDataSet(StockChart.buildDataSet(stockPrices));
+
+        return lineData;
+    }
+
     public int getMovingAveragePeriod() {
         return this.simpleMovingAverage.getSize();
     }
@@ -443,7 +491,6 @@ public class StockManager {
     }
 
     public int getWeightedMovingAveragePeriod() {
-        // TODO: fix
         return this.weightedMovingAverage.getSize();
     }
 
