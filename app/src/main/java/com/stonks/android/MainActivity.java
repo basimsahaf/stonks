@@ -156,13 +156,13 @@ public class MainActivity extends AppCompatActivity {
                     .build();
             JobScheduler tableJobScheduler = (JobScheduler)
                     getSystemService(JOB_SCHEDULER_SERVICE);
-            int tableSchedulerResult = tableJobScheduler.schedule(tableSchedulerInfo);
-            if (tableSchedulerResult == JobScheduler.RESULT_SUCCESS) {
-                Log.d(TAG, "download company info scheduled");
-            }
-            else {
-                Log.d(TAG, "download company info job scheduling failed");
-            }
+//            int tableSchedulerResult = tableJobScheduler.schedule(tableSchedulerInfo);
+//            if (tableSchedulerResult == JobScheduler.RESULT_SUCCESS) {
+//                Log.d(TAG, "download company info scheduled");
+//            }
+//            else {
+//                Log.d(TAG, "download company info job scheduling failed");
+//            }
         }
 
         // each fragment can update these properties as needed
