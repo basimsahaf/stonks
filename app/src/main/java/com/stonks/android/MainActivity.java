@@ -16,6 +16,7 @@ import androidx.fragment.app.FragmentTransaction;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.stonks.android.external.AlpacaWebSocket;
+import com.stonks.android.manager.UserManager;
 import com.stonks.android.model.WebSocketObserver;
 import com.stonks.android.storage.CompanyTable;
 import com.stonks.android.utility.Formatters;
@@ -26,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView globalTitle;
     private AlpacaWebSocket socket;
     private OnBackPressedCallback backPressedCallback;
+    private UserManager userManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,6 +112,7 @@ public class MainActivity extends AppCompatActivity {
         getOnBackPressedDispatcher().addCallback(this, backPressedCallback);
 
         this.socket = new AlpacaWebSocket();
+        this.userManager = UserManager.getInstance(getApplicationContext());
     }
 
     public void subscribe(String symbol, WebSocketObserver observer) {

@@ -5,15 +5,16 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import com.stonks.android.R;
+import com.stonks.android.manager.LoginManager;
 
 public class LoginViewModel extends ViewModel {
 
     private MutableLiveData<LoginFormState> loginFormState = new MutableLiveData<>();
     private MutableLiveData<LoginResult> loginResult = new MutableLiveData<>();
-    private LoginRepository loginRepository;
+    private LoginManager loginManager;
 
-    public LoginViewModel(LoginRepository loginRepository) {
-        this.loginRepository = loginRepository;
+    public LoginViewModel(LoginManager loginManager) {
+        this.loginManager = loginManager;
     }
 
     public LiveData<LoginFormState> getLoginFormState() {
@@ -25,22 +26,21 @@ public class LoginViewModel extends ViewModel {
     }
 
     public void login(String username, String password) {
-        Result<LoggedInUser> result = loginRepository.login(username, password);
+        Result<UserModel> result = loginManager.login(username, password);
 
         if (result instanceof Result.Success) {
-            loginResult.setValue(new LoginResult(new LoggedInUserView("Hello!")));
+            loginResult.setValue(new LoginResult(true));
         } else {
             Integer error = ((Result.Error) result).getError();
             loginResult.setValue(new LoginResult(error));
         }
     }
 
-    public void signup(String username, String password, boolean isBiometricsEnabled) {
-        Result<LoggedInUser> result =
-                loginRepository.signup(username, password, isBiometricsEnabled);
+    public void signup(String username, String password) {
+        Result<UserModel> result = loginManager.signUp(username, password);
 
         if (result instanceof Result.Success) {
-            loginResult.setValue(new LoginResult(new LoggedInUserView("Hello!")));
+            loginResult.setValue(new LoginResult(true));
         } else {
             Integer error = ((Result.Error) result).getError();
             loginResult.setValue(new LoginResult(error));

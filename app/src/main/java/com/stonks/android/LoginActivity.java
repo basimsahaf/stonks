@@ -18,9 +18,11 @@ import androidx.appcompat.app.AppCompatDelegate;
 import androidx.biometric.BiometricPrompt;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputLayout;
+import com.stonks.android.manager.LoginManager;
+import com.stonks.android.manager.UserManager;
 import com.stonks.android.model.AuthMode;
-import com.stonks.android.model.LoginRepository;
 import com.stonks.android.model.LoginViewModel;
+import com.stonks.android.model.UserModel;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -43,7 +45,7 @@ public class LoginActivity extends BaseActivity {
     private AuthMode currentAuthMode;
     private BiometricPrompt.PromptInfo promptInfo;
     private BiometricPrompt biometricPrompt;
-    private LoginRepository repo;
+    private LoginManager loginManager;
 
     @RequiresApi(api = Build.VERSION_CODES.P)
     @Override
@@ -52,8 +54,8 @@ public class LoginActivity extends BaseActivity {
         setContentView(R.layout.activity_login);
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
 
-        repo = LoginRepository.getInstance(getApplicationContext());
-        loginViewModel = new LoginViewModel(repo);
+        loginManager = LoginManager.getInstance(getApplicationContext());
+        loginViewModel = new LoginViewModel(loginManager);
 
         loginModeButton = findViewById(R.id.login_mode_button);
         signUpModeButton = findViewById(R.id.signup_mode_button);
@@ -84,7 +86,7 @@ public class LoginActivity extends BaseActivity {
         // toggle login mode by default
         switchView(AuthMode.LOGIN);
 
-        if (repo.initializeBiometricsUser()) {
+        if (loginManager.initializeBiometricsUser()) {
             biometricsButton.setVisibility(View.VISIBLE);
             authorizeViaBiometrics();
         } else {
@@ -119,7 +121,7 @@ public class LoginActivity extends BaseActivity {
                     break;
 
                 case SIGNUP:
-                    loginViewModel.signup(username, password, false);
+                    loginViewModel.signup(username, password);
                     break;
             }
         } else {
@@ -129,10 +131,10 @@ public class LoginActivity extends BaseActivity {
 
     @RequiresApi(api = Build.VERSION_CODES.P)
     private void authorizeViaBiometrics() {
-        String currentUser = repo.getCurrentUser();
-        setupBiometrics(currentUser);
+        UserModel currentUser = UserManager.getInstance(getApplicationContext()).getCurrentUser();
+        setupBiometrics(currentUser.getUsername());
         biometricPrompt.authenticate(promptInfo);
-        usernameField.getEditText().setText(currentUser);
+        usernameField.getEditText().setText(currentUser.getUsername());
     }
 
     @RequiresApi(api = Build.VERSION_CODES.P)
@@ -263,7 +265,7 @@ public class LoginActivity extends BaseActivity {
                             if (loginResult.getError() != null) {
                                 showLoginFailed(loginResult.getError());
                             }
-                            if (loginResult.getSuccess() != null) {
+                            if (loginResult.getSuccess()) {
                                 Toast.makeText(
                                                 getApplicationContext(),
                                                 R.string.welcome,

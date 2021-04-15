@@ -1,5 +1,6 @@
 package com.stonks.android;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,9 +13,9 @@ import androidx.core.content.res.ResourcesCompat;
 import com.google.android.material.checkbox.MaterialCheckBox;
 import com.google.android.material.textfield.TextInputEditText;
 import com.stonks.android.manager.SettingsManager;
-import com.stonks.android.model.LoggedInUser;
 import com.stonks.android.model.Result;
 import com.stonks.android.model.SettingsMode;
+import com.stonks.android.model.UserModel;
 
 public class SettingsFragment extends BaseFragment {
 
@@ -24,7 +25,8 @@ public class SettingsFragment extends BaseFragment {
             passwordSetting,
             passwordChangeScreen,
             trainingPeriodSetting,
-            amountChangeScreen;
+            amountChangeScreen,
+            logout;
     private Button submitButton;
     private SettingsMode currentMode;
     private SettingsManager settingsManager;
@@ -60,6 +62,7 @@ public class SettingsFragment extends BaseFragment {
         passwordChangeScreen = view.findViewById(R.id.password_change);
         trainingPeriodSetting = view.findViewById(R.id.money_setting);
         amountChangeScreen = view.findViewById(R.id.training_period_change);
+        logout = view.findViewById(R.id.logout);
         submitButton = view.findViewById(R.id.submit_button);
         usernameField = view.findViewById(R.id.username_text_field);
         currentUsername = view.findViewById(R.id.current_username);
@@ -128,6 +131,14 @@ public class SettingsFragment extends BaseFragment {
                                         getResources(), R.color.colorPrimary, null));
                     }
                 });
+
+        logout.setOnClickListener(
+                v -> {
+                    Intent intent = new Intent(getActivity(), LoginActivity.class);
+                    intent.setFlags(
+                            Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
+                });
     }
 
     public boolean shouldHandleBackPressed() {
@@ -167,7 +178,7 @@ public class SettingsFragment extends BaseFragment {
         String newUsername = usernameField.getText().toString();
         // TODO: do username validation once LoginManager is written
         String toastText;
-        Result<LoggedInUser> result = settingsManager.changeUsername(newUsername);
+        Result<UserModel> result = settingsManager.changeUsername(newUsername);
         if (result instanceof Result.Success) {
             toastText = getString(R.string.username_updated);
             status = true;
@@ -186,7 +197,7 @@ public class SettingsFragment extends BaseFragment {
         if (settingsManager.verifyCurrentPassword(currentPassword)) {
             status = true;
             String newPasswordText = newPassword.getText().toString();
-            Result<LoggedInUser> result = settingsManager.changePassword(newPasswordText);
+            Result<UserModel> result = settingsManager.changePassword(newPasswordText);
 
             // TODO: add password validation
 
@@ -217,7 +228,7 @@ public class SettingsFragment extends BaseFragment {
         String newAmount = trainingAmount.getText().toString();
 
         String toastText;
-        Result<LoggedInUser> result;
+        Result<UserModel> result;
         try {
             result = settingsManager.changeTrainingAmount(Float.parseFloat(newAmount));
             if (result instanceof Result.Success) {

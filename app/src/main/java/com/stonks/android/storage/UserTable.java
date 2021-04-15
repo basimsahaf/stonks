@@ -3,14 +3,11 @@ package com.stonks.android.storage;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 import androidx.annotation.Nullable;
 import com.stonks.android.BuildConfig;
 import com.stonks.android.R;
-import com.stonks.android.model.LoggedInUser;
 import com.stonks.android.model.Result;
 import com.stonks.android.model.UserModel;
 import java.time.LocalDateTime;
@@ -19,6 +16,7 @@ public class UserTable extends SQLiteOpenHelper {
     private static UserTable userTable;
     private final String TAG = UserTable.class.getCanonicalName();
     private final float INITIAL_AMOUNT = 100000f;
+    private final int DEFAULT_BIOMETRICS = 0;
 
     public static final String TABLE_NAME = "USER_TABLE";
     public static final String COLUMN_USERNAME = "username";
@@ -72,7 +70,7 @@ public class UserTable extends SQLiteOpenHelper {
         ContentValues cv = new ContentValues();
         cv.put(COLUMN_USERNAME, userModel.getUsername());
         cv.put(COLUMN_PASSWORD, userModel.getPassword());
-        cv.put(COLUMN_BIOMETRICS, userModel.getBiometricsEnabled());
+        cv.put(COLUMN_BIOMETRICS, userModel.isBiometricsEnabled());
         cv.put(COLUMN_TOTAL_AMOUNT, INITIAL_AMOUNT);
         cv.put(COLUMN_TRAINING_START_DATE, LocalDateTime.now().toString());
 
@@ -80,33 +78,37 @@ public class UserTable extends SQLiteOpenHelper {
         return insert >= 0;
     }
 
-    public boolean checkIfUserExists(String username) {
-        SQLiteDatabase db = this.getReadableDatabase();
-        String queryString = "SELECT * FROM " + TABLE_NAME + " WHERE username = '" + username + "'";
-        Cursor cursor = db.rawQuery(queryString, null);
-        boolean exists = cursor.moveToFirst();
-        cursor.close();
-        return exists;
+    public Result<UserModel> login(String username, String password) {
+        String query =
+                String.format(
+                        "SELECT * FROM %s WHERE %s = '%s'", TABLE_NAME, COLUMN_USERNAME, username);
+
+        UserModel userModel = getUserModel(query);
+
+        if (userModel != null) {
+            if (userModel.getPassword().equals(password)) {
+                return new Result.Success<UserModel>(userModel);
+            }
+            return new Result.Error(R.string.invalid_password);
+        }
+        return new Result.Error(R.string.user_does_not_exist);
     }
 
-    public boolean checkUsernamePassword(String username, String password) {
-        SQLiteDatabase db = this.getReadableDatabase();
-        String queryString =
-                "SELECT * FROM "
-                        + TABLE_NAME
-                        + " WHERE username = '"
-                        + username
-                        + "' AND password = '"
-                        + password
-                        + "'";
-
-        Cursor cursor = db.rawQuery(queryString, null);
-        boolean exists = cursor.moveToFirst();
-        cursor.close();
-        return exists;
+    public Result<UserModel> signUp(String username, String password) {
+        UserModel newUser =
+                new UserModel(
+                        username,
+                        password,
+                        DEFAULT_BIOMETRICS,
+                        INITIAL_AMOUNT,
+                        LocalDateTime.now().toString());
+        if (addUser(newUser)) {
+            return new Result.Success<UserModel>(newUser);
+        }
+        return new Result.Error(R.string.signup_failed);
     }
 
-    public Result<LoggedInUser> changeUsername(String oldUsername, String newUsername) {
+    public Result<UserModel> changeUsername(String oldUsername, String newUsername) {
         SQLiteDatabase db = this.getWritableDatabase();
         String query =
                 String.format(
@@ -115,213 +117,147 @@ public class UserTable extends SQLiteOpenHelper {
         Cursor cursor = db.rawQuery(query, null);
         String whereClause = String.format("%s = '%s'", COLUMN_USERNAME, oldUsername);
 
-        if (cursor.moveToFirst()) {
-            String password = cursor.getString(cursor.getColumnIndex(COLUMN_PASSWORD));
-            String biometrics = cursor.getString(cursor.getColumnIndex(COLUMN_BIOMETRICS));
-            String totalAmount = cursor.getString(cursor.getColumnIndex(COLUMN_TOTAL_AMOUNT));
+        UserModel userModel = getUserModel(query);
 
-            ContentValues cv = new ContentValues();
-            cv.put(COLUMN_USERNAME, newUsername);
-            cv.put(COLUMN_PASSWORD, password);
-            cv.put(COLUMN_BIOMETRICS, biometrics);
-            cv.put(COLUMN_TOTAL_AMOUNT, totalAmount);
-
-            try {
-                db.update(TABLE_NAME, cv, whereClause, null);
-                cursor.close();
-                return new Result.Success<>(new LoggedInUser(newUsername));
-            } catch (SQLiteConstraintException e) {
-                return new Result.Error(R.string.user_exists);
+        if (userModel != null) {
+            userModel.setUsername(newUsername);
+            if (updateUser(userModel, oldUsername)) {
+                return new Result.Success<UserModel>(userModel);
             }
+            return new Result.Error(R.string.user_exists);
         }
         // this shouldn't happen but just in case something goes wrong, this will allow graceful
         // exit
         return new Result.Error(R.string.internal_server_error);
     }
 
-    public boolean verifyCurrentPassword(String currentUsername, String currentPassword) {
-        SQLiteDatabase db = this.getReadableDatabase();
-        String query =
-                String.format(
-                        "SELECT * FROM %s WHERE %s = '%s' AND %s = '%s'",
-                        TABLE_NAME,
-                        COLUMN_USERNAME,
-                        currentUsername,
-                        COLUMN_PASSWORD,
-                        currentPassword);
-        Cursor cursor = db.rawQuery(query, null);
-        boolean result = false;
-        if (cursor.moveToFirst()) {
-            result = true;
-        }
-        cursor.close();
-        return result;
-    }
-
-    public Result<LoggedInUser> toggleBiometrics(String username, boolean status) {
-        SQLiteDatabase db = this.getWritableDatabase();
+    public Result<UserModel> changePassword(String username, String newPassword) {
         String query =
                 String.format(
                         "SELECT * FROM %s WHERE %s = '%s'", TABLE_NAME, COLUMN_USERNAME, username);
-        Cursor cursor = db.rawQuery(query, null);
-        String whereClause = String.format("%s = '%s'", COLUMN_USERNAME, username);
+        UserModel userModel = getUserModel(query);
 
-        if (cursor.moveToFirst()) {
-            String password = cursor.getString(cursor.getColumnIndex(COLUMN_PASSWORD));
-            String totalAmount = cursor.getString(cursor.getColumnIndex(COLUMN_TOTAL_AMOUNT));
-
-            ContentValues cv = new ContentValues();
-            cv.put(COLUMN_USERNAME, username);
-            cv.put(COLUMN_PASSWORD, password);
-            cv.put(COLUMN_BIOMETRICS, status);
-            cv.put(COLUMN_TOTAL_AMOUNT, totalAmount);
-
-            Log.d("Usertable", "trying to disable biometrics");
-
-            try {
-                db.update(TABLE_NAME, cv, whereClause, null);
-                cursor.close();
-                return new Result.Success<>(new LoggedInUser(username));
-            } catch (SQLiteConstraintException e) {
-                return new Result.Error(R.string.password_update_error);
+        if (userModel != null) {
+            userModel.setPassword(newPassword);
+            if (updateUser(userModel, username)) {
+                return new Result.Success<UserModel>(userModel);
             }
+
+            return new Result.Error(R.string.password_update_error);
         }
         // this shouldn't happen but just in case something goes wrong, this will allow graceful
         // exit
         return new Result.Error(R.string.internal_server_error);
     }
 
-    public Result<LoggedInUser> getBiometricsUser() {
-        SQLiteDatabase db = this.getReadableDatabase();
+    public Result<UserModel> toggleBiometrics(String username, boolean status) {
+        String query =
+                String.format(
+                        "SELECT * FROM %s WHERE %s = '%s'", TABLE_NAME, COLUMN_USERNAME, username);
+        UserModel userModel = getUserModel(query);
+
+        if (userModel != null) {
+            userModel.setBiometricsEnabled(status ? 1 : 0);
+            if (updateUser(userModel, username)) {
+                return new Result.Success<UserModel>(userModel);
+            }
+            return new Result.Error(R.string.biometrics_in_use);
+        }
+        // this shouldn't happen but just in case something goes wrong, this will allow graceful
+        // exit
+        return new Result.Error(R.string.internal_server_error);
+    }
+
+    public Result<UserModel> getBiometricsUser() {
         String query =
                 String.format("SELECT * FROM %s WHERE %s = 1", TABLE_NAME, COLUMN_BIOMETRICS);
-        Cursor cursor = db.rawQuery(query, null);
-        LoggedInUser loggedInUser;
-        if (cursor.moveToFirst()) {
-            String username = cursor.getString(cursor.getColumnIndex(COLUMN_USERNAME));
-            loggedInUser = new LoggedInUser(username);
-            return new Result.Success<>(loggedInUser);
+        UserModel userModel = getUserModel(query);
+
+        if (userModel != null) {
+            return new Result.Success<UserModel>(userModel);
         }
-        return new Result.Error(R.string.no_biometrics);
+        return new Result.Error(R.string.internal_server_error);
     }
 
-    public float getFunds(String username) {
-        SQLiteDatabase db = this.getReadableDatabase();
-        String queryString = "SELECT * FROM " + TABLE_NAME + " WHERE username = '" + username + "'";
+    public Result<UserModel> changeTrainingAmount(String username, float amount) {
+        String query =
+                String.format(
+                        "SELECT * FROM %s WHERE %s = '%s'", TABLE_NAME, COLUMN_USERNAME, username);
+        UserModel userModel = getUserModel(query);
 
-        Cursor cursor = db.rawQuery(queryString, null);
-        boolean exists = cursor.moveToFirst();
+        if (userModel != null) {
+            // need to update the date as well
+            userModel.setTrainingAmount(amount);
+            userModel.setTrainingStartDate(LocalDateTime.now().toString());
+            if (updateUser(userModel, username)) {
+                return new Result.Success<UserModel>(userModel);
+            }
 
-        if (exists) {
-            float funds = cursor.getFloat(cursor.getColumnIndex(COLUMN_TOTAL_AMOUNT));
-            cursor.close();
-
-            return funds;
+            return new Result.Error(R.string.training_period_error);
         }
-
-        cursor.close();
-        return -1.0f;
-    }
-
-    public boolean updateFunds(String username, float newFunds) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        String whereClause = String.format(COLUMN_USERNAME + " = ? ");
-        ContentValues cv = new ContentValues();
-        cv.put(COLUMN_USERNAME, username);
-        cv.put(COLUMN_TOTAL_AMOUNT, newFunds);
-
-        long update = db.update(TABLE_NAME, cv, whereClause, new String[] {username});
-        return update >= 0;
+        // this shouldn't happen but just in case something goes wrong, this will allow graceful
+        // exit
+        return new Result.Error(R.string.internal_server_error);
     }
 
     public LocalDateTime getTrainingStartDate(String username) {
-        SQLiteDatabase db = this.getReadableDatabase();
         String queryString = "SELECT * FROM " + TABLE_NAME + " WHERE username = '" + username + "'";
+        UserModel userModel = getUserModel(queryString);
 
-        Cursor cursor = db.rawQuery(queryString, null);
-        boolean exists = cursor.moveToFirst();
-
-        if (exists) {
-            String date = cursor.getString(cursor.getColumnIndex(COLUMN_TRAINING_START_DATE));
-            cursor.close();
-
-            return LocalDateTime.parse(date);
+        if (userModel != null) {
+            return LocalDateTime.parse(userModel.getTrainingStartDate());
         }
-
-        cursor.close();
         return null;
     }
 
-    public boolean updateTrainingStartDate(String username) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        String whereClause = String.format(COLUMN_USERNAME + " = ? ");
-        ContentValues cv = new ContentValues();
-        cv.put(COLUMN_USERNAME, username);
-        cv.put(COLUMN_TRAINING_START_DATE, LocalDateTime.now().toString());
-
-        long update = db.update(TABLE_NAME, cv, whereClause, new String[] {username});
-        return update >= 0;
-    }
-
-    public Result<LoggedInUser> changePassword(String username, String newPassword) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        String query =
-                String.format(
-                        "SELECT * FROM %s WHERE %s = '%s'", TABLE_NAME, COLUMN_USERNAME, username);
-        Cursor cursor = db.rawQuery(query, null);
-        String whereClause = String.format("%s = '%s'", COLUMN_USERNAME, username);
-
-        if (cursor.moveToFirst()) {
-            String biometrics = cursor.getString(cursor.getColumnIndex(COLUMN_BIOMETRICS));
-            String totalAmount = cursor.getString(cursor.getColumnIndex(COLUMN_TOTAL_AMOUNT));
-
-            ContentValues cv = new ContentValues();
-            cv.put(COLUMN_USERNAME, username);
-            cv.put(COLUMN_PASSWORD, newPassword);
-            cv.put(COLUMN_BIOMETRICS, biometrics);
-            cv.put(COLUMN_TOTAL_AMOUNT, totalAmount);
-
-            try {
-                db.update(TABLE_NAME, cv, whereClause, null);
-                cursor.close();
-                return new Result.Success<>(new LoggedInUser(username));
-            } catch (SQLiteConstraintException e) {
-                return new Result.Error(R.string.password_update_error);
-            }
+    public float getFunds(String username) {
+        String queryString = "SELECT * FROM " + TABLE_NAME + " WHERE username = '" + username + "'";
+        UserModel userModel = getUserModel(queryString);
+        if (userModel != null) {
+            return userModel.getTrainingAmount();
         }
-        // this shouldn't happen but just in case something goes wrong, this will allow graceful
-        // exit
-        return new Result.Error(R.string.internal_server_error);
+        return -1.0f;
     }
 
-    public Result<LoggedInUser> changeTrainingAmount(String username, float amount) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        String query =
-                String.format(
-                        "SELECT * FROM %s WHERE %s = '%s'", TABLE_NAME, COLUMN_USERNAME, username);
+    private UserModel getUserModel(String query) {
+        SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(query, null);
-        String whereClause = String.format("%s = '%s'", COLUMN_USERNAME, username);
+        UserModel userModel = null;
 
         if (cursor.moveToFirst()) {
+            String username = cursor.getString(cursor.getColumnIndex(COLUMN_USERNAME));
             String password = cursor.getString(cursor.getColumnIndex(COLUMN_PASSWORD));
             String biometrics = cursor.getString(cursor.getColumnIndex(COLUMN_BIOMETRICS));
-
-            ContentValues cv = new ContentValues();
-            cv.put(COLUMN_USERNAME, username);
-            cv.put(COLUMN_PASSWORD, password);
-            cv.put(COLUMN_BIOMETRICS, biometrics);
-            cv.put(COLUMN_TOTAL_AMOUNT, amount);
-
-            try {
-                db.update(TABLE_NAME, cv, whereClause, null);
-                cursor.close();
-                return new Result.Success<>(new LoggedInUser(username));
-            } catch (SQLiteConstraintException e) {
-                return new Result.Error(R.string.training_period_error);
-            }
+            String totalAmount = cursor.getString(cursor.getColumnIndex(COLUMN_TOTAL_AMOUNT));
+            String startDate = cursor.getString(cursor.getColumnIndex(COLUMN_TRAINING_START_DATE));
+            userModel =
+                    new UserModel(
+                            username,
+                            password,
+                            Integer.parseInt(biometrics),
+                            Float.parseFloat(totalAmount),
+                            startDate);
         }
-        // this shouldn't happen but just in case something goes wrong, this will allow graceful
-        // exit
-        return new Result.Error(R.string.internal_server_error);
+        cursor.close();
+        return userModel;
+    }
+
+    private boolean updateUser(UserModel userModel, String username) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        String whereClause = String.format("%s = '%s'", COLUMN_USERNAME, username);
+
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(COLUMN_USERNAME, userModel.getUsername());
+        contentValues.put(COLUMN_PASSWORD, userModel.getPassword());
+        contentValues.put(COLUMN_BIOMETRICS, userModel.isBiometricsEnabled());
+        contentValues.put(COLUMN_TOTAL_AMOUNT, userModel.getTrainingAmount());
+        contentValues.put(COLUMN_TRAINING_START_DATE, userModel.getTrainingStartDate());
+
+        try {
+            db.update(TABLE_NAME, contentValues, whereClause, null);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 }
