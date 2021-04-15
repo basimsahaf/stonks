@@ -18,6 +18,7 @@ import com.google.android.material.button.MaterialButton;
 import com.stonks.android.adapter.StockListRecyclerViewAdapter;
 import com.stonks.android.manager.PortfolioManager;
 import com.stonks.android.model.alpaca.DateRange;
+import com.stonks.android.uicomponent.ChartMarker;
 import com.stonks.android.uicomponent.StockChart;
 import com.stonks.android.utility.Formatters;
 import java.util.ArrayList;
@@ -41,6 +42,7 @@ public class HomePageFragment extends BaseFragment {
     private MaterialButton rangeMonthButton;
     private MaterialButton rangeYearButton;
     private MaterialButton rangeAllButton;
+    private NestedScrollView scrollView;
 
     private static PortfolioManager portfolioManager;
     private static RecyclerView.Adapter portfolioListAdapter;
@@ -66,6 +68,7 @@ public class HomePageFragment extends BaseFragment {
         this.stockChart = view.findViewById(R.id.new_stock_chart);
         this.priceUpdateArrow = view.findViewById(R.id.price_update_arrow);
         this.totalReturnArrow = view.findViewById(R.id.total_return_arrow);
+        this.scrollView = view.findViewById(R.id.scroll_view);
 
         this.rangeDayButton = view.findViewById(R.id.range_day);
         this.rangeWeekButton = view.findViewById(R.id.range_week);
@@ -84,7 +87,16 @@ public class HomePageFragment extends BaseFragment {
                 new StockListRecyclerViewAdapter(this.getActivity(), new ArrayList<>(), false);
         portfolioList.setAdapter(portfolioListAdapter);
 
-        NestedScrollView scrollView = view.findViewById(R.id.scroll_view);
+        ChartMarker lineMarker =
+                new ChartMarker(
+                        getContext(), R.layout.chart_marker, portfolioManager.getLineMarker());
+        lineMarker.setChartView(this.stockChart);
+        StockChart.CustomGestureListener lineChartGestureListener =
+                new StockChart.CustomGestureListener(this.stockChart, this.scrollView);
+
+        this.stockChart.setOnChartGestureListener(lineChartGestureListener);
+        this.stockChart.setMarker(lineMarker);
+
         ConstraintLayout currentInfoHeader = view.findViewById(R.id.current_info_header);
 
         // get the height of the header

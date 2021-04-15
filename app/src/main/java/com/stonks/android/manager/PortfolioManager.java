@@ -1,6 +1,7 @@
 package com.stonks.android.manager;
 
 import android.content.Context;
+import android.provider.FontRequest;
 import android.util.Log;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineDataSet;
@@ -22,14 +23,21 @@ import com.stonks.android.storage.TransactionTable;
 import com.stonks.android.storage.UserTable;
 import com.stonks.android.uicomponent.StockChart;
 import com.stonks.android.utility.ChartHelpers;
+import com.stonks.android.utility.Formatters;
+
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.schedulers.Schedulers;
+
+import java.text.Normalizer;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class PortfolioManager {
@@ -43,6 +51,7 @@ public class PortfolioManager {
     private final UserTable userTable;
     private final PortfolioTable portfolioTable;
     private final TransactionTable transactionTable;
+    private static Function<Integer, String> lineMarker;
 
     private static boolean isUpdating = false;
     private static String username;
@@ -58,6 +67,14 @@ public class PortfolioManager {
         userTable = UserTable.getInstance(context);
         portfolioTable = PortfolioTable.getInstance(context);
         transactionTable = TransactionTable.getInstance(context);
+
+        lineMarker =
+                (x) -> {
+                    if (x >= graphData.size()) {
+                        return "";
+                    }
+                    return Formatters.formatPrice(graphData.get(x));
+                };
     }
 
     public static PortfolioManager getInstance(Context context, HomePageFragment f) {
@@ -72,11 +89,18 @@ public class PortfolioManager {
         transactions = portfolioManager.transactionTable.getTransactions(username);
         symbolList = portfolioManager.portfolioTable.getSymbols(username);
 
+        transactions.add(new Transaction(username, "SHOP", 2, 1000.0f, TransactionMode.BUY, LocalDateTime.now().minusMonths(6)));
+        symbolList.add("SHOP");
+
+        ArrayList<PortfolioItem> items = new ArrayList<PortfolioItem>();
+//        ArrayList<PortfolioItem> items = portfolioManager.portfolioTable.getPortfolioItems(username);
+        items.add(new PortfolioItem(username, "SHOP", 2));
+
         portfolio =
                 new Portfolio(
                         portfolioManager.userTable.getFunds(username),
                         0.0f,
-                        portfolioManager.portfolioTable.getPortfolioItems(username),
+                        items,
                         portfolioManager);
         portfolioManager.fragment = f;
         portfolioManager.currentRange = DateRange.DAY;
@@ -139,6 +163,10 @@ public class PortfolioManager {
 
     public float getTotalReturn() {
         return allTimeChange;
+    }
+
+    public Function<Integer, String> getLineMarker() {
+        return lineMarker;
     }
 
     public void setCurrentRange(DateRange range) {
