@@ -15,7 +15,6 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.stonks.android.external.AlpacaWebSocket;
 import com.stonks.android.manager.UserManager;
-import com.stonks.android.model.UserModel;
 import com.stonks.android.model.WebSocketObserver;
 import com.stonks.android.storage.CompanyTable;
 import com.stonks.android.utility.Formatters;
