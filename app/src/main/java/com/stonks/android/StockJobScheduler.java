@@ -40,46 +40,6 @@ public class StockJobScheduler extends JobService {
     }
 
     public void downloadStockData(JobParameters params) {
-        receiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                String action = intent.getAction();
-                if (DownloadManager.ACTION_DOWNLOAD_COMPLETE.equals(action)) {
-                    long downloadID = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, 0);
-                    DownloadManager.Query query = new DownloadManager.Query();
-                    query.setFilterById(enqueue);
-                    Cursor c = dm.query(query);
-                    if (c.moveToFirst()) {
-                        int columnIndex = c.getColumnIndex(DownloadManager.COLUMN_STATUS);
-                        if (DownloadManager.STATUS_SUCCESSFUL == c.getInt(columnIndex)) {
-                            String uriString = c.getString(c.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI));
-
-                            Log.d("main activity", "what is URI strng " + uriString);
-                            Uri a = Uri.parse(uriString);
-                            File companyData = new File(a.getPath());
-                            Log.d("main activity", "download finished and in local file now " + a.getPath());
-
-                            String location = companyData.getPath();
-                            Log.d("main activity", "file is at " + location);
-
-//                            JsonParser parser = new JsonParser();
-//                            try {
-//
-//                                Log.d("main activity", "parsing file " + LocalDateTime.now());
-//
-//                                Object obj = parser.parse(new FileReader(companyData));
-//                                Log.d("main activity", "parsing file done " + LocalDateTime.now());
-//
-//                            } catch (Exception e) {
-//                                e.printStackTrace();
-//                            }
-
-                        }
-                    }
-                }
-            }
-        };
-        registerReceiver(receiver, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
 
         new Thread(new Runnable() {
             @Override
@@ -123,7 +83,7 @@ public class StockJobScheduler extends JobService {
         }
     }
 
-    private boolean doesSymbolsFileExist() {
+    public static boolean doesSymbolsFileExist() {
         String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/"
                 + Environment.DIRECTORY_DOWNLOADS + "/symbols.json";
 
@@ -134,7 +94,7 @@ public class StockJobScheduler extends JobService {
         return exists;
     }
 
-    private boolean deletesSymbolsFile() {
+    public static boolean deletesSymbolsFile() {
         String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/"
                 + Environment.DIRECTORY_DOWNLOADS + "/symbols.json";
         File file = new File(path);

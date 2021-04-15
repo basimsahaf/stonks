@@ -29,6 +29,7 @@ public class LoginDataSource {
             return new Result.Success<>(user);
 
         } catch (Exception e) {
+            e.printStackTrace();
             return new Result.Error(R.string.internal_server_error);
         }
     }
@@ -53,6 +54,7 @@ public class LoginDataSource {
             return new Result.Success<>(user);
 
         } catch (Exception e) {
+            e.printStackTrace();
             return new Result.Error(R.string.internal_server_error);
         }
     }

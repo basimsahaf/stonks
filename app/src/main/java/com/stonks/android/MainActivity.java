@@ -2,6 +2,7 @@ package com.stonks.android;
 
 import android.app.DownloadManager;
 import android.app.job.JobInfo;
+import android.app.job.JobParameters;
 import android.app.job.JobScheduler;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -51,10 +52,10 @@ public class MainActivity extends AppCompatActivity {
     private long enqueue;
     private DownloadManager dm;
 
+    private static final String TAG = "MainActivity";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        CompanyTable.populateCompanyTableIfNotEmpty(getApplicationContext());
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
@@ -93,28 +94,60 @@ public class MainActivity extends AppCompatActivity {
         View actionBarView = inflator.inflate(R.layout.actionbar_layout, null);
 
         // Download company names json
+        BroadcastReceiver receiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                String action = intent.getAction();
+                if (DownloadManager.ACTION_DOWNLOAD_COMPLETE.equals(action)) {
+                    long downloadID = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, 0);
+                    DownloadManager.Query query = new DownloadManager.Query();
+                    query.setFilterById(enqueue);
+                    Cursor c = dm.query(query);
+                    if (c.moveToFirst()) {
+                        int columnIndex = c.getColumnIndex(DownloadManager.COLUMN_STATUS);
+                        if (DownloadManager.STATUS_SUCCESSFUL == c.getInt(columnIndex)) {
+                            String uriString = c.getString(c.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI));
+
+                            Log.d(TAG, "intent recieved!");
+                            Uri a = Uri.parse(uriString);
+
+
+                            File companyData = new File(a.getPath());
+                            String location = companyData.getPath();
+
+                            Log.d(TAG, "start company data populating");
+//                            CompanyTable.populateCompanyTableIfEmpty(getApplicationContext());
+
+                        }
+                    }
+                }
+            }
+        };
+        registerReceiver(receiver, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
+
         SharedPreferences prefs = getSharedPreferences("prefs", MODE_PRIVATE);
         boolean firstStart = prefs.getBoolean("firstStart", true);
         firstStart = true; // testing
 
         if (firstStart) {
-            Log.d("main activity", "about to enter job scheduer");
-            ComponentName componentName = new ComponentName(this, StockJobScheduler.class);
-            JobInfo info = new JobInfo.Builder(1, componentName)
-                    .setRequiredNetworkType(JobInfo.NETWORK_TYPE_UNMETERED)
-                    .setPersisted(true)
-                    .setPeriodic(1440 * 60 * 1000)
-                    .build();
-            JobScheduler scheduler = (JobScheduler) getSystemService(JOB_SCHEDULER_SERVICE);
-            int result = scheduler.schedule(info);
-
-            if (result == JobScheduler.RESULT_SUCCESS) {
-                Log.d("main activity", "job scheduled");
-            }
-            else {
-                Log.d("main activity", "job scheduling failed");
-            }
-            Log.d("main activity", "first start is " + firstStart);
+            downloadStockData();
+//            Log.d("main activity", "about to enter job scheduer");
+//            ComponentName componentName = new ComponentName(this, StockJobScheduler.class);
+//            JobInfo info = new JobInfo.Builder(1, componentName)
+//                    .setRequiredNetworkType(JobInfo.NETWORK_TYPE_UNMETERED)
+//                    .setPersisted(true)
+//                    .setPeriodic(1440 * 60 * 1000)
+//                    .build();
+//            JobScheduler scheduler = (JobScheduler) getSystemService(JOB_SCHEDULER_SERVICE);
+//            int result = scheduler.schedule(info);
+//
+//            if (result == JobScheduler.RESULT_SUCCESS) {
+//                Log.d("main activity", "job scheduled");
+//            }
+//            else {
+//                Log.d("main activity", "job scheduling failed");
+//            }
+//            Log.d("main activity", "first start is " + firstStart);
         }
 
 
@@ -191,4 +224,31 @@ public class MainActivity extends AppCompatActivity {
     public SlidingUpPanelLayout getSlidingUpPanel() {
         return slidingUpPanel;
     }
+
+    public void downloadStockData() {
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Log.d(TAG, "start json download at " + LocalDateTime.now());
+
+                if(StockJobScheduler.doesSymbolsFileExist()) {
+                    StockJobScheduler.deletesSymbolsFile();
+                }
+                dm = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
+                DownloadManager.Request request = new DownloadManager.Request(
+                        Uri.parse("https://finnhub.io/api/v1/stock/symbol?exchange=US&token=c0krmsf48v6und6s0rig"))
+                        .setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "symbols.json");
+                enqueue = dm.enqueue(request);
+
+                Log.d(TAG, "finish json download at " + LocalDateTime.now());
+
+                SharedPreferences prefs = getSharedPreferences("prefs", MODE_PRIVATE);
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.putBoolean("firstStart", false);
+                editor.apply();
+            }
+        }).start();
+    }
+
 }
