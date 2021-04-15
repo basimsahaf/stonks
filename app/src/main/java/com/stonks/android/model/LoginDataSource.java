@@ -63,6 +63,10 @@ public class LoginDataSource {
         // TODO: revoke authentication
     }
 
+    public float getTotalAmountAvailable(String username) {
+        return userTable.getTotalAmountAvailable(username);
+    }
+
     public Result<LoggedInUser> changeUsername(String oldUsername, String newUsername) {
         return userTable.changeUsername(oldUsername, newUsername);
     }
@@ -93,7 +97,7 @@ public class LoginDataSource {
 
     public Result<LoggedInUser> changeTrainingAmount(String username, float amount) {
         try {
-            return userTable.changeTrainingAmount(username, amount);
+            return userTable.changeTrainingBalance(username, amount);
         } catch (Exception e) {
             return new Result.Error(R.string.internal_server_error);
         }
