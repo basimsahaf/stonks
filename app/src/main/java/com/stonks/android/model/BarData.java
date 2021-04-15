@@ -1,8 +1,9 @@
 package com.stonks.android.model;
 
 import com.google.gson.annotations.SerializedName;
+import java.io.Serializable;
 
-public class BarData {
+public class BarData implements Serializable {
     @SerializedName("t")
     private Integer timestamp;
 
