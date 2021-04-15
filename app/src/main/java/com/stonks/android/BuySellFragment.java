@@ -86,9 +86,11 @@ public class BuySellFragment extends Fragment {
         MainActivity mainActivity = (MainActivity) getActivity();
 
         slidingUpPanel = mainActivity.getSlidingUpPanel();
-        // TODO: Set custom sliding drawer height
         slidingUpPanel.post(
-                () -> slidingUpPanel.setPanelState(SlidingUpPanelLayout.PanelState.ANCHORED));
+                () -> {
+                    slidingUpPanel.setPanelState(SlidingUpPanelLayout.PanelState.ANCHORED);
+                    slidingUpPanel.setAnchorPoint(1.0f);
+                });
 
         buyBtn = getView().findViewById(R.id.buy_mode_button);
         sellBtn = getView().findViewById(R.id.sell_mode_button);
