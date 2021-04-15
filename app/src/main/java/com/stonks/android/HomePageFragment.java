@@ -43,6 +43,7 @@ public class HomePageFragment extends BaseFragment {
     private MaterialButton rangeYearButton;
     private MaterialButton rangeAllButton;
     private NestedScrollView scrollView;
+    private ConstraintLayout currentInfoHeader;
 
     private static PortfolioManager portfolioManager;
     private static RecyclerView.Adapter portfolioListAdapter;
@@ -97,10 +98,7 @@ public class HomePageFragment extends BaseFragment {
         this.stockChart.setOnChartGestureListener(lineChartGestureListener);
         this.stockChart.setMarker(lineMarker);
 
-        ConstraintLayout currentInfoHeader = view.findViewById(R.id.current_info_header);
-
-        // get the height of the header
-        currentInfoHeader.post(() -> currentInfoHeaderHeight = currentInfoHeader.getHeight());
+        currentInfoHeader = view.findViewById(R.id.current_info_header);
 
         getActionBar().setDisplayHomeAsUpEnabled(false);
         getMainActivity().setActionBarCustomViewAlpha(0);
@@ -110,7 +108,10 @@ public class HomePageFragment extends BaseFragment {
                 (View.OnScrollChangeListener)
                         (view1, scrollX, scrollY, oldScrollX, oldScrollY) -> {
                             float offset = currentInfoHeaderHeight - scrollY;
-                            float alpha = (1f - (Math.max(0f, offset) / currentInfoHeaderHeight));
+                            float alpha =
+                                    (1f
+                                            - (Math.max(0f, offset)
+                                                    / Math.max(1f, currentInfoHeaderHeight)));
 
                             getMainActivity().setActionBarCustomViewAlpha(alpha);
                         });
@@ -186,6 +187,9 @@ public class HomePageFragment extends BaseFragment {
         this.moneyLeft.setText(Formatters.formatPrice(portfolioManager.getAccountBalance()));
 
         updateGraphData();
+
+        // get the height of the header
+        currentInfoHeader.post(() -> currentInfoHeaderHeight = currentInfoHeader.getHeight());
     }
 
     public void updateGraphData() {
