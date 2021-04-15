@@ -2,7 +2,6 @@ package com.stonks.android;
 
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -109,7 +108,10 @@ public class HomePageFragment extends BaseFragment {
                 (View.OnScrollChangeListener)
                         (view1, scrollX, scrollY, oldScrollX, oldScrollY) -> {
                             float offset = currentInfoHeaderHeight - scrollY;
-                            float alpha = (1f - (Math.max(0f, offset) / Math.max(1f, currentInfoHeaderHeight)));
+                            float alpha =
+                                    (1f
+                                            - (Math.max(0f, offset)
+                                                    / Math.max(1f, currentInfoHeaderHeight)));
 
                             getMainActivity().setActionBarCustomViewAlpha(alpha);
                         });
