@@ -70,7 +70,7 @@ public class PortfolioManager {
 
         username = LoginRepository.getInstance(context).getCurrentUser();
         transactions = portfolioManager.transactionTable.getTransactions(username);
-        symbolList = portfolioManager.transactionTable.getSymbols(username);
+        symbolList = portfolioManager.portfolioTable.getSymbols(username);
 
         portfolio =
                 new Portfolio(
