@@ -25,7 +25,7 @@ public class TransactionTable extends SQLiteOpenHelper {
     public static final String COLUMN_CREATED_AT = "transaction_date";
     public static final String COLUMN_COMPUTED_AMOUNT = COLUMN_PRICE + " * " + COLUMN_SHARES;
     public static final String CREATE_STRING =
-            "CREATE TABLE "
+            "CREATE TABLE IF NOT EXISTS "
                     + TABLE_NAME
                     + " ("
                     + COLUMN_USERNAME

@@ -28,7 +28,7 @@ public class CompanyTable extends SQLiteOpenHelper {
     private String TAG = CompanyTable.class.getCanonicalName();
     private static CompanyTable companyTable = null;
     public static String CREATE_STRING =
-            "CREATE TABLE "
+            "CREATE TABLE IF NOT EXISTS "
                     + TABLE_NAME
                     + " ("
                     + COLUMN_SYMBOL
