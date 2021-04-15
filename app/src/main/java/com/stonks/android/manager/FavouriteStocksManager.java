@@ -3,17 +3,20 @@ package com.stonks.android.manager;
 import android.content.Context;
 import com.stonks.android.model.FavouriteStock;
 import com.stonks.android.model.StockListItem;
+import com.stonks.android.storage.CompanyTable;
 import com.stonks.android.storage.FavouritesTable;
 import java.util.ArrayList;
 
 public class FavouriteStocksManager {
     private static FavouriteStocksManager favouriteStocksManager = null;
     private static FavouritesTable favouritesTable;
+    private static CompanyTable companyTable;
     private String username;
 
     private FavouriteStocksManager(Context context) {
         this.favouritesTable = FavouritesTable.getInstance(context);
         this.username = UserManager.getInstance(context).getCurrentUser().getUsername();
+        this.companyTable = CompanyTable.getInstance(context);
     }
 
     public static FavouriteStocksManager getInstance(Context context) {
@@ -41,11 +44,17 @@ public class FavouriteStocksManager {
 
         // necessary bc the saved stocks page expects a list of StockListItems
         faveStocks.forEach(
-                (faveStock) ->
-                        faveStocksList.add(
-                                new StockListItem(
-                                        faveStock.getSymbol(), "CompanyName", 0, 0, 0, 0)));
-        // ^^ TODO: use getcompanyname here
+                (faveStock) -> {
+                    String companyName;
+                    try {
+                        companyName = companyTable.getCompanyName(faveStock.getSymbol());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        companyName = "";
+                    }
+                    faveStocksList.add(
+                            new StockListItem(faveStock.getSymbol(), companyName, 0, 0, 0, 0));
+                });
         return faveStocksList;
     }
 }
