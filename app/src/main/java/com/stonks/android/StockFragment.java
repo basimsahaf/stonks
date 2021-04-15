@@ -230,7 +230,10 @@ public class StockFragment extends BaseFragment {
                     getActivity()
                             .getSupportFragmentManager()
                             .beginTransaction()
-                            .replace(R.id.sliding_drawer, hypotheticalFragment, null)
+                            .replace(
+                                    R.id.sliding_drawer,
+                                    hypotheticalFragment,
+                                    hypotheticalFragment.getClass().getCanonicalName())
                             .commit();
                 });
 
@@ -246,7 +249,10 @@ public class StockFragment extends BaseFragment {
                     getActivity()
                             .getSupportFragmentManager()
                             .beginTransaction()
-                            .replace(R.id.sliding_drawer, buyFrag, null)
+                            .replace(
+                                    R.id.sliding_drawer,
+                                    buyFrag,
+                                    buyFrag.getClass().getCanonicalName())
                             .commit();
                 });
         sellButton.setOnClickListener(
@@ -261,7 +267,10 @@ public class StockFragment extends BaseFragment {
                     getActivity()
                             .getSupportFragmentManager()
                             .beginTransaction()
-                            .replace(R.id.sliding_drawer, sellFrag, null)
+                            .replace(
+                                    R.id.sliding_drawer,
+                                    sellFrag,
+                                    sellFrag.getClass().getCanonicalName())
                             .commit();
                 });
         this.favIcon.setOnClickListener(
@@ -315,6 +324,14 @@ public class StockFragment extends BaseFragment {
         }
 
         this.stockManager.fetchInitialData();
+    }
+
+    public Boolean shouldHandleBackPressed() {
+        return isVisible() && this.overlay.getVisibility() == View.VISIBLE;
+    }
+
+    public void handleBackPressedForOverlay() {
+        this.tradeButton.close(this.overlay);
     }
 
     private void toggleCandleVisible() {

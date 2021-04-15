@@ -47,7 +47,10 @@ public class FilterFragment extends BaseFragment
         companiesFilterList = view.findViewById(R.id.companies_list);
         companiesFilterList.setLayoutManager(companiesFilterListManager);
         companiesFilterListAdapter =
-                new CompanyFilterListAdapter(recentTransactionsManager.getSymbols(), this);
+                new CompanyFilterListAdapter(
+                        recentTransactionsManager.getSymbols(),
+                        this,
+                        recentTransactionsManager.getSymbolsFilter());
         companiesFilterList.setAdapter(companiesFilterListAdapter);
 
         setupRadioListeners(view);
@@ -56,8 +59,8 @@ public class FilterFragment extends BaseFragment
         setupMinAmountInputEdit(view);
         setupMaxAmountInputEdit(view);
 
-        MaterialButton button = view.findViewById(R.id.apply_button);
-        button.setOnClickListener(
+        MaterialButton applyButton = view.findViewById(R.id.apply_button);
+        applyButton.setOnClickListener(
                 v -> {
                     super.getActivity().onBackPressed();
                 });
@@ -86,6 +89,10 @@ public class FilterFragment extends BaseFragment
                 v -> {
                     recentTransactionsManager.applyModeFilter(TransactionMode.SELL);
                 });
+
+        TransactionMode mode = recentTransactionsManager.getTransactionModeFilter();
+        buyRadio.setChecked(mode == TransactionMode.BUY);
+        sellRadio.setChecked(mode == TransactionMode.SELL);
     }
 
     private void setupResetMinMaxAmountButton(View view) {
@@ -117,9 +124,14 @@ public class FilterFragment extends BaseFragment
                     @Override
                     public void afterTextChanged(Editable s) {
                         String minAmount = min.getText().toString();
+                        if (minAmount.isEmpty()) {
+                            return;
+                        }
                         recentTransactionsManager.applyMinAmountFilter(Integer.parseInt(minAmount));
                     }
                 });
+
+        min.setText(recentTransactionsManager.getMinAmountFilterString());
     }
 
     private void setupMaxAmountInputEdit(View view) {
@@ -136,9 +148,13 @@ public class FilterFragment extends BaseFragment
                     @Override
                     public void afterTextChanged(Editable s) {
                         String maxAmount = max.getText().toString();
+                        if (maxAmount.isEmpty()) {
+                            return;
+                        }
                         recentTransactionsManager.applyMaxAmountFilter(Integer.parseInt(maxAmount));
                     }
                 });
+        max.setText(recentTransactionsManager.getMaxAmountFilterString());
     }
 
     private void setupResetAllButton(View view) {
@@ -152,8 +168,8 @@ public class FilterFragment extends BaseFragment
                     TextView reset = view.findViewById(R.id.reset_button);
                     reset.performClick();
 
-                    companiesFilterListAdapter.notifyDataSetChanged();
                     recentTransactionsManager.resetFilters();
+                    companiesFilterListAdapter.notifyDataSetChanged();
                 });
     }
 

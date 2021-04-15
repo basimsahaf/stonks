@@ -51,7 +51,7 @@ public class CompanyTable extends SQLiteOpenHelper {
         return companyTable;
     }
 
-    public static void populateCompanyTableIfNotEmpty(Context context) {
+    public static void populateCompanyTableIfEmpty(Context context) {
         CompanyTable companyTable = CompanyTable.getInstance(context);
         if (companyTable.isEmpty()) {
             companyTable.populateTableInThread();

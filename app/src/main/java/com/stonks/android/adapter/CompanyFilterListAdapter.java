@@ -13,9 +13,14 @@ import java.util.ArrayList;
 public class CompanyFilterListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     ArrayList<String> companies;
     FilterFragment parentFragment;
+    ArrayList<String> checkedCompanies;
 
-    public CompanyFilterListAdapter(ArrayList<String> transactionList, FilterFragment fragment) {
-        this.companies = transactionList;
+    public CompanyFilterListAdapter(
+            ArrayList<String> companies,
+            FilterFragment fragment,
+            ArrayList<String> checkedCompanies) {
+        this.companies = companies;
+        this.checkedCompanies = checkedCompanies;
         this.parentFragment = fragment;
     }
 
@@ -35,7 +40,7 @@ public class CompanyFilterListAdapter extends RecyclerView.Adapter<RecyclerView.
                 (CompanyFilterListAdapter.CompanyFilterListViewHolder) viewHolder;
 
         holder.checkBox.setText(company);
-        holder.checkBox.setChecked(false);
+        holder.checkBox.setChecked(checkedCompanies.contains(company));
         holder.checkBox.setOnCheckedChangeListener(parentFragment);
     }
 
