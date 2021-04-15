@@ -4,10 +4,22 @@ A simulated robo-investor that can help you learn how to trade stocks, without t
 Horizontal number picker source: https://stackoverflow.com/questions/6796243/is-it-possible-to-make-a-horizontal-numberpicker
 Stonks image source: https://wallpaperaccess.com/stonks
 
-## Set up for local gradle.properties:
-#### Database
-1. Add DATABASE_NAME="stonks_db" to gradle.properties
+## CREATE A NEW gradle.properties FILE FOR THE PROJECT with the following base:
+```
+org.gradle.jvmargs=-Xmx2048m
+android.useAndroidX=true
 
+android.enableJetifier=true
+
+ALPACA_KEY_ID="your_api_key_here"
+ALPACA_SECRET_KEY="your_api_key_here"
+TD_API_KEY="your_api_key_here"
+FINNHUB_TOKEN="your_api_key_here"
+
+DATABASE_NAME="stonks_db"
+```
+
+### Fill in "your_api_key_here" with the following:
 #### Alapaca API Keys
 1. Go to https://alpaca.markets/ and sign up for an account
 1. Click "Live Trading" in the top left and select "Paper Trading"
