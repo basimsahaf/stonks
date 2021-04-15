@@ -49,14 +49,12 @@ public class FavouriteStocksManager {
                     String companyName;
                     try {
                         companyName = companyTable.getCompanyName(faveStock.getSymbol());
-                    }catch (Exception e) {
+                    } catch (Exception e) {
                         e.printStackTrace();
                         companyName = "";
                     }
                     faveStocksList.add(
-                            new StockListItem(
-                                    faveStock.getSymbol(), companyName, 0, 0, 0, 0));
-
+                            new StockListItem(faveStock.getSymbol(), companyName, 0, 0, 0, 0));
                 });
         return faveStocksList;
     }
