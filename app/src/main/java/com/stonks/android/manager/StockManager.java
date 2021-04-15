@@ -1,6 +1,7 @@
 package com.stonks.android.manager;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.util.Log;
 import android.util.Pair;
 import com.github.mikephil.charting.data.CandleEntry;
@@ -10,11 +11,13 @@ import com.stonks.android.external.MarketDataService;
 import com.stonks.android.model.*;
 import com.stonks.android.model.alpaca.AlpacaTimeframe;
 import com.stonks.android.model.alpaca.DateRange;
+import com.stonks.android.storage.CompanyTable;
 import com.stonks.android.storage.PortfolioTable;
 import com.stonks.android.storage.TransactionTable;
 import com.stonks.android.uicomponent.StockChart;
 import com.stonks.android.utility.ChartHelpers;
 import com.stonks.android.utility.SimpleMovingAverage;
+import com.stonks.android.utility.WeightedMovingAverage;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
@@ -34,12 +37,16 @@ public class StockManager {
     private final MarketDataService marketDataService;
     private DateRange currentRange;
     private final SimpleMovingAverage simpleMovingAverage;
+    private final WeightedMovingAverage weightedMovingAverage;
     private final HashMap<Integer, BarData> candleData;
     private final HashMap<Integer, BarData> lineData;
     private final Function<Integer, String> candleMarker;
     private final Function<Integer, String> lineMarker;
     private final TransactionTable transactionTable;
     private final PortfolioTable portfolioTable;
+    private final CompanyTable companyTable;
+    private final UserManager userManager;
+    private boolean movingAverageEnabled, wMovingAverageEnabled;
 
     private StockManager(Context context) {
         this.stockData = new StockData();
@@ -87,8 +94,13 @@ public class StockManager {
                     return ChartHelpers.getMarkerDateFormatter(this.currentRange).format(date);
                 };
         simpleMovingAverage = new SimpleMovingAverage(5);
+        weightedMovingAverage = new WeightedMovingAverage(5);
         transactionTable = TransactionTable.getInstance(context);
         portfolioTable = PortfolioTable.getInstance(context);
+        companyTable = CompanyTable.getInstance(context);
+        userManager = UserManager.getInstance(context);
+        movingAverageEnabled = false;
+        wMovingAverageEnabled = false;
     }
 
     public static StockManager getInstance(Context context) {
@@ -105,6 +117,8 @@ public class StockManager {
         this.currentRange = DateRange.DAY;
         this.candleData.clear();
         this.lineData.clear();
+        movingAverageEnabled = false;
+        wMovingAverageEnabled = false;
     }
 
     public Function<Integer, String> getCandleMarker() {
@@ -113,6 +127,23 @@ public class StockManager {
 
     public Function<Integer, String> getLineMarker() {
         return lineMarker;
+    }
+
+    public Function<Integer, String> getHypotheticalLineMarker() {
+        return (x) -> {
+            BarData bar = this.lineData.get(x);
+            if (bar == null) {
+                return "";
+            }
+
+            long timeStamp = x == this.lineData.size() ? bar.getEndTimestamp() : bar.getTimestamp();
+
+            LocalDateTime date =
+                    LocalDateTime.ofInstant(
+                            Instant.ofEpochSecond(timeStamp), TimeZone.getDefault().toZoneId());
+
+            return ChartHelpers.getMarkerDateFormatter(DateRange.YEAR).format(date);
+        };
     }
 
     public StockData getStockData() {
@@ -126,25 +157,35 @@ public class StockManager {
 
     public PortfolioItem getPosition() {
         List<PortfolioItem> positions =
-                portfolioTable.getPortfolioItemsBySymbol("username", this.symbol);
-        int quantity = positions.stream().map(PortfolioItem::getQuantity).reduce(0, Integer::sum);
+                portfolioTable.getPortfolioItemsBySymbol(
+                        this.userManager.getCurrentUser().getUsername(), this.symbol);
 
-        return new PortfolioItem("username", this.symbol, quantity);
-    }
-
-    public List<TransactionsListRow> getTransactions() {
-        List<TransactionsListRow> transactionList = new ArrayList<>();
-
-        // TODO: get username from LoginRepository
-        List<Transaction> transactions = this.transactionTable.getTransactions("tmp");
-
-        if (transactions.size() == 0) {
-            return Collections.emptyList();
+        if (positions == null || positions.size() == 0) {
+            return null;
         }
 
-        LocalDateTime lastTransactionDate = transactions.get(0).getCreatedAt();
+        return positions.get(0);
+    }
 
-        for (Transaction transaction : transactions) {
+    public ArrayList<TransactionsListRow> getTransactions() {
+        ArrayList<TransactionsListRow> transactionList = new ArrayList<>();
+        List<Transaction> transactions =
+                this.transactionTable.getTransactions(
+                        this.userManager.getCurrentUser().getUsername());
+
+        List<Transaction> filteredTransactions =
+                transactions.stream()
+                        .filter(transaction -> transaction.getSymbol().equals(this.symbol))
+                        .collect(Collectors.toList());
+
+        if (filteredTransactions.size() == 0) {
+            return new ArrayList<>();
+        }
+
+        LocalDateTime lastTransactionDate = filteredTransactions.get(0).getCreatedAt();
+        transactionList.add(new TransactionsListRow(lastTransactionDate));
+
+        for (Transaction transaction : filteredTransactions) {
             LocalDateTime createdAt = transaction.getCreatedAt();
             if (!lastTransactionDate.toLocalDate().isEqual(createdAt.toLocalDate())) {
                 transactionList.add(new TransactionsListRow(createdAt));
@@ -191,6 +232,9 @@ public class StockManager {
                             List<BarData> cleanedData =
                                     ChartHelpers.cleanData(newStockData.getGraphData(), timeframe);
 
+                            String companyName = this.companyTable.getCompanyName(this.symbol);
+
+                            newStockData.setCompanyName(companyName);
                             this.stockData.updateStock(
                                     newStockData, this.currentRange, cleanedData);
                         },
@@ -290,10 +334,14 @@ public class StockManager {
     }
 
     private List<Entry> getLineData() {
-        List<BarData> cachedBars = this.stockData.getCachedGraphData(this.currentRange);
+        return getLineData(this.currentRange);
+    }
+
+    private List<Entry> getLineData(DateRange range) {
+        List<BarData> cachedBars = this.stockData.getCachedGraphData(range);
         long firstTimeStamp =
                 ChartHelpers.getEpochTimestamp(
-                        this.currentRange, cachedBars.get(cachedBars.size() - 1).getTimestamp());
+                        range, cachedBars.get(cachedBars.size() - 1).getTimestamp());
 
         List<BarData> bars =
                 cachedBars.stream()
@@ -302,7 +350,7 @@ public class StockManager {
 
         int windowSize = 1;
 
-        switch (this.currentRange) {
+        switch (range) {
             case DAY:
                 windowSize = 5;
                 break;
@@ -346,9 +394,28 @@ public class StockManager {
                 .collect(Collectors.toList());
     }
 
+    private List<Entry> getWeightedMovingAverage() {
+        this.weightedMovingAverage.setData(
+                this.lineData.entrySet().stream()
+                        .sorted(Comparator.comparingInt(Map.Entry::getKey))
+                        .map(Map.Entry::getValue)
+                        .collect(Collectors.toList()));
+        List<Entry> movingAverage = this.weightedMovingAverage.getMovingAverage();
+        List<Entry> average =
+                movingAverage.subList(
+                        Math.max(movingAverage.size() - this.lineData.size(), 0),
+                        movingAverage.size());
+
+        AtomicInteger index = new AtomicInteger(1);
+        return average.stream()
+                .map(entry -> new Entry(index.getAndIncrement(), entry.getY()))
+                .collect(Collectors.toList());
+    }
+
     public LineData getLineChartData() {
         List<Entry> stockPrices = getLineData();
         List<Entry> simpleMovingAverage = getSimpleMovingAverage();
+        List<Entry> weightedMovingAverage = getWeightedMovingAverage();
 
         LineData lineData = new LineData();
 
@@ -356,10 +423,83 @@ public class StockManager {
             lineData.addDataSet(StockChart.buildDataSet(stockPrices));
         }
 
-        if (simpleMovingAverage.size() > 0) {
-            lineData.addDataSet(StockChart.buildIndicatorDataSet(simpleMovingAverage));
+        if (movingAverageEnabled && simpleMovingAverage.size() > 0) {
+            lineData.addDataSet(
+                    StockChart.buildIndicatorDataSet(simpleMovingAverage, Color.YELLOW));
+        }
+
+        if (wMovingAverageEnabled && weightedMovingAverage.size() > 0) {
+            lineData.addDataSet(
+                    StockChart.buildIndicatorDataSet(weightedMovingAverage, Color.CYAN));
         }
 
         return lineData;
+    }
+
+    public void loadHypotheticalData() {
+        final int limit = 1000;
+        final Symbols symbols = new Symbols(Collections.singletonList(this.symbol));
+        final AlpacaTimeframe timeframe = ChartHelpers.getDataPointTimeframe(DateRange.YEAR);
+
+        marketDataService
+                .getBars(symbols, timeframe, limit)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(
+                        stockBars -> {
+                            List<BarData> bars = stockBars.get(symbol);
+                            List<BarData> cleanedData = ChartHelpers.cleanData(bars, timeframe);
+
+                            this.stockData.updateCachedGraphData(DateRange.YEAR, cleanedData);
+                        },
+                        err -> Log.e(TAG, "getHypotheticalLineData: " + err.toString()));
+    }
+
+    public LineData getHypotheticalLineData() {
+        List<Entry> stockPrices = getLineData(DateRange.YEAR);
+        LineData lineData = new LineData();
+        lineData.addDataSet(StockChart.buildDataSet(stockPrices));
+
+        return lineData;
+    }
+
+    public int getMovingAveragePeriod() {
+        return this.simpleMovingAverage.getSize();
+    }
+
+    public void setMovingAverage(boolean enabled, int period) {
+        this.movingAverageEnabled = enabled;
+        this.simpleMovingAverage.setData(
+                this.lineData.entrySet().stream()
+                        .sorted(Comparator.comparingInt(Map.Entry::getKey))
+                        .map(Map.Entry::getValue)
+                        .collect(Collectors.toList()),
+                period);
+
+        this.stockData.notifyChange();
+    }
+
+    public void setWMovingAverageEnabled(boolean enabled, int period) {
+        this.wMovingAverageEnabled = enabled;
+        this.weightedMovingAverage.setData(
+                this.lineData.entrySet().stream()
+                        .sorted(Comparator.comparingInt(Map.Entry::getKey))
+                        .map(Map.Entry::getValue)
+                        .collect(Collectors.toList()),
+                period);
+
+        this.stockData.notifyChange();
+    }
+
+    public int getWeightedMovingAveragePeriod() {
+        return this.weightedMovingAverage.getSize();
+    }
+
+    public boolean isMovingAverageEnabled() {
+        return movingAverageEnabled;
+    }
+
+    public boolean iswMovingAverageEnabled() {
+        return wMovingAverageEnabled;
     }
 }

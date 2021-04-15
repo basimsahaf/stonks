@@ -51,7 +51,7 @@ public class CompanyTable extends SQLiteOpenHelper {
         return companyTable;
     }
 
-    public static void populateCompanyTableIfNotEmpty(Context context) {
+    public static void populateCompanyTableIfEmpty(Context context) {
         CompanyTable companyTable = CompanyTable.getInstance(context);
         if (companyTable.isEmpty()) {
             companyTable.populateTableInThread();
@@ -126,17 +126,14 @@ public class CompanyTable extends SQLiteOpenHelper {
     }
 
     private void populateTableInThread() {
-        new Thread(
-                        () -> {
-                            populateTable();
-                        })
-                .start();
+        new Thread(this::populateTable).start();
     }
 
     private void populateTable() {
         SQLiteDatabase db = this.getWritableDatabase();
         String SYMBOL = "symbol";
         String NAME = "description";
+        String TYPE = "type";
 
         try {
             String jsonDataString = readJsonDataFromFile();
@@ -148,11 +145,14 @@ public class CompanyTable extends SQLiteOpenHelper {
                 JSONObject item = companyJsonArray.getJSONObject(i);
                 String symbol = item.getString(SYMBOL);
                 String name = item.getString(NAME);
+                String type = item.getString(TYPE);
 
-                ContentValues cv = new ContentValues();
-                cv.put(COLUMN_SYMBOL, symbol);
-                cv.put(COLUMN_NAME, name);
-                db.insert(TABLE_NAME, null, cv);
+                if (type.equalsIgnoreCase("common stock")) {
+                    ContentValues cv = new ContentValues();
+                    cv.put(COLUMN_SYMBOL, symbol);
+                    cv.put(COLUMN_NAME, name);
+                    db.insert(TABLE_NAME, null, cv);
+                }
             }
             db.setTransactionSuccessful();
             db.endTransaction();

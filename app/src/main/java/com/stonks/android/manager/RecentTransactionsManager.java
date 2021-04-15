@@ -93,6 +93,28 @@ public class RecentTransactionsManager {
         filters.setMaxAmount(TransactionFilters.UNINITIALIZED_AMOUNT);
     }
 
+    public String getMinAmountFilterString() {
+        if (filters.isMinAmountFilterApplied()) {
+            return Integer.toString(filters.getMinAmount());
+        }
+        return "";
+    }
+
+    public String getMaxAmountFilterString() {
+        if (filters.isMaxAmountFilterApplied()) {
+            return Integer.toString(filters.getMaxAmount());
+        }
+        return "";
+    }
+
+    public TransactionMode getTransactionModeFilter() {
+        return filters.getMode();
+    }
+
+    public ArrayList<String> getSymbolsFilter() {
+        return filters.getSymbols();
+    }
+
     private Boolean datesAreOnDifferentDays(LocalDateTime date1, LocalDateTime date2) {
         return date1.getDayOfYear() != date2.getDayOfYear() || date1.getYear() != date2.getYear();
     }

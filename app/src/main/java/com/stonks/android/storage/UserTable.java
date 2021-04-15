@@ -126,8 +126,8 @@ public class UserTable extends SQLiteOpenHelper {
             }
             return new Result.Error(R.string.user_exists);
         }
-        // this shouldn't happen but just in case something goes wrong, this will allow graceful
-        // exit
+        // this shouldn't happen but just in case something goes wrong, this will
+        // allow graceful exit
         return new Result.Error(R.string.internal_server_error);
     }
 
@@ -145,8 +145,8 @@ public class UserTable extends SQLiteOpenHelper {
 
             return new Result.Error(R.string.password_update_error);
         }
-        // this shouldn't happen but just in case something goes wrong, this will allow graceful
-        // exit
+        // this shouldn't happen but just in case something goes wrong, this will
+        // allow graceful exit
         return new Result.Error(R.string.internal_server_error);
     }
 
@@ -163,8 +163,8 @@ public class UserTable extends SQLiteOpenHelper {
             }
             return new Result.Error(R.string.biometrics_in_use);
         }
-        // this shouldn't happen but just in case something goes wrong, this will allow graceful
-        // exit
+        // this shouldn't happen but just in case something goes wrong, this will
+        // allow graceful exit
         return new Result.Error(R.string.internal_server_error);
     }
 
@@ -195,8 +195,8 @@ public class UserTable extends SQLiteOpenHelper {
 
             return new Result.Error(R.string.training_period_error);
         }
-        // this shouldn't happen but just in case something goes wrong, this will allow graceful
-        // exit
+        // this shouldn't happen but just in case something goes wrong, this will
+        // allow graceful exit
         return new Result.Error(R.string.internal_server_error);
     }
 
