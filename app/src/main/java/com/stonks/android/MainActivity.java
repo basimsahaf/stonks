@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
                             switchFragment(new RecentTransactionsFragment());
                             break;
                         case R.id.saved_nav:
-                            switchFragment(new SavedStocksFragment());
+                            switchFragment(new FavouriteStocksFragment());
                             break;
                         case R.id.settings_nav:
                             switchFragment(new SettingsFragment());
